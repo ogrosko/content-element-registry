@@ -1,6 +1,7 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Hook;
 
+use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -33,12 +34,12 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
 
         $contentElementRegistry = ContentElementRegistry::getInstance();
         if ($contentElementRegistry->existsContentElement($row['CType'])) {
-            /** @var AbstractContentElementRegistryItem\ $contentElement */
+            /** @var AbstractContentElementRegistryItem $contentElement */
             $contentElement = $contentElementRegistry->getContentElement($row['CType']);
             $drawItem = false;
             $view = GeneralUtility::makeInstance(StandaloneView::class);
-            $view->setPartialRootPaths(["EXT:bb_boilerplate/Resources/Private/Partials"]);
-            $view->setTemplatePathAndFilename("EXT:bb_boilerplate/Resources/Private/Templates/ContentElements/{$contentElement->getTemplateName()}.html");
+            $view->setPartialRootPaths(["EXT:{$contentElement->getExtensionKey()}/Resources/Private/Partials"]);
+            $view->setTemplatePathAndFilename("EXT:{$contentElement->getExtensionKey()}/Resources/Private/Templates/ContentElements/{$contentElement->getTemplateName()}.html");
 
             $itemContent = $this->getEditContentLink($parentObject, $row);
             $itemContent .= $view->renderSection(

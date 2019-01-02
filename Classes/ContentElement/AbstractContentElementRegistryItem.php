@@ -1,10 +1,9 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\ContentElement;
 
-use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
+use Digitalwerk\ContentElementRegistry\DataProcessing\ContentElementObjectDataProcessor;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class AbstractContentElementRegistryItem
@@ -213,7 +212,10 @@ abstract class AbstractContentElementRegistryItem
             'tt_content' => [
                 $this->getCType() => '< lib.contentElement',
                 $this->getCType().'.' => [
-                    'templateName' => $this->getTemplateName()
+                    'templateName' => $this->getTemplateName(),
+                    'dataProcessing.' => [
+                        '0' => ContentElementObjectDataProcessor::class
+                    ],
                 ]
             ],
         ];
