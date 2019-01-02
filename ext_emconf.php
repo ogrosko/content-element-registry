@@ -1,7 +1,7 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'CEs',
+    'title' => 'Content element registry',
     'description' => 'Helper for creating typo3 content elements',
     'category' => 'fe',
     'author' => 'Ondrej Grosko',

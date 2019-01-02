@@ -1,0 +1,26 @@
+{
+	"name": "digitalwerk/content-element-registry",
+	"type": "typo3-cms-extension",
+	"description": "Content element registry helper for registering Typo3 content elements",
+	"version": "0.0.1",
+	"license": "GPL-2.0+",
+	"require": {
+		"typo3/cms-core": "^8.7"
+	},
+	"autoload": {
+		"psr-4": {
+			"Digitalwerk\\ContentElementRegistry\\": "Classes"
+		}
+	},
+	"replace": {
+		"content_element_registry": "self.version",
+		"typo3-ter/content-element-registry": "self.version"
+	},
+	"authors": [
+		{
+			"name": "Ondrej Grosko",
+			"email": "ondrej@digitalwerk.agency",
+			"homepage": "https://digitalwerk.agency/"
+		}
+	]
+}
