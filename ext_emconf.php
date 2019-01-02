@@ -7,8 +7,8 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Ondrej Grosko',
     'author_email' => 'ondrej@digitalwerk.agency',
     'author_company' => 'Digitalwerk',
-    'state' => 'alpha',
-    'version' => '0.0.1',
+    'state' => 'beta',
+    'version' => '0.0.2',
     'constraints' => [
         'depends' => [
         ],
