@@ -11,10 +11,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractContentElementRegistryItem
 {
-    /**
-     * Prefix for all CEs
-     */
-    const PREFIX = 'dwContentElementRegistry';
 
     /**
      * Palettes
@@ -58,7 +54,7 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getIdentifier()
     {
-        return \strtolower(\sprintf("%s_%s", static::PREFIX, $this->getName()));
+        return \strtolower(\sprintf("%s_%s", $this->getExtensionName(), $this->getName()));
     }
 
     /**
@@ -75,9 +71,16 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getExtensionKey()
     {
-        return GeneralUtility::camelCaseToLowerCaseUnderscored(
-            ContentElementRegistryUtility::getNamespaceConfiguration(static::class, 'extensionName')
-        );
+        return GeneralUtility::camelCaseToLowerCaseUnderscored($this->getExtensionName());
+    }
+
+    /**
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function getExtensionName()
+    {
+        return ContentElementRegistryUtility::getNamespaceConfiguration(static::class, 'extensionName');
     }
 
     /**
