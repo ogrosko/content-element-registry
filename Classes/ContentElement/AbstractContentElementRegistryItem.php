@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\ContentElement;
 
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
@@ -70,11 +71,35 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function getExtensionKey()
+    {
+        return GeneralUtility::camelCaseToLowerCaseUnderscored(
+            ContentElementRegistryUtility::getNamespaceConfiguration(static::class, 'extensionName')
+        );
+    }
+
+    /**
      * @return mixed
      */
-    public function getIcon()
+    public function getIconIdentifier()
     {
         return $this->getIdentifier();
+    }
+
+    /**
+     * @return string
+     */
+    public function getIconPath()
+    {
+        $iconSource = "EXT:{$this->getExtensionKey()}/Resources/Public/Icons/ContentElement/{$this->getIconIdentifier()}.svg";
+        if (!file_exists(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($iconSource))) {
+            $iconSource = "EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg";
+        }
+
+        return $iconSource;
     }
 
     /**
@@ -82,7 +107,7 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getTitle()
     {
-        return "LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.title";
+        return "LLL:EXT:{$this->getExtensionKey()}/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.title";
     }
 
     /**
@@ -90,7 +115,7 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getDescription()
     {
-        return "LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.description";
+        return "LLL:EXT:{$this->getExtensionKey()}/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.description";
     }
 
     /**
@@ -134,7 +159,7 @@ abstract class AbstractContentElementRegistryItem
             $this->getWizardTabName() => [
                 'elements' => [
                     $this->getCType() => [
-                        'iconIdentifier' => $this->getIcon(),
+                        'iconIdentifier' => $this->getIconIdentifier(),
                         'title' => $this->getTitle(),
                         'description' => $this->getDescription(),
                         'tt_content_defValues' => [
@@ -280,7 +305,7 @@ abstract class AbstractContentElementRegistryItem
         }
 
         $this->palettes[$paletteIdentifier] = [
-            'label' => "LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.palette.{$name}",
+            'label' => "LLL:EXT:{$this->getExtensionKey()}/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.palette.{$name}",
             'showitem' => $showItem,
         ];
     }

@@ -15,15 +15,11 @@ call_user_func(
         /** @var \Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem $contentElement */
         foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
             //Register CE icon
-            $iconSource = "EXT:{$extKey}/Resources/Public/Icons/Content/{$contentElement->getIcon()}.svg";
-            if (!file_exists(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($iconSource))) {
-                $iconSource = "EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg";
-            }
             $iconRegistry->registerIcon(
-                $contentElement->getIdentifier(),
+                $contentElement->getIconIdentifier(),
                 \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
                 [
-                    'source' => $iconSource,
+                    'source' => $contentElement->getIconPath(),
                 ]
             );
 

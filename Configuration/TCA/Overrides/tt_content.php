@@ -28,7 +28,7 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
         [
             $contentElement->getTitle(),
             $contentElement->getCType(),
-            $contentElement->getIcon()
+            $contentElement->getIconIdentifier()
         ],
         'text',
         'before'
