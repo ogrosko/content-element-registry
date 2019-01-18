@@ -1,6 +1,7 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\ContentElement;
 
+use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use Digitalwerk\ContentElementRegistry\DataProcessing\ContentElementObjectDataProcessor;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -20,6 +21,8 @@ abstract class AbstractContentElementRegistryItem
     private $palettes = [];
 
     /**
+     * Table columns mappings to Model properties
+     *
      * @var array
      */
     protected $columnsMapping = [];
@@ -32,6 +35,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE name
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -41,6 +46,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE template name
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -50,7 +57,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
-     * @return mixed
+     * Get CE identifier
+     *
+     * @return string
+     * @throws \ReflectionException
      */
     public function getIdentifier()
     {
@@ -58,7 +68,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * get CE CType
+     *
      * @return string
+     * @throws \ReflectionException
      */
     public function getCType()
     {
@@ -66,6 +79,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get extension key
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -75,6 +90,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get extension name
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -84,7 +101,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
-     * @return mixed
+     * Get CE icon identifier
+     *
+     * @return string
+     * @throws \ReflectionException
      */
     public function getIconIdentifier()
     {
@@ -92,20 +112,26 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE icon path
+     *
      * @return string
+     * @throws \ReflectionException
      */
     public function getIconPath()
     {
         $iconSource = "EXT:{$this->getExtensionKey()}/Resources/Public/Icons/ContentElement/{$this->getIconIdentifier()}.svg";
-        if (!file_exists(\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($iconSource))) {
-            $iconSource = "EXT:core/Resources/Public/Icons/T3Icons/default/default-not-found.svg";
+        if (!file_exists(GeneralUtility::getFileAbsFileName($iconSource))) {
+            $iconSource = "EXT:".ContentElementRegistry::EXTENSION_KEY."/Resources/Public/Icons/CEDefaultIcon.svg";
         }
 
         return $iconSource;
     }
 
     /**
-     * @return null|string
+     * Get CE LLL title
+     *
+     * @return string
+     * @throws \ReflectionException
      */
     public function getTitle()
     {
@@ -113,7 +139,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
-     * @return null|string
+     * Get CE LLL description
+     *
+     * @return string
+     * @throws \ReflectionException
      */
     public function getDescription()
     {
@@ -121,6 +150,9 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE wizard tab name [common, menu, special, forms, plugins]
+     * Specify in which wizard tab should be element placed
+     *
      * @return string
      */
     protected function getWizardTabName()
@@ -129,14 +161,18 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE wizard tab name
+     *
      * @return string
      */
     protected function getWizardTabHeader()
     {
-        return 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:common';
+        return "LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:{$this->getWizardTabName()}";
     }
 
     /**
+     * Get CE group
+     *
      * @return string
      */
     public function getGroupName()
@@ -145,6 +181,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE group label
+     *
      * @return string
      */
     public function getGroupLabel()
@@ -153,7 +191,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE PageTSconfig
+     *
      * @return string
+     * @throws \ReflectionException
      */
     public function getPageTSconfig()
     {
@@ -181,6 +222,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE TCA showitem config
+     *
      * @return string
      */
     public function getTCAShowItemConfig()
@@ -206,6 +249,8 @@ abstract class AbstractContentElementRegistryItem
 
 
     /**
+     * Get CE tt_content typoscript config
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -227,6 +272,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get CE Extbase typoscript config
+     *
      * @throws \ReflectionException
      */
     public function getTypoScriptPersistenceConfig()
@@ -290,6 +337,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Additional columns overrides
+     *
      * @return array
      */
     public function getColumnsOverrides()
@@ -298,8 +347,10 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
-     * @param string $name
-     * @param string $showItem
+     * Add pallete to CE
+     *
+     * @param string $name Palette name
+     * @param string $showItem Pallete showitem string
      * @throws \Exception
      */
     protected function addPalette($name, $showItem)
@@ -316,6 +367,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get palettes showitem string
+     *
      * @return string
      */
     private function getPalettesShowItemString()
@@ -329,6 +382,8 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get Ce Palettes
+     *
      * @return array
      */
     public function getPalettes()

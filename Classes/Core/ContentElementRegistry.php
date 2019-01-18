@@ -7,7 +7,6 @@ use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class ContentElementRegistry
@@ -17,7 +16,12 @@ class ContentElementRegistry implements SingletonInterface
 {
 
     /**
-     * Registered CEs
+     * Extension key
+     */
+    const EXTENSION_KEY = 'content_element_registry';
+
+    /**
+     * CEs (Content elements) register
      *
      * @var array
      */
@@ -39,6 +43,45 @@ class ContentElementRegistry implements SingletonInterface
      */
     public function __construct()
     {
+        $this->registerContentElements();
+        $this->emitRegisterContentElementRegistryClass();
+    }
+
+    /**
+     * Register content elements based on extConf
+     *
+     * @throws ContentElementRegistryException
+     */
+    private function registerContentElements()
+    {
+        $contentElementsPaths = $this->getExtConf('contentElementsPaths');
+        if ($contentElementsPaths) {
+            $contentElementsPaths = GeneralUtility::trimExplode(',', $contentElementsPaths);
+            foreach ($contentElementsPaths as $contentElementsPath) {
+                if (GeneralUtility::isFirstPartOfStr($contentElementsPath, 'EXT:')) {
+                    $contentElementsPath = GeneralUtility::getFileAbsFileName($contentElementsPath);
+                }
+                if (\file_exists($contentElementsPath) and \is_dir($contentElementsPath)) {
+                    $contentElementsClasses = ClassMapGenerator::createMap($contentElementsPath);
+                    foreach ($contentElementsClasses as $contentElementClass => $contentElementClassPath) {
+                        $contentElement = GeneralUtility::makeInstance($contentElementClass);
+                        if ($contentElement instanceof AbstractContentElementRegistryItem) {
+                            $this->registerContentElement($contentElement);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Emit registerContentElementRegistryClass signal
+     *
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
+     */
+    private function emitRegisterContentElementRegistryClass()
+    {
         $dispatcher = GeneralUtility::makeInstance(Dispatcher::class);
         $dispatcher->dispatch(__CLASS__, 'registerContentElementRegistryClass', [$this]);
     }
@@ -54,8 +97,7 @@ class ContentElementRegistry implements SingletonInterface
     /**
      * Registration of new CE
      *
-     * @param string $name
-     * @param string $palette
+     * @param AbstractContentElementRegistryItem $element
      * @throws ContentElementRegistryException
      */
     public function registerContentElement(AbstractContentElementRegistryItem $element)
@@ -81,8 +123,9 @@ class ContentElementRegistry implements SingletonInterface
      *
      * @param string $elementIdentifier
      * @return AbstractContentElementRegistryItem
+     * @throws ContentElementRegistryException
      */
-    public function getContentElement($elementIdentifier)
+    public function getContentElement(string $elementIdentifier)
     {
         if ($this->existsContentElement($elementIdentifier)) {
             return $this->contentElements[$elementIdentifier];
@@ -97,7 +140,7 @@ class ContentElementRegistry implements SingletonInterface
      * @param string $elementIdentifier
      * @return bool
      */
-    public function existsContentElement($elementIdentifier)
+    public function existsContentElement(string $elementIdentifier)
     {
         return \array_key_exists($elementIdentifier, $this->contentElements);
     }
@@ -108,9 +151,9 @@ class ContentElementRegistry implements SingletonInterface
      *  config.tx_extbase {
      *       persistence {
      *           classes {
-     *               BinaryBay\BbBoilerplate\Domain\Model\ContentElement {
+     *                Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement {
      *                   subclasses {
-     *                       BinaryBay\BbBoilerplate\Domain\Model\ContentElement\RegularTextElement = BinaryBay\BbBoilerplate\Domain\Model\ContentElement\RegularTextElement
+     *                       ...
      *                   }
      *                   mapping {
      *                       tableName = tt_content
@@ -183,5 +226,25 @@ class ContentElementRegistry implements SingletonInterface
         $class = \implode('\\', $modelNamespace);
 
         return \class_exists($class) ? $class : false;
+    }
+
+    /**
+     * Retrieve extension configuration
+     *
+     * @param null $configurationKey
+     * @return array|mixed
+     */
+    private function getExtConf($configurationKey = null)
+    {
+        $extConf = [];
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY])) {
+            $extConf = \unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY]);
+        }
+
+        if (null !== $configurationKey and isset($extConf[$configurationKey])) {
+            return $extConf[$configurationKey];
+        }
+
+        return $extConf;
     }
 }
