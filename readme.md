@@ -1,6 +1,6 @@
 ![](./Resources/Public/Icons/Extension.svg)
 # Content element registry
-Typo3 extension simplify process of creating new content elements in [Typo3 way](https://docs.typo3.org/typo3cms/extensions/fluid_styled_content/7.6/AddingYourOwnContentElements/Index.html)
+Typo3 extension simplify process of creating new content elements (CE) in [Typo3 way](https://docs.typo3.org/typo3cms/extensions/fluid_styled_content/7.6/AddingYourOwnContentElements/Index.html)
 
 ## Install
 Install extension via composer `composer req digitalwerk/content-element-registry` and activate it in Extension module
@@ -53,8 +53,9 @@ class YourNewContentElement extends AbstractContentElementRegistryItem
 ```
 After clearing typo3 caches you should now see new content element in wizard
 ![](./Resources/Public/Images/NewContentElement1.png)
+
 As you can see there is either title nor description of the content element. These are automatically fetched and translated from locallang file inside of your extension:
-`EXT:your_extension/Resources/Private/Language/locallang_db.xlf`. Yoy can now define your CE title and description as follows:
+`EXT:your_extension/Resources/Private/Language/locallang_db.xlf`. You can now define your CE title and description as follows:
 ```xml
 <trans-unit id="tt_content.yourextension_yournewcontentelement.title">
     <source>Your new content element</source>
@@ -63,3 +64,64 @@ As you can see there is either title nor description of the content element. The
     <source>Your new content element description</source>
 </trans-unit>
 ```
+
+When you add this new CE it will contains only default CE fields:
+![](./Resources/Public/Images/NewContentElement2.png)
+
+### Adding CE fields
+To add new fields you have to define it in `\YourVendor\YourExtension\ContentElement\YourNewContentElement`:
+```php
+<?php
+namespace \YourVendor\YourExtension\ContentElement;
+
+use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
+
+class YourNewContentElement extends AbstractContentElementRegistryItem
+{
+
+    /**
+     * YourNewContentElement constructor.
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addPalette(
+            'default',
+            'header, --linebreak--, bodytext'
+        );
+    }
+}
+```
+
+By this, we defined new CE *palette* with name `default` with two fields `header` and `bodytext`.
+
+**Code description:**
+1. Name of the palette must be unique per CE. Label for palette can be defined in `locallang_db.xlf` with following key: `tt_content.yourextension_yournewcontentelement.palette.default`
+2. Fields definition syntax must follows [TCA palette showitem syntax](https://docs.typo3.org/typo3cms/TCAReference/Palettes/Index.html#showitem)
+3. Used fields must be properly configured in [Typo3 TCA](https://docs.typo3.org/typo3cms/TCAReference/8.7/)
+4. You can add as many palettes as you need ;)
+
+Our CE now should looks like this:
+![](./Resources/Public/Images/NewContentElement3.png)
+
+If you need to override field configuration you can do this in this way: (In following example we enabled rich text editor for `bodytext` field)
+```php
+<?php
+    /**
+     * @return array
+     */
+    public function getColumnsOverrides()
+    {
+        return [
+            'bodytext' => [
+                'config' => [
+                    'enableRichtext' => true,
+                ],
+            ],
+        ];
+    }
+```
+
+### CE Template
+
