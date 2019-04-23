@@ -4,9 +4,12 @@ namespace Digitalwerk\ContentElementRegistry\Core;
 use Composer\Autoload\ClassMapGenerator;
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class ContentElementRegistry
@@ -237,8 +240,13 @@ class ContentElementRegistry implements SingletonInterface
     private function getExtConf($configurationKey = null)
     {
         $extConf = [];
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY])) {
-            $extConf = \unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY]);
+
+        if (\version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0.0', '<')) {
+            if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY])) {
+                $extConf = \unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY]);
+            }
+        } else {
+            $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY);
         }
 
         if (null !== $configurationKey and isset($extConf[$configurationKey])) {

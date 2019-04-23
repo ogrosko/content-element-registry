@@ -39,18 +39,10 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
     }
 
     /**
-     * @return ObjectManager
-     */
-    protected function getObjectManager()
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class);
-    }
-
-    /**
      * @return DataMapper
      */
     protected function getDataMapper()
     {
-        return $this->getObjectManager()->get(DataMapper::class);
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }
 }

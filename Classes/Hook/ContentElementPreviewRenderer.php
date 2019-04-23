@@ -7,9 +7,11 @@ use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterface
@@ -74,18 +76,10 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
     }
 
     /**
-     * @return ObjectManager
-     */
-    protected function getObjectManager()
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class);
-    }
-
-    /**
      * @return DataMapper
      */
     protected function getDataMapper()
     {
-        return $this->getObjectManager()->get(DataMapper::class);
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }
 }
