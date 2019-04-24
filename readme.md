@@ -1,16 +1,22 @@
 ![](./Resources/Public/Icons/Extension.svg)
+
 # Content element registry
 Typo3 extension simplify process of creating new content elements (CE) in [Typo3 way](https://docs.typo3.org/typo3cms/extensions/fluid_styled_content/7.6/AddingYourOwnContentElements/Index.html)
+
 
 ## Install
 Install extension via composer `composer req digitalwerk/content-element-registry` and activate it in Extension module
 
+
 ## Setup
 After activating extension, you have to define your Content elements configuration classes.
 It can be done in two ways:
+
 1. By defining paths in extension configuration (aka *extConf*). Can contain comma separated list of paths do directories
 **Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/` 
+
 2. By registering Signal slot in `ext_localconf.php` of your extension as follows:
+
 ```php
 <?php
 $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
@@ -23,7 +29,9 @@ $signalSlotDispatcher->connect(
     'yourMethodName'
 );
 ```
+
 Method `\YourVendor\YourExtension\::yourMethodName` can looks like this:
+
 ```php
 <?php
 /**
@@ -38,6 +46,7 @@ public function registerContentElements(\Digitalwerk\ContentElementRegistry\Core
 }
 ```
 
+
 ## Creating new content element
 To create new Content element you have to create new *Class* inside your folder defined in [Setup section](#setup) which extends `Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem`
 ```php
@@ -51,10 +60,11 @@ class YourNewContentElement extends AbstractContentElementRegistryItem
 
 }
 ```
+
 After clearing typo3 caches you should now see new content element in wizard
 ![](./Resources/Public/Images/NewContentElement1.png)
 
-As you can see there is either title nor description of the content element. These are automatically fetched and translated from locallang file inside of your extension:
+As you can see, there is either title nor description of the content element. These are automatically fetched and translated from locallang file inside of your extension:
 `EXT:your_extension/Resources/Private/Language/locallang_db.xlf`. You can now define your CE title and description as follows:
 ```xml
 <trans-unit id="tt_content.yourextension_yournewcontentelement.title">
@@ -123,5 +133,51 @@ If you need to override field configuration you can do this in this way: (In fol
     }
 ```
 
-### CE Template
 
+### CE Template
+Template path of content element must be configured in typoscript as follow:
+
+```typo3_typoscript
+lib.contentElement {
+    layoutRootPaths {
+        10 = EXT:your_extension/Resources/Private/Layouts
+    }
+
+    partialRootPaths {
+        10 = EXT:your_extension/Resources/Private/Partials
+    }
+
+    templateRootPaths {
+        10 = EXT:your_extension/Resources/Private/Templates/ContentElements
+    }
+}
+```
+
+Template name is matched by CE class name. E.g. if is registered CE with class name `YourNewContentElement` this
+template must exists `EXT:your_extension/Resources/Private/Templates/ContentElements/YourNewContentElement.html`.
+Content of template can looks like this:
+
+```html
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="ContentElements/{contentElement.layout}" />
+
+<f:section name="Main">
+  ...
+</f:section>
+
+<f:section name="Preview">
+  ...
+</f:section>
+
+</html>
+```
+
+Whether you use `<f:layout />` and `<f:section />` it's fully up to you. You can also add section 
+`<f:section name="Preview">` which is used for BE preview.
+
+
+### CE Domain Model
+[TODO]

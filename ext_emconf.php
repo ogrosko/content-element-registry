@@ -8,9 +8,11 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'ondrej@digitalwerk.agency',
     'author_company' => 'Digitalwerk',
     'state' => 'beta',
-    'version' => '0.0.4',
+    'version' => '0.0.5',
     'constraints' => [
         'depends' => [
+            'typo3' => '8.7.0-9.5.999',
+            'php' => '7.0.0-7.3.999',
         ],
         'conflicts' => [
         ],
