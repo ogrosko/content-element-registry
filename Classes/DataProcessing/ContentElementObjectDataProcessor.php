@@ -35,6 +35,7 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
             [$cObj->data]
         )[0];
 
+        $processedData['ce'] = $processedData['contentElement'];
         return $processedData;
     }
 
