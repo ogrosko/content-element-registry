@@ -19,7 +19,7 @@ call_user_func(
                 $contentElement->getIconIdentifier(),
                 \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
                 [
-                    'source' => $contentElement->getIconPath(),
+                    'source' => $contentElement->getIconSrcPath(),
                 ]
             );
 

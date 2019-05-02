@@ -112,14 +112,25 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * Get path to icons
+     *
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function getIconsPath(): string
+    {
+        return "EXT:{$this->getExtensionKey()}/Resources/Public/Icons/ContentElement/";
+    }
+
+    /**
      * Get CE icon path
      *
      * @return string
      * @throws \ReflectionException
      */
-    public function getIconPath()
+    public function getIconSrcPath()
     {
-        $iconSource = "EXT:{$this->getExtensionKey()}/Resources/Public/Icons/ContentElement/{$this->getIconIdentifier()}.svg";
+        $iconSource = "{$this->getIconsPath()}{$this->getIconIdentifier()}.svg";
         if (!file_exists(GeneralUtility::getFileAbsFileName($iconSource))) {
             $iconSource = "EXT:".ContentElementRegistry::EXTENSION_KEY."/Resources/Public/Icons/CEDefaultIcon.svg";
         }

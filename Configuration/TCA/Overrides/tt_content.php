@@ -45,3 +45,27 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
         'columnsOverrides' => $contentElement->getColumnsOverrides(),
     ];
 }
+
+
+$tmpColumns = [
+    'tx_contentelementregistry_relations' => [
+        'label' => 'Content relation (Label should be always rewrited by subType)',
+        'config' => [
+            'type' => 'inline',
+            'foreign_table' => 'tx_contentelementregistry_domain_model_relation',
+            'foreign_field' => 'content_element',
+            'foreign_sortby' => 'sorting',
+            'maxitems' => 9999,
+            'appearance' => [
+                'useSortable' => true,
+                'collapseAll' => 1,
+                'levelLinksPosition' => 'top',
+                'showSynchronizationLink' => 1,
+                'showPossibleLocalizationRecords' => 1,
+                'showAllLocalizationLink' => 1
+            ],
+        ],
+    ],
+];
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', $tmpColumns);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2015-08-14T12:33:16Z" product-name="content_element_registry">
+        <header/>
+        <body>
+            <trans-unit id="tx_contentelementregistry_domain_model_relation">
+                <source>Content Element Registry relation</source>
+            </trans-unit>
+            <trans-unit id="tx_contentelementregistry_domain_model_relation.type">
+                <source>Relation type</source>
+            </trans-unit>
+            <trans-unit id="tx_contentelementregistry_domain_model_relation.title">
+                <source>Title</source>
+            </trans-unit>
+            <trans-unit id="tx_contentelementregistry_domain_model_relation.description">
+                <source>Description</source>
+            </trans-unit>
+            <trans-unit id="tx_contentelementregistry_domain_model_relation.media">
+                <source>Media</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
