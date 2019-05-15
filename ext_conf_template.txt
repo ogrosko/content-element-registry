@@ -1,2 +1,2 @@
-# cat=basic; type=string; label=Content element class path:Path to Content elements classes directory. Can be comma separated list of paths. Example: EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/
+# cat=basic; type=string; label=Content element class path:Path to Content elements classes directory. Can be comma separated list of paths. Example: EXT:your_ext_1/Classes/ContentElement/,EXT:your_ext_2/Classes/ContentElement/
 contentElementsPaths =
