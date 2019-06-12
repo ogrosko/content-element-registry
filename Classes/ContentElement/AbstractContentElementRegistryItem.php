@@ -401,4 +401,13 @@ abstract class AbstractContentElementRegistryItem
     {
         return $this->palettes;
     }
+
+    /**
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function getFlexFormFormDefinition(): string
+    {
+        return "FILE:EXT:{$this->getExtensionKey()}/Configuration/FlexForms/ContentElement/{$this->getIdentifier()}.xml";
+    }
 }

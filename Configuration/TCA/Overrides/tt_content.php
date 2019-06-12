@@ -39,6 +39,10 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
         $GLOBALS['TCA']['tt_content']['palettes'][$paletteName] = $palette;
     }
 
+    // Add CE FlexForm
+    $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds']["*,{$contentElement->getIdentifier()}"] =
+        $contentElement->getFlexFormFormDefinition();
+
     //Add CE type
     $GLOBALS['TCA']['tt_content']['types'][$contentElement->getCType()] = [
         'showitem' => $contentElement->getTCAShowItemConfig(),
