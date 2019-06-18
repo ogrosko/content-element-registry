@@ -403,6 +403,19 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
+     * @return bool
+     * @throws \ReflectionException
+     */
+    public function flexFormDefinitionExists(): bool
+    {
+        return \file_exists(
+            GeneralUtility::getFileAbsFileName(
+                substr($this->getFlexFormFormDefinition(), \strlen('FILE:'))
+            )
+        );
+    }
+
+    /**
      * @return string
      * @throws \ReflectionException
      */

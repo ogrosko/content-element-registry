@@ -40,8 +40,10 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
     }
 
     // Add CE FlexForm
-    $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds']["*,{$contentElement->getIdentifier()}"] =
-        $contentElement->getFlexFormFormDefinition();
+    if ($contentElement->flexFormDefinitionExists()) {
+        $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds']["*,{$contentElement->getIdentifier()}"] =
+            $contentElement->getFlexFormFormDefinition();
+    }
 
     //Add CE type
     $GLOBALS['TCA']['tt_content']['types'][$contentElement->getCType()] = [
