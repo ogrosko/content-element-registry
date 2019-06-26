@@ -75,4 +75,15 @@ class ContentElementRegistryUtility
 
         return $data;
     }
+
+    /**
+     * Convert camelCaseString to camel-case-dashed-string
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function camelCase2Dashed(string $string): string
+    {
+        return strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $string));
+    }
 }
