@@ -171,7 +171,7 @@ class ContentElementRegistry implements SingletonInterface
      *       }
      *   }
      *
-     * @return string
+     * @return array
      * @throws \ReflectionException
      */
     public function getBaseTypoScriptPersistenceConfig()
@@ -207,7 +207,7 @@ class ContentElementRegistry implements SingletonInterface
             }
         }
 
-        return ContentElementRegistryUtility::convertArrayToTypoScript($config, 'config.tx_extbase.persistence.classes');
+        return $config;
     }
 
     /**

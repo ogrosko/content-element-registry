@@ -1,4 +1,7 @@
 <?php
+
+use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
+
 defined('TYPO3_MODE') or die();
 
 call_user_func(
@@ -9,7 +12,10 @@ call_user_func(
         );
         $contentElementsRegistry = \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::getInstance();
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-            $contentElementsRegistry->getBaseTypoScriptPersistenceConfig()
+            ContentElementRegistryUtility::convertArrayToTypoScript(
+                $contentElementsRegistry->getBaseTypoScriptPersistenceConfig(),
+                'config.tx_extbase.persistence.classes'
+            )
         );
 
         /** @var \Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem $contentElement */
@@ -24,18 +30,27 @@ call_user_func(
             );
 
             //Register CE wizard item
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig($contentElement->getPageTSconfig());
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+                ContentElementRegistryUtility::convertArrayToTypoScript(
+                    $contentElement->getWizardPageTSconfig(),
+                    'mod.wizards.newContentElement.wizardItems'
+                )
+            );
 
             //Register CE rendering definition
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
                 $extKey,
                 'setup',
-                $contentElement->getTypoScriptConfiguration()
+                ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
             );
+
 
             //Add TypoScript setup for Extbase persistence mapping
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-                $contentElement->getTypoScriptPersistenceConfig()
+                ContentElementRegistryUtility::convertArrayToTypoScript(
+                    $contentElement->getTypoScriptPersistenceConfig(),
+                    'config.tx_extbase.persistence.classes'
+                )
             );
 
             //Register CE preview template

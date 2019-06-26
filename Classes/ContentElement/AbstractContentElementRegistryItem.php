@@ -28,6 +28,21 @@ abstract class AbstractContentElementRegistryItem
     protected $columnsMapping = [];
 
     /**
+     * Get CE wizard tab name [common, menu, special, forms, plugins]
+     * Specify in which wizard tab should be element placed
+     *
+     * @var string
+     */
+    protected $wizardTabName = 'common';
+
+    /**
+     * Should be element hidden in wizard
+     *
+     * @var bool
+     */
+    protected $hiddenInWizard = false;
+
+    /**
      * AbstractContentElementRegistryItem constructor.
      */
     public function __construct()
@@ -161,24 +176,13 @@ abstract class AbstractContentElementRegistryItem
     }
 
     /**
-     * Get CE wizard tab name [common, menu, special, forms, plugins]
-     * Specify in which wizard tab should be element placed
-     *
-     * @return string
-     */
-    protected function getWizardTabName()
-    {
-        return 'common';
-    }
-
-    /**
      * Get CE wizard tab name
      *
      * @return string
      */
     protected function getWizardTabHeader()
     {
-        return "LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:{$this->getWizardTabName()}";
+        return "LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:{$this->wizardTabName}";
     }
 
     /**
@@ -188,7 +192,7 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getGroupName()
     {
-        return $this->getWizardTabName();
+        return $this->wizardTabName;
     }
 
     /**
@@ -204,13 +208,15 @@ abstract class AbstractContentElementRegistryItem
     /**
      * Get CE PageTSconfig
      *
-     * @return string
+     * @return array
      * @throws \ReflectionException
      */
-    public function getPageTSconfig()
+    public function getWizardPageTSconfig()
     {
-        $config = [
-            $this->getWizardTabName() => [
+        $config = [];
+
+        if (false === $this->hiddenInWizard) {
+            $config[$this->wizardTabName] = [
                 'elements' => [
                     $this->getCType() => [
                         'iconIdentifier' => $this->getIconIdentifier(),
@@ -223,13 +229,10 @@ abstract class AbstractContentElementRegistryItem
                 ],
                 'show' => ":= addToList({$this->getCType()})",
                 'header' => $this->getWizardTabHeader(),
-            ],
-        ];
+            ];
+        }
 
-        return ContentElementRegistryUtility::convertArrayToTypoScript(
-            $config,
-            'mod.wizards.newContentElement.wizardItems'
-        );
+        return $config;
     }
 
     /**
@@ -262,12 +265,12 @@ abstract class AbstractContentElementRegistryItem
     /**
      * Get CE tt_content typoscript config
      *
-     * @return string
+     * @return array
      * @throws \ReflectionException
      */
     public function getTypoScriptConfiguration()
     {
-        $config = [
+        return [
             'tt_content' => [
                 $this->getCType() => '< lib.contentElement',
                 $this->getCType().'.' => [
@@ -278,13 +281,12 @@ abstract class AbstractContentElementRegistryItem
                 ]
             ],
         ];
-
-        return ContentElementRegistryUtility::convertArrayToTypoScript($config);
     }
 
     /**
      * Get CE Extbase typoscript config
      *
+     * @return array
      * @throws \ReflectionException
      */
     public function getTypoScriptPersistenceConfig()
@@ -310,10 +312,7 @@ abstract class AbstractContentElementRegistryItem
             }
         }
 
-        return ContentElementRegistryUtility::convertArrayToTypoScript(
-            $config,
-            'config.tx_extbase.persistence.classes'
-        );
+        return $config;
     }
 
     /**
