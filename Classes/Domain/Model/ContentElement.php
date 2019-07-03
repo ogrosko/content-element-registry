@@ -42,6 +42,11 @@ class ContentElement extends AbstractEntity
     protected $cssClassPrefix = 'ce-';
 
     /**
+     * @var array
+     */
+    protected $cssClassModifiers = [];
+
+    /**
      * Get Model name
      *
      * @return string
@@ -92,6 +97,19 @@ class ContentElement extends AbstractEntity
     {
         $cssClass = $this->cssClass ?: ContentElementRegistryUtility::camelCase2Dashed($this::getModelName());
         return \sprintf("%s%s", $this->cssClassPrefix, $cssClass);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCssClassWithModifiers(): string
+    {
+        $prefix = $this->getCssClass()."--";
+        if (!empty($this->cssClassModifiers)) {
+            return $prefix . implode(" ". $prefix, $this->cssClassModifiers);
+        }
+
+        return "";
     }
 
     /**
