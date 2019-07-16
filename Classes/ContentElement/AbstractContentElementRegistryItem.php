@@ -244,6 +244,7 @@ abstract class AbstractContentElementRegistryItem
     {
         return "--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
                     --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
+                    --palette--;;headers,
                     {$this->getPalettesShowItemString()}
                     {$this->getAdditionalTCAConfig()}
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance,

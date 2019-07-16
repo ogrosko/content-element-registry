@@ -32,6 +32,26 @@ class ContentElement extends AbstractEntity
     protected $header = '';
 
     /**
+     * @var int
+     */
+    protected $headerLayout = 0;
+
+    /**
+     * @var string
+     */
+    protected $headerPosition = '';
+
+    /**
+     * @var string
+     */
+    protected $headerLink = '';
+
+    /**
+     * @var string
+     */
+    protected $subheader = '';
+
+    /**
      * @var string
      */
     protected $cssClass = '';
@@ -87,6 +107,38 @@ class ContentElement extends AbstractEntity
     public function getHeader(): string
     {
         return $this->header;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeaderLayout(): int
+    {
+        return $this->headerLayout;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderPosition(): string
+    {
+        return $this->headerPosition;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderLink(): string
+    {
+        return $this->headerLink;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubheader(): string
+    {
+        return $this->subheader;
     }
 
     /**
