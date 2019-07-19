@@ -142,6 +142,8 @@ class ContentElement extends AbstractEntity
     }
 
     /**
+     * Get Css class
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -152,16 +154,29 @@ class ContentElement extends AbstractEntity
     }
 
     /**
+     * Set css class modifiers
+     * @return void
+     */
+    public function initializeCssClassModifiers(): void
+    {
+    }
+
+    /**
+     * Get css class with modifiers string
      * @return string
+     * @throws \ReflectionException
      */
     public function getCssClassWithModifiers(): string
     {
-        $prefix = $this->getCssClass()."--";
+        $cssClass = $this->getCssClass();
+        $this->initializeCssClassModifiers();
+        $prefix = $this->getCssClass() . '--';
+
         if (!empty($this->cssClassModifiers)) {
-            return $prefix . implode(" ". $prefix, $this->cssClassModifiers);
+            $cssClass .= ' ' . $prefix . implode(" {$prefix}", $this->cssClassModifiers);
         }
 
-        return "";
+        return \trim($cssClass);
     }
 
     /**
