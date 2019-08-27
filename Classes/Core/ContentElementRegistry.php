@@ -118,7 +118,21 @@ class ContentElementRegistry implements SingletonInterface
      */
     public function getContentElements()
     {
+        $this->sortContentElements();
         return $this->contentElements;
+    }
+
+    /**
+     * @return void
+     */
+    private function sortContentElements()
+    {
+        \uasort($this->contentElements, function (AbstractContentElementRegistryItem $a, AbstractContentElementRegistryItem $b) {
+            if ($a->getGroupName() === $b->getGroupName()) {
+                return \strcmp($a->getIdentifier(), $b->getIdentifier());
+            }
+            return \strcmp($a->getGroupName(), $b->getGroupName());
+        });
     }
 
     /**
