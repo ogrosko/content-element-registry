@@ -201,7 +201,7 @@ class ContentElement extends AbstractEntity
     /**
      * @return ContentObjectRenderer
      */
-    public function getCObj(): ContentObjectRenderer
+    public function getCObj(): ? ContentObjectRenderer
     {
         return $this->cObj;
     }
