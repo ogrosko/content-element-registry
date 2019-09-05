@@ -30,12 +30,17 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
         array $processorConfiguration,
         array $processedData
     ) {
-        $processedData['contentElement'] = $this->getDataMapper()->map(
+        /** @var ContentElement $contentElement */
+        $contentElement = $this->getDataMapper()->map(
             ContentElement::class,
             [$cObj->data]
         )[0];
 
-        $processedData['ce'] = $processedData['contentElement'];
+        $contentElement->setCObj($cObj);
+        $contentElement->setContentObjectConfiguration($contentObjectConfiguration);
+
+        $processedData['ce'] = $processedData['contentElement'] = $contentElement;
+
         return $processedData;
     }
 

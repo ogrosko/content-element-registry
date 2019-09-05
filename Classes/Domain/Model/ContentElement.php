@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\Domain\Model;
 
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class ContentElement
@@ -65,6 +66,16 @@ class ContentElement extends AbstractEntity
      * @var array
      */
     protected $cssClassModifiers = [];
+
+    /**
+     * @var ContentObjectRenderer
+     */
+    protected $cObj = null;
+
+    /**
+     * @var array
+     */
+    protected $contentObjectConfiguration = [];
 
     /**
      * Get Model name
@@ -185,5 +196,37 @@ class ContentElement extends AbstractEntity
     public function getLanguageUid()
     {
         return $this->_languageUid;
+    }
+
+    /**
+     * @return ContentObjectRenderer
+     */
+    public function getCObj(): ContentObjectRenderer
+    {
+        return $this->cObj;
+    }
+
+    /**
+     * @param ContentObjectRenderer $cObj
+     */
+    public function setCObj(ContentObjectRenderer $cObj)
+    {
+        $this->cObj = $cObj;
+    }
+
+    /**
+     * @return array
+     */
+    public function getContentObjectConfiguration(): array
+    {
+        return $this->contentObjectConfiguration;
+    }
+
+    /**
+     * @param array $contentObjectConfiguration
+     */
+    public function setContentObjectConfiguration(array $contentObjectConfiguration)
+    {
+        $this->contentObjectConfiguration = $contentObjectConfiguration;
     }
 }
