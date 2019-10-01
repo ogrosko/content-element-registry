@@ -206,12 +206,12 @@ class YourNewContentElement extends ContentElement
 Into class you can write some `functions, getters, setters, etc`. Some of them are inherited from 
 `DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement`.
 
-#####Model in template
+##### Model in template
 The whole model is accessible in the template of this element. 
 To find out what data is loaded in the model in the template use `<f:debug>{contentElement}</f:debug>`.
 
-##Create a new field and setup
-####Create a new field
+## Create a new field and setup
+#### Create a new field
 1. Create a field in the table `ext_table.sql`, e.g. `new_field`.
 2. In the TCA `EXT:your_extension/Configuration/TCA/Overrides/tt_content.php` create new column and config [Typo3 Columns Config](https://docs.typo3.org/m/typo3/reference-tca/master/en-us/ColumnsConfig/Index.html):
 ```php
@@ -221,7 +221,7 @@ To find out what data is loaded in the model in the template use `<f:debug>{cont
         ],
     ],
 ```
-####Setup a new field
+#### Setup a new field
 - In Class `\YourVendor\YourExtension\ContentElement\YourNewContentElement` add created field `new_field`:
 ```php
 <?php
@@ -249,8 +249,8 @@ class YourNewContentElement extends AbstractContentElementRegistryItem
 - In Model of CE `EXT:your_extension/Classes/Domain/Model/YourNewContentElement.php` add property of created field `$newField`.
 **You must follow the syntax**, e.g. `new_field` which is written in ext_table.php, you must write `newField` in the model.
 
-##Content element with IRRE
-####Mapping
+## Content element with IRRE
+#### Mapping
 Map in `ext_typoscript_setup.typoscript` relation table to CE model:
 ```typo3_typoscript
       YourVendor\YourExtension\Domain\Model\ContentElement\YourNewContentElement\YourNewRelation {
@@ -260,10 +260,10 @@ Map in `ext_typoscript_setup.typoscript` relation table to CE model:
         }
       }
 ```
-####Register relation icon
+#### Register relation icon
 You can register relation icon using [Typo3 Icon API](https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/Icon/Index.html#registration)
 
-####Relation TCA
+#### Relation TCA
 In TCA `EXT:your_extension/Configuration/TCA/Overrides/tx_contentelementregistry_domain_model_relation.php` create:
 ```php
 
@@ -297,7 +297,7 @@ $tempTca = [
 $GLOBALS['TCA']['tx_contentelementregistry_domain_model_relation'] = array_replace_recursive($GLOBALS['TCA']['tx_contentelementregistry_domain_model_relation'], $tempTca);
 
 ```
-####Relation add to CE
+#### Relation add to CE
 Add name of relation to palette:
 ```php
 <?php
@@ -318,7 +318,7 @@ class YourNewContentElement extends AbstractContentElementRegistryItem
 }
 ```
 
-####Relation model
+#### Relation model
 - In model of CE create property and getter:
 ```php
 <?php
@@ -378,7 +378,7 @@ class YourNewRelation extends Relation
 }
 ```
 
-##CE field mapping
+## CE field mapping
 In Class of CE you can map field, when you want to use it in model, e.g. `tx_contentelementregistry_relations` is called in the model `txContentelementregistryRelation`,
 but after mapping `'tx_contentelementregistry_relations' => 'relations'`,`tx_contentelementregistry_relations` is called in the model `relations`.
  ```php
