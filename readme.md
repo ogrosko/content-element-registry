@@ -14,35 +14,50 @@ After activating extension, you have to define your Content elements configurati
 It can be done in two ways:
 
 1. By defining paths in extension configuration (aka *extConf*). Can contain comma separated list of paths to directories
-**Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/` 
+**Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/`
+![](./Resources/Public/Images/ExtConfSettings.png)
 
 2. By registering Signal slot in `ext_localconf.php` of your extension as follows:
 
 ```php
 <?php
-$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-    \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class
+defined('TYPO3_MODE') or die();
+
+call_user_func(
+    function ($extKey) {
+        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class
+        );
+        $signalSlotDispatcher->connect(
+            \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::class,
+            'registerContentElementRegistryClass',
+            \YourVendor\YourExtension\YourClass::class,
+            'yourMethodName'
+        );
+    },
+    $_EXTKEY
 );
-$signalSlotDispatcher->connect(
-    \YourVendor\ContentElementRegistry\Core\ContentElementRegistry::class,
-    'registerContentElementRegistryClass',
-    \YourVendor\YourExtension\::class,
-    'yourMethodName'
-);
+
 ```
 
-Method `\YourVendor\YourExtension\::yourMethodName` can looks like this:
+Method `\YourVendor\YourExtension\YourClass::yourMethodName` can looks like this:
 
 ```php
 <?php
-/**
- * @param \YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry
- */
-public function registerContentElements(\YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry)
+declare(strict_types=1);
+namespace \YourVendor\YourExtension;
+
+class YourClass
 {
-    $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(PATH_typo3conf.'ext/your_extension/Classes/ContentElement/');
-    foreach ($contentElementsClassMap as $elementClass => $elementClassPath) {
-        $contentElementRegistry->registerContentElement(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass));
+    /**
+     * @param \YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry
+     */
+    public function registerContentElements(\YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry)
+    {
+        $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(PATH_typo3conf.'ext/your_extension/Classes/ContentElement/');
+        foreach ($contentElementsClassMap as $elementClass => $elementClassPath) {
+            $contentElementRegistry->registerContentElement(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass));
+        }
     }
 }
 ```
