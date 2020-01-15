@@ -14,47 +14,62 @@ After activating extension, you have to define your Content elements configurati
 It can be done in two ways:
 
 1. By defining paths in extension configuration (aka *extConf*). Can contain comma separated list of paths to directories
-**Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/` 
+**Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/`
+![](./Resources/Public/Images/ExtConfSettings.png)
 
 2. By registering Signal slot in `ext_localconf.php` of your extension as follows:
 
 ```php
 <?php
-$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-    \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class
+defined('TYPO3_MODE') or die();
+
+call_user_func(
+    function ($extKey) {
+        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class
+        );
+        $signalSlotDispatcher->connect(
+            \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::class,
+            'registerContentElementRegistryClass',
+            \YourVendor\YourExtension\YourClass::class,
+            'yourMethodName'
+        );
+    },
+    $_EXTKEY
 );
-$signalSlotDispatcher->connect(
-    \YourVendor\ContentElementRegistry\Core\ContentElementRegistry::class,
-    'registerContentElementRegistryClass',
-    \YourVendor\YourExtension\::class,
-    'yourMethodName'
-);
+
 ```
 
-Method `\YourVendor\YourExtension\::yourMethodName` can looks like this:
+Method `\YourVendor\YourExtension\YourClass::yourMethodName` can looks like this:
 
 ```php
 <?php
-/**
- * @param \YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry
- */
-public function registerContentElements(\YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry)
+declare(strict_types=1);
+namespace \YourVendor\YourExtension;
+
+class YourClass
 {
-    $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(PATH_typo3conf.'ext/your_extension/Classes/ContentElement/');
-    foreach ($contentElementsClassMap as $elementClass => $elementClassPath) {
-        $contentElementRegistry->registerContentElement(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass));
+    /**
+     * @param \YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry
+     */
+    public function registerContentElements(\YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry)
+    {
+        $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(PATH_typo3conf.'ext/your_extension/Classes/ContentElement/');
+        foreach ($contentElementsClassMap as $elementClass => $elementClassPath) {
+            $contentElementRegistry->registerContentElement(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass));
+        }
     }
 }
 ```
 
 
 ## Creating new content element
-To create new Content element you have to create new *Class* inside your folder defined in [Setup section](#setup) which extends `YourVendor\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem`
+To create new Content element you have to create new *Class* inside your folder defined in [Setup section](#setup) which extends `Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem`
 ```php
 <?php
 namespace \YourVendor\YourExtension\ContentElement;
 
-use YourVendor\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
+use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 
 class YourNewContentElement extends AbstractContentElementRegistryItem
 {
@@ -65,7 +80,7 @@ class YourNewContentElement extends AbstractContentElementRegistryItem
 After clearing typo3 caches you should now see new content element in wizard
 ![](./Resources/Public/Images/NewContentElement1.png)
 
-As you can see, there is either title nor description of the content element. These are automatically fetched and translated from locallang file inside of your extension:
+As you can see, there is neither title nor description of the content element. These are automatically fetched and translated from locallang file inside of your extension:
 `EXT:your_extension/Resources/Private/Language/locallang_db.xlf`. You can now define your CE title and description as follows:
 ```xml
 <trans-unit id="tt_content.yourextension_yournewcontentelement.title">
@@ -74,9 +89,12 @@ As you can see, there is either title nor description of the content element. Th
 <trans-unit id="tt_content.yourextension_yournewcontentelement.description">
     <source>Your new content element description</source>
 </trans-unit>
+<trans-unit id="tt_content.yourextension_yournewcontentelement.palette.default">
+    <source>Default palette</source>
+</trans-unit>
 ```
 
-When you add this new CE it will contains only default CE fields:
+When you add this new CE it will contain only default CE fields:
 ![](./Resources/Public/Images/NewContentElement2.png)
 
 ### Adding CE fields
@@ -85,7 +103,7 @@ To add new fields you have to define it in `\YourVendor\YourExtension\ContentEle
 <?php
 namespace \YourVendor\YourExtension\ContentElement;
 
-use YourVendor\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
+use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 
 class YourNewContentElement extends AbstractContentElementRegistryItem
 {
@@ -110,13 +128,13 @@ By this, we defined new CE *palette* with name `default` with two fields `header
 **Code description:**
 1. Name of the palette must be unique per CE. Label for palette can be defined in `locallang_db.xlf` with following key: `tt_content.yourextension_yournewcontentelement.palette.default`
 2. Fields definition syntax must follows [TCA palette showitem syntax](https://docs.typo3.org/typo3cms/TCAReference/Palettes/Index.html#showitem)
-3. Used fields must be properly configured in [Typo3 TCA](https://docs.typo3.org/typo3cms/TCAReference/8.7/)
+3. Used fields must be properly configured in *tt_content* [TCA](https://docs.typo3.org/typo3cms/TCAReference/8.7/)
 4. You can add as many palettes as you need ;)
 
 Our CE now should looks like this:
 ![](./Resources/Public/Images/NewContentElement3.png)
 
-If you need to override field configuration you can do this in this way: (In following example we enabled rich text editor for `bodytext` field)
+If you need to override field configuration you can do this in this way: (In following example we've enabled rich text editor for `bodytext` field)
 ```php
 <?php
     /**
@@ -181,15 +199,15 @@ Whether you use `<f:layout />` and `<f:section />` it's fully up to you. You can
 
 ### CE Icon
 If you don't want to use the defaut icon, you can change it:
-- Add files with an icon to the folder `EXT:your_extension/Resources/Public/Icons`
-- Rename icon file, ***Icon file must also have the same name as CE***, e.g. `yourextension_yournewcontentelement`
+- Add an icon to the folder `EXT:your_extension/Resources/Public/Icons/ContentElement/yourextension_yournewcontentelement.svg`
 
 ### CE Domain Model
 Model name is matched by CE class name. E.g. if is registered CE with class name `YourNewContentElement` this model can
-exists `EXT:your_extension/Classes/Domain/Model/YourNewContentElement.php` Content of model can 
+exists in `EXT:your_extension/Classes/Domain/Model/YourNewContentElement.php` Content of model can 
 looks like this:
 ```php
 <?php
+declare(strict_types=1);
 namespace \YourVendor\YourExtension\Domain\Model\ContentElement;
 
 use DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement;
@@ -204,22 +222,31 @@ class YourNewContentElement extends ContentElement
 }
 ```
 Into class you can write some `functions, getters, setters, etc`. Some of them are inherited from 
-`DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement`.
+`DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement` (take a look ;).
 
 ##### Model in template
-The whole model is accessible in the template of this element. 
-To find out what data is loaded in the model in the template use `<f:debug>{contentElement}</f:debug>`.
+Model is accessible in the template of element with variable name `{contentElement}`. To find out what data is loaded in the model in the template use:
+`<f:debug>{contentElement}</f:debug>`.
 
 ## Create a new field and setup
 #### Create a new field
 1. Create a field in the table `ext_table.sql`, e.g. `new_field`.
 2. In the TCA `EXT:your_extension/Configuration/TCA/Overrides/tt_content.php` create new column and config [Typo3 Columns Config](https://docs.typo3.org/m/typo3/reference-tca/master/en-us/ColumnsConfig/Index.html):
 ```php
- 'columns' => [
-        'new_field' => [
-            'label' => 'New field',
-        ],
+<?php
+defined('TYPO3_MODE') or die();
+
+$ttContentNewColumns = [
+    'new_field' => [
+        'label' => 'New field',
+        'config' => [
+            'type' => 'input',
+            'eval' => 'trim',
+         ],
     ],
+];
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', $ttContentNewColumns);
 ```
 #### Setup a new field
 - In Class `\YourVendor\YourExtension\ContentElement\YourNewContentElement` add created field `new_field`:
