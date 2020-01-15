@@ -203,7 +203,7 @@ $'.lcfirst($name).'Columns = [
 
 //        Created new files
         file_put_contents($CeClass, $CeClassContent);
-        $resultCheckAndAddInlineFields = (new \Digitalwerk\DwBoilerplate\Utility\CreateContentElementUtility)->checkAndAddInlineFields($name, $name, $fields,'contentElementsAndInlineRelationFields', $inlineFields);
+        $resultCheckAndAddInlineFields = (new \Digitalwerk\ContentElementRegistry\Utility\CreateContentElementUtility)->checkAndAddInlineFields($name, $name, $fields,'contentElementsAndInlineRelationFields', $inlineFields);
         file_put_contents($CeTemplate, $CeTemplateContent);
         file_put_contents($CeModel, $CeModelContent);
 
