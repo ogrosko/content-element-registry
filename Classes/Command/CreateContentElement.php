@@ -19,6 +19,9 @@ class CreateContentElement extends Command
 
     protected function configure()
     {
+        $this->addArgument('name', InputArgument::REQUIRED,'Enter name of CE. Format: [NewContentElement]');
+        $this->addArgument('title', InputArgument::REQUIRED,'Enter title of new CE. Format: [title-of-new-CE]');
+        $this->addArgument('description', InputArgument::REQUIRED,'Enter description of new CE. Format: [description-of-new-CE]');
         $this->setDescription('Create content element with some fields.');
         $this->addArgument('fields',InputArgument::OPTIONAL ,'Enter fields of new CE. Format: [name,type,title-of-field/name2,type,title,title-of-field2/]
         fields types => [fal, textarea, input, radio, select, check]');
