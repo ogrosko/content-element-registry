@@ -33,7 +33,7 @@ class TCAFieldTypesAndImportedClasses
             $selectConfig = $this->getSelectConfig($table, $contentElementOrPageTypeName, $secondDesignation, 'dw_boilerplate', $fieldsToArray, $relativePath, 'contentElementsAndInlineRelationFields');
         }
         if ($fieldTypeConfig === 'inline' && $commandFieldType === 'contentElementsAndInlineRelationFields') {
-            $inlineConfig = $this->getInlineConfig($relativePathToClass, $contentElementOrPageTypeName, $fieldItem);
+            $inlineConfig = $this->getInlineConfig($relativePathToClass, $contentElementOrPageTypeName, $fieldItem, $contentElementOrPageTypeName);
         }
         if ($fieldTypeConfig === 'check' && $commandFieldType === 'contentElementsAndInlineRelationFields') {
             $checkConfig = $this->getCheckConfig($table, $contentElementOrPageTypeName, $secondDesignation, 'dw_boilerplate', $fieldsToArray, $relativePath, 'contentElementsAndInlineRelationFields');
@@ -565,10 +565,11 @@ class TCAFieldTypesAndImportedClasses
      * @param $pathToClass
      * @param $fieldName
      * @param $fieldItem
+     * @param $contentElementName
      * @param string $extraSpaces
      * @return string
      */
-    public function getInlineConfig($pathToClass,$fieldName, $fieldItem, $extraSpaces = ''): string
+    public function getInlineConfig($pathToClass,$fieldName, $fieldItem, $contentElementName, $extraSpaces = ''): string
     {
         GeneralCreateCommandUtility::addTitleToTranslation(
             'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
@@ -580,6 +581,9 @@ class TCAFieldTypesAndImportedClasses
             ' . $extraSpaces. '\'foreign_table\' => \'tx_contentelementregistry_domain_model_relation\',
             ' . $extraSpaces. '\'foreign_field\' => \'content_element\',
             ' . $extraSpaces. '\'foreign_sortby\' => \'sorting\',
+            ' . $extraSpaces. '\'foreign_match_fields\' => [
+                ' . $extraSpaces. '\'type\' => \Digitalwerk\DwBoilerplate\ContentElement\\' . $contentElementName . '::CONTENT_RELATION_' . strtoupper($fieldItem[0]) . ',
+            ' . $extraSpaces. '],
             ' . $extraSpaces. '\'maxitems\' => 9999,
             ' . $extraSpaces. '\'appearance\' => [
                 ' . $extraSpaces. '\'useSortable\' => true,
