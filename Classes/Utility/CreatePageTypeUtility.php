@@ -11,27 +11,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CreatePageTypeUtility
 {
     /**
-     * @param $fields
-     * @param $name
-     * @return string
-     * Return IRRE field's name (format string)
-     */
-    public static function getTyposcriptMappingWithoutFields($pageTypeName)
-    {
-
-        $template =
-'      Digitalwerk\DwPageTypes\Domain\Model\\'.$pageTypeName.' {
-         mapping {
-           tableName = pages
-           recordType = {$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}
-         }
-      }';
-
-
-        return $template;
-    }
-
-    /**
      * @param $autoHeader
      * @param $pageTypeName
      */

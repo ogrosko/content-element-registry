@@ -1,9 +1,9 @@
 <?php
-namespace Digitalwerk\ContentElementRegistry\Command;
+namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config;
 
 /**
  * Class FlexFormFieldTypes
- * @package Digitalwerk\ContentElementRegistry\Command
+ * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config
  */
 class FlexFormFieldTypes
 {

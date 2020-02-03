@@ -1,6 +1,8 @@
 <?php
-namespace Digitalwerk\ContentElementRegistry\Command;
+namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\FlexFormUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,10 +10,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CreatePlugin
- * @package Digitalwerk\ContentElementRegistry\Command
+ * Class Plugin
+ * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand
  */
-class CreatePlugin extends Command
+class Plugin extends Command
 {
 
     protected function configure()
@@ -63,7 +65,7 @@ class ' . $controllerName . 'Controller extends ActionController
             <ROOT>
                 <type>array</type>
                 <el>
-                    ' . GeneralCreateCommandUtility::addFieldsToFlexForm($pluginFlexFormFields, $pluginName,'plugins', false) . '
+                    ' . FlexFormUtility::addFieldsToFlexForm($pluginFlexFormFields, $pluginName,'plugins', false) . '
                 </el>
             </ROOT>
         </General>
@@ -215,12 +217,12 @@ class ' . $controllerName . 'Controller extends ActionController
         );
 
 //        Add translations (title, description) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
-        GeneralCreateCommandUtility::addTitleToTranslation(
+        TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
             "plugin." . strtolower($pluginName) . ".title",
             $pluginTitle
         );
-        GeneralCreateCommandUtility::addTitleToTranslation(
+        TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
             "plugin." . strtolower($pluginName) . ".description",
             $pluginDescription

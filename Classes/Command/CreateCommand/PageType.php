@@ -1,6 +1,11 @@
 <?php
-namespace Digitalwerk\ContentElementRegistry\Command;
+namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\ModelUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\SQLUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TCAUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TypoScriptUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreatePageTypeUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use Symfony\Component\Console\Command\Command;
@@ -9,10 +14,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CreatePageType
- * @package Digitalwerk\ContentElementRegistry\Command
+ * Class PageType
+ * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand
  */
-class CreatePageType extends Command
+class PageType extends Command
 {
 
     protected function configure()
@@ -32,7 +37,7 @@ class CreatePageType extends Command
         $pageTypeTitle = $input->getArgument('title');
         $autoHeader = $input->getArgument('auto-header');
         $fields = $input->getArgument('fields');
-
+        $table = 'pages';
 
         $pageTypeIcon = "public/typo3conf/ext/dw_page_types/Resources/Public/Icons/dw-page-type-" . $doktype . ".svg";
         $pageTypeIconNotInMenu = "public/typo3conf/ext/dw_page_types/Resources/Public/Icons/dw-page-type-" . $doktype . "-not-in-menu.svg";
@@ -42,7 +47,7 @@ class CreatePageType extends Command
 declare(strict_types=1);
 namespace Digitalwerk\DwPageTypes\Domain\Model;
 
-' . GeneralCreateCommandUtility::importClassToModel($fields, 'pageTypesFields') . '
+' . ModelUtility::importClassToModel($fields, $table) . '
 
 /**
  * Class ' . $pageTypeName . '
@@ -50,14 +55,14 @@ namespace Digitalwerk\DwPageTypes\Domain\Model;
  */
 class ' . $pageTypeName . ' extends DefaultPage
 {
-    ' . GeneralCreateCommandUtility::addConstantsToModel($fields, 'pageTypesFields') . '
+    ' . ModelUtility::addConstantsToModel($fields, $table) . '
 
     /**
      * @var int
      */
     protected static $doktype = ' . $doktype . ';
     
-    ' . GeneralCreateCommandUtility::addFieldsToModel($fields, 'pageTypesFields', $pageTypeName) . '
+    ' . ModelUtility::addFieldsToModel($fields, $table) . '
 }';
 
         $pageTCAContent = 'public/typo3conf/ext/dw_page_types/Configuration/TCA/Overrides/pages_' . $pageTypeName . '.php';
@@ -74,11 +79,11 @@ $tca = [
     \'palettes\' => [
         \'' . lcfirst($pageTypeName) . '\' => [
             \'label\' => \'LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label\',
-            \'showitem\' => \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $pageTypeName, 'pageTypesFields', '          '). '\'
+            \'showitem\' => \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $pageTypeName, $table, '          '). '\'
         ],
     ],    
     \'columns\' => [
-        ' . GeneralCreateCommandUtility::addColumnsToTCA('pages', $pageTypeName, $pageTypeName, $fields, 'Digitalwerk\DwPageTypes\Domain\Model\\' . $pageTypeName, 'pageTypesFields', '        ', 'dw_page_types', '    '). '
+        ' . TCAUtility::addColumnsToTCA($table, $pageTypeName, $pageTypeName, $fields, 'Digitalwerk\DwPageTypes\Domain\Model\\' . $pageTypeName, '        ', 'dw_page_types', '    '). '
     ],
 ];
 
@@ -122,7 +127,7 @@ $GLOBALS[\'TCA\'][\'pages\'] = array_replace_recursive($GLOBALS[\'TCA\'][\'pages
         GeneralCreateCommandUtility::importStringInToFileAfterString(
             'public/typo3conf/ext/dw_page_types/ext_typoscript_setup.typoscript',
             [
-                GeneralCreateCommandUtility::getTyposcriptMapping($pageTypeName, $fields, 'pageTypesFields', 'pages', '{$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}', 'Digitalwerk\DwPageTypes\Domain\Model\\' . $pageTypeName). " \n"
+                TypoScriptUtility::getTyposcriptMapping($pageTypeName, $fields, $table, '{$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}', 'Digitalwerk\DwPageTypes\Domain\Model\\' . $pageTypeName). " \n"
             ],
             [
                 'config.tx_extbase {',
@@ -172,19 +177,18 @@ $GLOBALS[\'TCA\'][\'pages\'] = array_replace_recursive($GLOBALS[\'TCA\'][\'pages
         copy("public/typo3conf/ext/dw_page_types/Resources/Public/Icons/dw-page-type-99.svg",$pageTypeIcon);
         copy("public/typo3conf/ext/dw_page_types/Resources/Public/Icons/dw-page-type-99.svg",$pageTypeIconNotInMenu);
 
-        GeneralCreateCommandUtility::addTitleToTranslation(
+        TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
             'page.type.'. $doktype . '.label',
             $pageTypeTitle
         );
 
-        GeneralCreateCommandUtility::addFieldsTitleToTranslation(
+        TranslationUtility::addFieldsTitleToTranslation(
             'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
-            'pages',
+            $table,
             $pageTypeName,
             $pageTypeName,
             $fields,
-            'pageTypesFields',
             'DwPageTypes'
         );
 
@@ -192,7 +196,7 @@ $GLOBALS[\'TCA\'][\'pages\'] = array_replace_recursive($GLOBALS[\'TCA\'][\'pages
         if ($fields !== '-') {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/dw_page_types/ext_tables.sql',
-                ['    ' . GeneralCreateCommandUtility::addFieldsToTable($fields, $pageTypeName, 'pageTypesFields'). ", \n"],
+                ['    ' . SQLUtility::addFieldsToSQLTable($fields, $pageTypeName, $table). ", \n"],
                 [
                     '#',
                     "# Table structure for table 'pages'",

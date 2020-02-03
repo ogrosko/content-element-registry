@@ -1,6 +1,14 @@
 <?php
-namespace Digitalwerk\ContentElementRegistry\Command;
+namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
+use BaconQrCode\Common\Mode;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\ClassUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\FlexFormUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\ModelUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\SQLUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TCAUtility;
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateContentElementUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use Symfony\Component\Console\Command\Command;
@@ -11,10 +19,10 @@ use Symfony\Component\Console\Question\Question;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class CreateContentElement
- * @package Digitalwerk\ContentElementRegistry\Command
+ * Class ContentElement
+ * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand
  */
-class CreateContentElement extends Command
+class ContentElement extends Command
 {
 
     protected function configure()
@@ -47,6 +55,7 @@ class CreateContentElement extends Command
         $description = $input->getArgument('description');
         $fields = $input->getArgument('fields');
         $inlineFields = $input->getArgument('inline-fields');
+        $table = 'tt_content';
 
 //        Content element class path($CeClass) and Content element class's template ($CeClassContent)
         $CeClass = "public/typo3conf/ext/dw_boilerplate/Classes/ContentElement/".$name.".php";
@@ -66,7 +75,7 @@ class '.$name.' extends AbstractContentElementRegistryItem
      * @var array
      */
     protected $columnsMapping = [
-        '.CreateContentElementUtility::addFieldsToClassMapping($fields, $name).'
+        ' . ClassUtility::addFieldsToClassMapping($fields, $name, $table) . '
     ];
 
     /**
@@ -78,7 +87,7 @@ class '.$name.' extends AbstractContentElementRegistryItem
         parent::__construct();
         $this->addPalette(
             \'default\',
-            \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $name, 'contentElementsAndInlineRelationFields', '') . '\'
+            \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $name, $table, '') . '\'
         );
     }
 
@@ -88,7 +97,7 @@ class '.$name.' extends AbstractContentElementRegistryItem
     public function getColumnsOverrides()
     {
         return [
-'.CreateContentElementUtility::getDefaultFieldsWithAnotherTitle('tt_content', $name, $name, $fields).'
+' . TCAUtility::getDefaultFieldsWithAnotherTitle('tt_content', $name, $name, $fields) . '
         ];
     }
 }';
@@ -121,7 +130,7 @@ class '.$name.' extends AbstractContentElementRegistryItem
 declare(strict_types=1);
 namespace Digitalwerk\DwBoilerplate\Domain\Model\ContentElement;
 
-' . GeneralCreateCommandUtility::importClassToModel($fields, 'contentElementsAndInlineRelationFields') . '
+' . ModelUtility::importClassToModel($fields, $table) . '
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
 
 /**
@@ -130,9 +139,9 @@ use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
  */
 class '.$name.' extends ContentElement
 {
-    ' . GeneralCreateCommandUtility::addConstantsToModel($fields, 'contentElementsAndInlineRelationFields') . '
+    ' . ModelUtility::addConstantsToModel($fields, $table) . '
     
-    ' . GeneralCreateCommandUtility::addFieldsToModel($fields, 'contentElementsAndInlineRelationFields', $name, '', 'Domain\Model\ContentElement\\' . $name) . '
+    ' . ModelUtility::addFieldsToModel($fields, $table, '', 'Domain\Model\ContentElement\\' . $name) . '
 }';
 
         $ttContent = 'public/typo3conf/ext/dw_boilerplate/Configuration/TCA/Overrides/tt_content_'.$name.'.php';
@@ -143,7 +152,7 @@ defined(\'TYPO3_MODE\') or die();
  * tt_content new fields
  */
 $'.lcfirst($name).'Columns = [
-    ' . GeneralCreateCommandUtility::addColumnsToTCA('tt_content', $name, $name, $fields, '\Digitalwerk\DwBoilerplate\Domain\Model\ContentElement\\' . $name, 'contentElementsAndInlineRelationFields', '    ', 'dw_boilerplate', '    ','\Digitalwerk\DwBoilerplate\ContentElement\\' . $name) . '
+    ' . TCAUtility::addColumnsToTCA($table, $name, $name, $fields, '\Digitalwerk\DwBoilerplate\Domain\Model\ContentElement\\' . $name, '    ', 'dw_boilerplate', '    ','\Digitalwerk\DwBoilerplate\ContentElement\\' . $name) . '
 ];
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(\'tt_content\', $'.lcfirst($name).'Columns);  
 ';
@@ -159,7 +168,7 @@ $'.lcfirst($name).'Columns = [
             <ROOT>
                 <type>array</type>
                     <el>
-                        ' . GeneralCreateCommandUtility::addFieldsToFlexForm($fields, $name, 'contentElementsAndInlineRelationFields', true) . '
+                        ' . FlexFormUtility::addFieldsToFlexForm($fields, $name, $table, true) . '
                     </el>
             </ROOT>
         </sDEF>
@@ -167,8 +176,6 @@ $'.lcfirst($name).'Columns = [
 </T3DataStructure>
 ';
 
-
-        CreateContentElementUtility::areTxContentelementregistryRelationsOnlyInCEFields($fields, 'contentElementField');
 
 //        Flexform creating
         if (!file_exists('public/typo3conf/ext/dw_boilerplate/Configuration/FlexForms/ContentElement')) {
@@ -179,35 +186,34 @@ $'.lcfirst($name).'Columns = [
         }
 
 //        Add translations (title, description) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
-        GeneralCreateCommandUtility::addTitleToTranslation(
+        TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
             'tt_content.dwboilerplate_'. strtolower($name) . '.title',
             $title
         );
-        GeneralCreateCommandUtility::addTitleToTranslation(
+        TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
             'tt_content.dwboilerplate_'. strtolower($name) . '.description',
             $description
         );
 
 //        Add translations (fields titles) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
-        GeneralCreateCommandUtility::addFieldsTitleToTranslation(
+        TranslationUtility::addFieldsTitleToTranslation(
             'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
-            'tt_content',
+            $table,
             $name,
             $name,
             $fields,
-            'contentElementsAndInlineRelationFields',
             'DwBoilerplate'
         );
 
 //        Created new files
         file_put_contents($CeClass, $CeClassContent);
-        $resultCheckAndAddInlineFields = (new \Digitalwerk\ContentElementRegistry\Utility\CreateContentElementUtility)->checkAndAddInlineFields($name, $name, $fields,'contentElementsAndInlineRelationFields', $inlineFields);
+        $resultCheckAndAddInlineFields = (new \Digitalwerk\ContentElementRegistry\Utility\CreateCommand\InlineUtility)->checkAndAddInlineFields($name, $name, $fields, $inlineFields);
         file_put_contents($CeTemplate, $CeTemplateContent);
         file_put_contents($CeModel, $CeModelContent);
 
-        if ($fields !== '-' && CreateContentElementUtility::areAllFieldsDefault($fields) === false) {
+        if ($fields !== '-' && GeneralCreateCommandUtility::areAllFieldsDefault($fields, $table) === false) {
             file_put_contents($ttContent, $ttContentAddContent);
         }
         copy("public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg",$CeIcon);
@@ -217,11 +223,11 @@ $'.lcfirst($name).'Columns = [
         $output->writeln('<bg=green;options=bold>Content element '.$name.' was created.</>');
 
 //        Message with sql fields
-        if ($fields !== '-' && CreateContentElementUtility::areAllFieldsDefault($fields) === false) {
+        if ($fields !== '-' && GeneralCreateCommandUtility::areAllFieldsDefault($fields, $table) === false) {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/dw_boilerplate/ext_tables.sql',
                 [
-                    '    ' . GeneralCreateCommandUtility::addFieldsToTable($fields, $name, 'contentElementsAndInlineRelationFields'). ", \n"
+                    '    ' . SQLUtility::addFieldsToSQLTable($fields, $name, $table). ", \n"
                 ],
                 [
                     "# Table structure for table 'tt_content'",
