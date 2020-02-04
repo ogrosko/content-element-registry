@@ -2,14 +2,11 @@
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use BaconQrCode\Common\Mode;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\ClassUtility;
-use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\FlexFormUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\ModelUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\SQLUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TCAUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
-use Digitalwerk\ContentElementRegistry\Utility\CreateContentElementUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -56,9 +53,10 @@ class ContentElement extends Command
         $fields = $input->getArgument('fields');
         $inlineFields = $input->getArgument('inline-fields');
         $table = 'tt_content';
+        $extensionName = 'dw_boilerplate';
 
 //        Content element class path($CeClass) and Content element class's template ($CeClassContent)
-        $CeClass = "public/typo3conf/ext/dw_boilerplate/Classes/ContentElement/".$name.".php";
+        $CeClass = "public/typo3conf/ext/dw_boilerplate/Classes/ContentElement/" . $name . ".php";
         $CeClassContent = '<?php
 declare(strict_types=1);
 namespace Digitalwerk\DwBoilerplate\ContentElement;
@@ -66,20 +64,20 @@ namespace Digitalwerk\DwBoilerplate\ContentElement;
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 
 /**
- * Class '.$name.'
+ * Class ' . $name . '
  * @package Digitalwerk\DwBoilerplate\ContentElement
  */
-class '.$name.' extends AbstractContentElementRegistryItem
+class ' . $name . ' extends AbstractContentElementRegistryItem
 {
     /**
      * @var array
      */
     protected $columnsMapping = [
-        ' . ClassUtility::addFieldsToClassMapping($fields, $name, $table) . '
+        ' . ClassUtility::addFieldsToClassMapping($fields, $name, $table, '        ') . '
     ];
 
     /**
-     * '.$name.' constructor.
+     * ' . $name . ' constructor.
      * @throws \Exception
      */
     public function __construct()
@@ -87,7 +85,7 @@ class '.$name.' extends AbstractContentElementRegistryItem
         parent::__construct();
         $this->addPalette(
             \'default\',
-            \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $name, $table, '') . '\'
+            \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $name, $table, '            ') . '\'
         );
     }
 
@@ -156,34 +154,6 @@ $'.lcfirst($name).'Columns = [
 ];
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(\'tt_content\', $'.lcfirst($name).'Columns);  
 ';
-//        Content element flexform
-        $CEFlexForm = "public/typo3conf/ext/dw_boilerplate/Configuration/FlexForms/ContentElement/dwboilerplate_" . strtolower($name) . '.xml';
-        $CEFlexFormContent = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<T3DataStructure>
-    <meta>
-        <langDisable>1</langDisable>
-    </meta>
-    <sheets>
-        <sDEF>
-            <ROOT>
-                <type>array</type>
-                    <el>
-                        ' . FlexFormUtility::addFieldsToFlexForm($fields, $name, $table, true) . '
-                    </el>
-            </ROOT>
-        </sDEF>
-    </sheets>
-</T3DataStructure>
-';
-
-
-//        Flexform creating
-        if (!file_exists('public/typo3conf/ext/dw_boilerplate/Configuration/FlexForms/ContentElement')) {
-            mkdir('public/typo3conf/ext/dw_boilerplate/Configuration/FlexForms/ContentElement/', 0777, true);
-        }
-        if (CreateContentElementUtility::areAFlexFormOnlyInCEFields($fields, 'contentElementField')) {
-            file_put_contents($CEFlexForm, $CEFlexFormContent);
-        }
 
 //        Add translations (title, description) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
         TranslationUtility::addStringToTranslation(

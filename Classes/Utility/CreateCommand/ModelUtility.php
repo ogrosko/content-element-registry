@@ -24,15 +24,16 @@ class ModelUtility
     public static function addFieldsToModel($fields, $table, $betweenProtectedsAndGetters = '', $inlineRelativePath = '')
     {
         if (!empty($fields)) {
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $resultOfTraits = [];
             $resultOfProtected = [];
             $resultOfGetters = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',',$field)[0];
-                $fieldType = explode(',',$field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($TCAFieldTypes[$table][$fieldType]['defaultFieldName'] === $fieldName && !empty($TCAFieldTypes[$table][$fieldType]['trait']))
                 {
@@ -45,7 +46,7 @@ class ModelUtility
                     }
                 } else {
                     if ($TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed']) {
-                        $fieldItem = explode(';', explode('*', explode(',', $field)[3])[0]);
+                        $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
                         $typeValue =
                             [
                                 $TCAFieldTypes[$table][$fieldType]['modelDataTypes']['propertyDataType'],
@@ -123,20 +124,20 @@ class ModelUtility
     public static function addConstantsToModel($fields, $table)
     {
         if (!empty($fields)) {
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $result = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',', $field)[0];
-                $fieldType = explode(',', $field)[1];
-                $fieldItems = explode('*', explode(',', $field)[3]);
-                array_pop($fieldItems);
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
+                $fieldItems = $generalCreateCommandUtility->getFieldItems($field);
 
                 if ($TCAFieldTypes[$table][$fieldType]['TCAItemsAllowed'] === true) {
                     foreach ($fieldItems as $fieldItem) {
-                        $itemName = explode(';' ,$fieldItem)[0];
-                        $itemValue = explode(';' ,$fieldItem)[2];
+                        $itemName = $generalCreateCommandUtility->getItemName($fieldItem);
+                        $itemValue = $generalCreateCommandUtility->getItemValue($fieldItem);
                         $result[] =  'const ' . strtoupper($fieldName) . '_' .strtoupper($itemName) . ' = ' . '"' . $itemValue . '";';
                     }
                 } elseif (!empty($fieldItems) && $TCAFieldTypes[$table][$fieldType]['FlexFormItemsAllowed'] !== true && $TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed'] !== true) {
@@ -157,14 +158,15 @@ class ModelUtility
     public static function importClassToModel($fields, $table, $optionalClass = null)
     {
         if (!empty($fields) || $fields !== '-') {
-            $fieldsToArray = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypesAndImportedClasses = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $result = [];
             $importClass = GeneralUtility::makeInstance(ImportedClasses::class)->getClasses();
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',', $field)[0];
-                $fieldType = explode(',', $field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($optionalClass !== null && in_array($importClass[$optionalClass], $result) === false) {
                     $result[] = $importClass[$optionalClass];

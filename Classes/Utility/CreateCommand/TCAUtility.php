@@ -29,19 +29,33 @@ class TCAUtility
     public static function addColumnsToTCA($table ,$contentElementName, $secondDesignation, $fields, $relativePath, $extraSpaces, $extensionName, $extraSpaces2, $relativePathToClass = '')
     {
         if (!empty($fields)) {
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class);
             $result = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',', $field)[0];
-                $fieldType = explode(',', $field)[1];
-                $fieldItem = explode(';', explode('*', explode(',', $field)[3])[0]);
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
+                $fieldItems = $generalCreateCommandUtility->getFieldItems($field);
+                $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
 
                 if (!empty($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType])) {
                     $fieldConfig = $TCAFieldTypes->getTCAFieldTypes($table, $contentElementName, $secondDesignation, $fieldName, $field, $relativePath, $fieldType, $fieldItem, $relativePathToClass)[$table][$fieldType]['config'];
                     if (null !== $fieldConfig) {
                         $result[] = (new TCAUtility)->generateFieldInTCA($fieldName, $secondDesignation, $table, $contentElementName, $fieldConfig, $extraSpaces, $extensionName);
+                    }
+
+                    if ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['FlexFormItemsAllowed']) {
+                        //Create FlexForm
+                        FlexFormUtility::createFlexForm(
+                            "public/typo3conf/ext/dw_boilerplate/Configuration/FlexForms/ContentElement/dwboilerplate_" . strtolower($contentElementName) . '.xml',
+                            $fieldItems,
+                            $contentElementName,
+                            $table,
+                            true,
+                            $fieldType
+                        );
                     }
                 } else {
 //                Field does not exist
@@ -49,8 +63,7 @@ class TCAUtility
                 }
             }
 
-            return implode('
-    ' . $extraSpaces2, $result);
+            return implode("\n" . $extraSpaces2, $result);
         }
     }
 
@@ -64,13 +77,14 @@ class TCAUtility
     public static function addFieldsToIRRETypeTCA($fields, $name, $table)
     {
         if (!empty($fields) || $fields !== '-') {
-            $fieldsToArray = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $createdFields = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',',$field)[0];
-                $fieldType = explode(',', $field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
                     $createdFields[] = $fieldType;
@@ -91,18 +105,19 @@ class TCAUtility
 
     public static function getDefaultFieldsWithAnotherTitle($table, $contentElementName, $secondDesignation, $fields, $extraSpaces = '')
     {
-        $fieldsToArray = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class)->fieldsToArray($fields);
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+        $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
         $defaultFieldsWithAnotherTitle = [];
         $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
 
         foreach ($fieldsToArray as $field) {
-            $fieldName = explode(',',$field)[0];
-            $fieldType = explode(',',$field)[1];
-            $fieldTitle = explode(',',$field)[2];
+            $fieldName = $generalCreateCommandUtility->getFieldName($field);
+            $fieldType = $generalCreateCommandUtility->getFieldType($field);
+            $fieldTitle = $generalCreateCommandUtility->getFieldTitle($field);
             if ($fieldTitle !== $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'] && $TCAFieldTypes[$table][$fieldType]['isFieldDefault'])
             {
                 if ($TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed']) {
-                    $fieldItem = explode(';', explode('*', explode(',', $field)[3])[0]);
+                    $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
 
                     $defaultFieldsWithAnotherTitle[] =
                         $extraSpaces . '            \''.$fieldType.'\' => [
@@ -150,16 +165,16 @@ class TCAUtility
     public static function addFieldsItemsToTCA($field, $table, $extensionName,$name, $secondDesignation, $relativePath, $extraSpaces)
     {
         if (!empty($field) && !empty($table)) {
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
             $result = [];
-            $fieldName = explode(',', $field)[0];
-            $fieldType = explode(',', $field)[1];
-            $fieldItems = explode('*', explode(',', $field)[3]);
-            array_pop($fieldItems);
+            $fieldName = $generalCreateCommandUtility->getFieldName($field);
+            $fieldType = $generalCreateCommandUtility->getFieldType($field);
+            $fieldItems = $generalCreateCommandUtility->getFieldItems($field);
 
             if (!empty($fieldItems[0]) && (new TCAFieldTypes)->getTCAFieldTypes($table)[$table][$fieldType]['FlexFormItemsAllowed'] !== true) {
                 if ((new TCAFieldTypes)->getTCAFieldTypes($table)[$table][$fieldType]['TCAItemsAllowed'] === true) {
                     foreach ($fieldItems as $fieldItem) {
-                        $itemName = explode(';' ,$fieldItem)[0];
+                        $itemName = $generalCreateCommandUtility->getItemName($fieldItem);
 
                         $result[] = '[\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($name).'.'. strtolower($secondDesignation).'_'.$fieldName.'.' . strtolower($itemName) . '\', ' . $relativePath . '::' . strtoupper($fieldName) . '_' .strtoupper($itemName) . '],';
                     }
@@ -184,7 +199,8 @@ class TCAUtility
      */
     public function generateFieldInTCA($fieldName, $secondDesignation, $table, $name, $fieldConfig, $extraSpaces, $extensionName): string
     {
-        return '\''.strtolower($secondDesignation).'_'.$fieldName.'\' => [
+        return
+'\''.strtolower($secondDesignation).'_'.$fieldName.'\' => [
     ' . $extraSpaces . '\'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_','',$extensionName) . '_'.strtolower($name).'.'. strtolower($secondDesignation).'_'.$fieldName.'\',
     ' . $extraSpaces . '\'config\' => '.$fieldConfig.'
 ' . $extraSpaces . '],';

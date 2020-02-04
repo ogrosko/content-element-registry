@@ -79,7 +79,7 @@ $tca = [
     \'palettes\' => [
         \'' . lcfirst($pageTypeName) . '\' => [
             \'label\' => \'LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label\',
-            \'showitem\' => \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $pageTypeName, $table, '          '). '\'
+            \'showitem\' => \'' . GeneralCreateCommandUtility::addFieldsToPalette($fields, $pageTypeName, $table, '                      '). '\'
         ],
     ],    
     \'columns\' => [

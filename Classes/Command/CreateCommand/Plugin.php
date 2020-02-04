@@ -58,22 +58,6 @@ class ' . $controllerName . 'Controller extends ActionController
     }
 }';
 
-        $pluginFlexForm = 'public/typo3conf/ext/dw_page_types/Configuration/FlexForms/' . $pluginName . '.xml';
-        $pluginFlexFormContent = '<T3DataStructure>
-    <sheets>
-        <General>
-            <ROOT>
-                <type>array</type>
-                <el>
-                    ' . FlexFormUtility::addFieldsToFlexForm($pluginFlexFormFields, $pluginName,'plugins', false) . '
-                </el>
-            </ROOT>
-        </General>
-    </sheets>
-</T3DataStructure>
-';
-
-
         $pluginTemplate = 'public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName . '/' . ucfirst($actionName) . '.html';
         $pluginTemplateContent = '<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
       xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
@@ -165,7 +149,12 @@ class ' . $controllerName . 'Controller extends ActionController
                 ]
             );
 
-            file_put_contents($pluginFlexForm, $pluginFlexFormContent);
+            FlexFormUtility::createFlexForm(
+                'public/typo3conf/ext/dw_page_types/Configuration/FlexForms/' . $pluginName . '.xml',
+                $pluginFlexFormFields,
+                $pluginName,
+                '',
+                false);
         }
 
         if (!file_exists('public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName)) {

@@ -47,17 +47,17 @@ class TranslationUtility
      */
     public static function addFieldsTitleToTranslation($file, $table, $contentElementName, $secondDesignation, $fields, $extensionName)
     {
-        $fieldsToArray = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class)->fieldsToArray($fields);
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+        $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
         $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
         $xml = simplexml_load_file($file);
         $body = $xml->file->body;
 
         foreach ($fieldsToArray as $field) {
-            $fieldName = explode(',',$field)[0];
-            $fieldType = explode(',',$field)[1];
-            $fieldTitle = explode(',',$field)[2];
-            $fieldItems = explode('*', explode(',', $field)[3]);
-            array_pop($fieldItems);
+            $fieldName = $generalCreateCommandUtility->getFieldName($field);
+            $fieldType = $generalCreateCommandUtility->getFieldType($field);
+            $fieldTitle = $generalCreateCommandUtility->getFieldTitle($field);
+            $fieldItems = $generalCreateCommandUtility->getFieldItems($field);
 
             if ($fieldTitle !== $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'])
             {
@@ -68,8 +68,8 @@ class TranslationUtility
 
             if ($TCAFieldTypes[$table][$fieldType]['TCAItemsAllowed'] === true) {
                 foreach ($fieldItems as $fieldItem) {
-                    $itemName = explode(';' ,$fieldItem)[0];
-                    $itemTitle = explode(';' ,$fieldItem)[1];
+                    $itemName = $generalCreateCommandUtility->getItemName($fieldItem);
+                    $itemTitle = $generalCreateCommandUtility->getItemTitle($fieldItem);
 
                     $transUnitFieldValue1 = $body->addChild('trans-unit');
                     $transUnitFieldValue1->addAttribute('id',$table . '.' . strtolower($extensionName) . '_'. strtolower($contentElementName).'.'. strtolower($secondDesignation).'_'. strtolower($fieldName) . '.' . strtolower($itemName));
@@ -91,6 +91,7 @@ class TranslationUtility
     /**
      * @param $file
      * @param $id
+     * @return string
      */
     public static function getSourceByFileNameAndId($file, $id)
     {

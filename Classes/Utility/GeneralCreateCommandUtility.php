@@ -27,7 +27,7 @@ class GeneralCreateCommandUtility
 
         foreach ($fieldsToArray as $field) {
             if (count(explode(',', $field)) !== 3) {
-                if (count(explode(',', $field)) === 4 && count(explode(';', explode('*', explode(',', $field)[3])[0]))  !== 3) {
+                if (count(explode(',', $field)) === 4 && count(self::getFirstFieldItem($field))  !== 3) {
                     throw new InvalidArgumentException('Field syntax error.');
                 }
                 if (count(explode(',', $field)) > 4) {
@@ -95,14 +95,15 @@ class GeneralCreateCommandUtility
     public static function addFieldsToPalette($fields, $name, $table, $extraSpace)
     {
         if (!empty($fields)) {
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class);
             $createdFields = [];
 
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',',$field)[0];
-                $fieldType = explode(',', $field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['isFieldDefault']) {
                     $createdFields[] = '--linebreak--, ' . $fieldType;
@@ -113,8 +114,7 @@ class GeneralCreateCommandUtility
                     throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.1');
                 }
             }
-            return preg_replace('/--linebreak--, /', '', implode(',
-            ' . $extraSpace, $createdFields),1);
+            return preg_replace('/--linebreak--, /', '', implode(",\n" . $extraSpace, $createdFields),1);
         } else {
             return '';
         }
@@ -146,5 +146,97 @@ class GeneralCreateCommandUtility
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getFieldName($field)
+    {
+        return explode(',', $field)[0];
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getFieldType($field)
+    {
+        return explode(',', $field)[1];
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getFieldTitle($field)
+    {
+        return explode(',', $field)[2];
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    public function getFieldItems($field)
+    {
+        $fieldItems = explode('*', explode(',', $field)[3]);
+        array_pop($fieldItems);
+        return $fieldItems;
+    }
+
+    /**
+     * @param $field
+     * @return array
+     */
+    public function getFirstFieldItem($field)
+    {
+        return explode(';', explode('*', explode(',', $field)[3])[0]);
+    }
+
+    /**
+     * @param $field
+     * @return bool
+     */
+    public function hasItems($field)
+    {
+        return !empty(self::getFieldItems($field));
+    }
+
+    /**
+     * @param $item
+     * @return string
+     */
+    public function getItemName($item)
+    {
+        return explode(';', $item)[0];
+    }
+
+    /**
+     * @param $item
+     * @return string
+     */
+    public function getItemType($item)
+    {
+        return explode(';', $item)[1];
+    }
+
+    /**
+     * @param $item
+     * @return string
+     */
+    public function getItemValue($item)
+    {
+        return explode(';', $item)[1];
+    }
+
+    /**
+     * @param $item
+     * @return string
+     */
+    public function getItemTitle($item)
+    {
+        return explode(';', $item)[2];
     }
 }

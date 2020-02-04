@@ -21,14 +21,15 @@ class SQLUtility
      */
     public static function addFieldsToSQLTable($fields, $name, $table)
     {
-        $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+        $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
         $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
         $result = [];
 
 
         foreach ($fieldsToArray as $field) {
-            $fieldName = explode(',',$field)[0];
-            $fieldType = explode(',',$field)[1];
+            $fieldName = $generalCreateCommandUtility->getFieldName($field);
+            $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
             if ($TCAFieldTypes[$table][$fieldType]) {
                 if (null !== $TCAFieldTypes[$table][$fieldType]['tableFieldDataType']) {

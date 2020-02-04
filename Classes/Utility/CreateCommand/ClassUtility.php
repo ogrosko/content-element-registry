@@ -16,34 +16,34 @@ class ClassUtility
      * @param $fields
      * @param $name
      * @param $table
+     * @param $extraSpaces
      * @return string
      * Return full field's name => protected name (format string)
      */
-    public static function addFieldsToClassMapping($fields, $name, $table)
+    public static function addFieldsToClassMapping($fields, $name, $table, $extraSpaces)
     {
         if (!empty($fields)) {
-            $fieldsToArray = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $createdFields = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',',$field)[0];
-                $fieldType = explode(',', $field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($fieldName === $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
-//                    Default fields
+                    //Default fields (no action)
                 } elseif ($fieldName !== $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
                     $createdFields[] = '"' . $fieldType . '" => "' . str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName)))) . '"';
                 } elseif ($TCAFieldTypes[$table][$fieldType]) {
                     $createdFields[] = '"'. strtolower($name).'_'.$fieldName.'" => "'.str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName)))) . '"';
                 } else {
-//                    ErrorMessage (FieldType does not exist)
                     throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.6');
                 }
             }
 
-            return implode(',
-        ', $createdFields);
+            return implode(",\n" . $extraSpaces, $createdFields);
         } else {
             return null;
         }

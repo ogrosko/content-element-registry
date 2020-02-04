@@ -22,13 +22,14 @@ class TypoScriptUtility
     public static function addFieldsToTypoScriptMapping($fields, $name, $table)
     {
         if (!empty($fields)) {
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             $createdFields = [];
 
             foreach ($fieldsToArray as $field) {
-                $fieldName = explode(',',$field)[0];
-                $fieldType = explode(',', $field)[1];
+                $fieldName = $generalCreateCommandUtility->getFieldName($field);
+                $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
                 if ($fieldName === $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
 //                   Nothing to add (default fields)
@@ -69,8 +70,8 @@ class TypoScriptUtility
           }';
         }
 
-        $template =
-            '      ' . $pathToModel . ' {
+        $template = '
+      ' . $pathToModel . ' {
         mapping {
           tableName = ' . $table . '
           recordType = ' . $recordType . '' . $columnsMapOnProperty . '

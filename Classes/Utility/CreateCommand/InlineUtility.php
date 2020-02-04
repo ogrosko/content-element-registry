@@ -2,8 +2,6 @@
 namespace Digitalwerk\ContentElementRegistry\Utility\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
-use Digitalwerk\ContentElementRegistry\Command\TCAFieldTypesAndImportedClasses;
-use Digitalwerk\ContentElementRegistry\Utility\CreateContentElementUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -52,13 +50,14 @@ class InlineUtility
             }
 
             $needToCompareDatabase = false;
-            $fieldsToArray = (new GeneralCreateCommandUtility)->fieldsToArray($fields);
+            $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
+            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
             $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
             foreach ($fieldsToArray as $field) {
                 $fieldType = explode(',', $field)[1];
 
                 if ($TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed']) {
-                    $fieldItem = explode(';', explode('*', explode(',', $field)[3])[0]);
+                    $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
 
 //                    add constant
                     GeneralCreateCommandUtility::importStringInToFileAfterString(
@@ -130,7 +129,7 @@ $GLOBALS[\'TCA\'][\'tx_contentelementregistry_domain_model_relation\'] = array_r
  * tx_contentelementregistry_domain_model_relation new fields
  */
 $'.lcfirst($fieldItem[0]).'Columns = [
-    ' . TCAUtility::addColumnsToTCA($table, $staticName, $fieldItem[0], $inlineFields[$fieldItem[1]], '\Digitalwerk\DwBoilerplate\\' . str_replace('/', '\\', $this->getRelativePathToInlineModel()) . $fieldItem[0],'    ','dw_boilerplate', '', '\Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName) . '
+    ' . TCAUtility::addColumnsToTCA($table, $staticName, $fieldItem[0], $inlineFields[$fieldItem[1]], '\Digitalwerk\DwBoilerplate\\' . str_replace('/', '\\', $this->getRelativePathToInlineModel()) . $fieldItem[0],'    ','dw_boilerplate', '    ', '\Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName) . '
 ];
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(\'tx_contentelementregistry_domain_model_relation\', $'.lcfirst($fieldItem[0]).'Columns);  
 ';
