@@ -32,9 +32,9 @@ class ClassUtility
                 $fieldName = $generalCreateCommandUtility->getFieldName($field);
                 $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
-                if ($fieldName === $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
+                if ($fieldName === $fieldType && $generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
                     //Default fields (no action)
-                } elseif ($fieldName !== $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
+                } elseif ($fieldName !== $fieldType && $generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
                     $createdFields[] = '"' . $fieldType . '" => "' . str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName)))) . '"';
                 } elseif ($TCAFieldTypes[$table][$fieldType]) {
                     $createdFields[] = '"'. strtolower($name).'_'.$fieldName.'" => "'.str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName)))) . '"';

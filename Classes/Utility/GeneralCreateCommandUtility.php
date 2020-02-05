@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class GeneralCreateCommandUtility
 {
+
     /**
      * @param $fields
      * @return array
@@ -27,7 +28,7 @@ class GeneralCreateCommandUtility
 
         foreach ($fieldsToArray as $field) {
             if (count(explode(',', $field)) !== 3) {
-                if (count(explode(',', $field)) === 4 && count(self::getFirstFieldItem($field))  !== 3) {
+                if (count(explode(',', $field)) === 4 && count(explode(';', self::getFirstFieldItem($field))) !== 3) {
                     throw new InvalidArgumentException('Field syntax error.');
                 }
                 if (count(explode(',', $field)) > 4) {
@@ -188,11 +189,11 @@ class GeneralCreateCommandUtility
 
     /**
      * @param $field
-     * @return array
+     * @return string
      */
     public function getFirstFieldItem($field)
     {
-        return explode(';', explode('*', explode(',', $field)[3])[0]);
+        return explode('*', explode(',', $field)[3])[0];
     }
 
     /**
@@ -238,5 +239,16 @@ class GeneralCreateCommandUtility
     public function getItemTitle($item)
     {
         return explode(';', $item)[2];
+    }
+
+    /**
+     * @param $TCAFieldTypes
+     * @param $table
+     * @param $fieldType
+     * @return bool
+     */
+    public function isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)
+    {
+        return $TCAFieldTypes[$table][$fieldType]['isFieldDefault'];
     }
 }

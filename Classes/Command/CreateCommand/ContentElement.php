@@ -197,7 +197,7 @@ $'.lcfirst($name).'Columns = [
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/dw_boilerplate/ext_tables.sql',
                 [
-                    '    ' . SQLUtility::addFieldsToSQLTable($fields, $name, $table). ", \n"
+                    '    ' . (new SQLUtility)->addFieldsToSQLTable($fields, $name, $table). ", \n"
                 ],
                 [
                     "# Table structure for table 'tt_content'",

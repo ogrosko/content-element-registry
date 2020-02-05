@@ -57,12 +57,14 @@ class InlineUtility
                 $fieldType = explode(',', $field)[1];
 
                 if ($TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed']) {
-                    $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
+                    $firstFieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
+                    $firstFieldItemName = $generalCreateCommandUtility->getItemName($firstFieldItem);
+                    $firstFieldItemType = $generalCreateCommandUtility->getItemType($firstFieldItem);
 
 //                    add constant
                     GeneralCreateCommandUtility::importStringInToFileAfterString(
                         'public/typo3conf/ext/dw_boilerplate/Classes/ContentElement/' . $staticName . '.php',
-                        ['   const CONTENT_RELATION_' . strtoupper($fieldItem[0]) . ' = \'dwboilerplate_' . strtolower($staticName) . '_' . strtolower(($fieldItem[0])) . '\';' . "\n"],
+                        ['   const CONTENT_RELATION_' . strtoupper($firstFieldItemName) . ' = \'dwboilerplate_' . strtolower($staticName) . '_' . strtolower($firstFieldItemName) . '\';' . "\n"],
                         [
                             'class ' . $staticName . ' extends AbstractContentElementRegistryItem',
                             '{'
@@ -77,23 +79,23 @@ class InlineUtility
 
 //                    add irre model
                     $inlineNameSpace = "Digitalwerk\DwBoilerplate\\" . str_replace('/' , '\\', substr($this->getRelativePathToInlineModel(), 0, -1)) ;
-                    $inlineModel = "public/typo3conf/ext/dw_boilerplate/Classes/" . $this->getRelativePathToInlineModel() . $fieldItem[0] .".php";
+                    $inlineModel = "public/typo3conf/ext/dw_boilerplate/Classes/" . $this->getRelativePathToInlineModel() . $firstFieldItemName .".php";
                     $inlineModelContent = '<?php
 declare(strict_types=1);
 namespace '.$inlineNameSpace.';
 
-' . ModelUtility::importClassToModel($inlineFields[$fieldItem[1]], $table) . '
+' . ModelUtility::importClassToModel($inlineFields[$firstFieldItemType], $table) . '
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
- * Class ' . $fieldItem[0] . '
+ * Class ' . $firstFieldItemName . '
  * @package '.$inlineNameSpace.'
  */
-class ' . $fieldItem[0] . ' extends AbstractEntity
+class ' . $firstFieldItemName . ' extends AbstractEntity
 {
-    ' . ModelUtility::addConstantsToModel($inlineFields[$fieldItem[1]], $table) . '
+    ' . ModelUtility::addConstantsToModel($inlineFields[$firstFieldItemType], $table) . '
     
-    ' . ModelUtility::addFieldsToModel($inlineFields[$fieldItem[1]], $table, '', str_replace('/', '\\', $this->getRelativePathToInlineModel() . $fieldItem[0])) . '
+    ' . ModelUtility::addFieldsToModel($inlineFields[$firstFieldItemType], $table, '', str_replace('/', '\\', $this->getRelativePathToInlineModel() . $firstFieldItemName)) . '
 }';
                     if (!file_exists('public/typo3conf/ext/dw_boilerplate/Classes/' . substr($this->getRelativePathToInlineModel(), 0, -1))) {
                         mkdir('public/typo3conf/ext/dw_boilerplate/Classes/'. substr($this->getRelativePathToInlineModel(), 0, -1) , 0777, true);
@@ -102,22 +104,22 @@ class ' . $fieldItem[0] . ' extends AbstractEntity
 
 //                    Check if exist TCA for inline and add fields etc..
 
-                    $inlineTCA = 'public/typo3conf/ext/dw_boilerplate/Configuration/TCA/Overrides/tx_contentelementregistry_domain_model_relation_' . $staticName . '_' . $fieldItem[0] . '.php';
+                    $inlineTCA = 'public/typo3conf/ext/dw_boilerplate/Configuration/TCA/Overrides/tx_contentelementregistry_domain_model_relation_' . $staticName . '_' . $firstFieldItemName . '.php';
                     $inlineTCAContent = '<?php
 defined(\'TYPO3_MODE\') or die();
 
 $tempTca = [
     \'ctrl\' => [
         \'typeicon_classes\' => [
-            Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($fieldItem[0]).' => Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($fieldItem[0]).',
+            Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).' => Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).',
         ],
     ],
     \'types\' => [
-        Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($fieldItem[0]).' => [
-            \'showitem\' => \'type, ' . TCAUtility::addFieldsToIRRETypeTCA($inlineFields[$fieldItem[1]], $fieldItem[0], $table) . '
+        Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).' => [
+            \'showitem\' => \'type, ' . TCAUtility::addFieldsToIRRETypeTCA($inlineFields[$firstFieldItemType], $firstFieldItemName, $table) . '
                            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource\',
             \'columnsOverrides\' => [
-' . TCAUtility::getDefaultFieldsWithAnotherTitle($table, $staticName, $fieldItem[0], $inlineFields[$fieldItem[1]], '    ') . '
+' . TCAUtility::getDefaultFieldsWithAnotherTitle($table, $staticName, $firstFieldItemName, $inlineFields[$firstFieldItemType], '    ') . '
             ],
         ],
     ],
@@ -128,10 +130,10 @@ $GLOBALS[\'TCA\'][\'tx_contentelementregistry_domain_model_relation\'] = array_r
 /**
  * tx_contentelementregistry_domain_model_relation new fields
  */
-$'.lcfirst($fieldItem[0]).'Columns = [
-    ' . TCAUtility::addColumnsToTCA($table, $staticName, $fieldItem[0], $inlineFields[$fieldItem[1]], '\Digitalwerk\DwBoilerplate\\' . str_replace('/', '\\', $this->getRelativePathToInlineModel()) . $fieldItem[0],'    ','dw_boilerplate', '    ', '\Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName) . '
+$'.lcfirst($firstFieldItemName).'Columns = [
+    ' . TCAUtility::addColumnsToTCA($table, $staticName, $firstFieldItemName, $inlineFields[$firstFieldItemType], '\Digitalwerk\DwBoilerplate\\' . str_replace('/', '\\', $this->getRelativePathToInlineModel()) . $firstFieldItemName,'    ','dw_boilerplate', '    ', '\Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName) . '
 ];
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(\'tx_contentelementregistry_domain_model_relation\', $'.lcfirst($fieldItem[0]).'Columns);  
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(\'tx_contentelementregistry_domain_model_relation\', $'.lcfirst($firstFieldItemName).'Columns);  
 ';
                     file_put_contents($inlineTCA, $inlineTCAContent);
 
@@ -141,18 +143,18 @@ $'.lcfirst($fieldItem[0]).'Columns = [
                         'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
                         $table,
                         $staticName,
-                        $fieldItem[0],
-                        $inlineFields[$fieldItem[1]],
+                        $firstFieldItemName,
+                        $inlineFields[$firstFieldItemType],
                         'DwBoilerplate'
                     );
 
 //        IRRE default icon
-                    $inlineIcon = "public/typo3conf/ext/dw_boilerplate/Resources/Public/Icons/ContentElement/dwboilerplate_".strtolower($staticName)."_".strtolower($fieldItem[0]).".svg";
+                    $inlineIcon = "public/typo3conf/ext/dw_boilerplate/Resources/Public/Icons/ContentElement/dwboilerplate_".strtolower($staticName)."_".strtolower($firstFieldItemName).".svg";
                     copy("public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg",$inlineIcon);
                     GeneralCreateCommandUtility::importStringInToFileAfterString(
                         'public/typo3conf/ext/dw_boilerplate/ext_localconf.php',
                         [
-                            "                'ContentElement/dwboilerplate_" . strtolower($staticName) . "_" . strtolower($fieldItem[0]) . "', \n"
+                            "                'ContentElement/dwboilerplate_" . strtolower($staticName) . "_" . strtolower($firstFieldItemName) . "', \n"
                         ],
                         [
                             "'GridElement/2ColumnGrid',",
@@ -164,7 +166,7 @@ $'.lcfirst($fieldItem[0]).'Columns = [
                     GeneralCreateCommandUtility::importStringInToFileAfterString(
                         'public/typo3conf/ext/dw_boilerplate/ext_typoscript_setup.typoscript',
                         [
-                            ' ' . TypoScriptUtility::getTyposcriptMapping($fieldItem[0], $inlineFields[$fieldItem[1]], $table, 'dwboilerplate_'.strtolower($staticName).'_'.strtolower($fieldItem[0]), 'Digitalwerk\DwBoilerplate\\'. str_replace('/', '\\',$this->getRelativePathToInlineModel() . $fieldItem[0])) . "\n"
+                            ' ' . TypoScriptUtility::getTyposcriptMapping($firstFieldItemName, $inlineFields[$firstFieldItemType], $table, 'dwboilerplate_'.strtolower($staticName).'_'.strtolower($firstFieldItemName), 'Digitalwerk\DwBoilerplate\\'. str_replace('/', '\\',$this->getRelativePathToInlineModel() . $firstFieldItemName)) . "\n"
                         ],
                         [
                             'config.tx_extbase {',
@@ -174,11 +176,11 @@ $'.lcfirst($fieldItem[0]).'Columns = [
                     );
 
 //        Message with inline sql fields
-                    if ((!empty($inlineFields[$fieldItem[1]]) || $inlineFields[$fieldItem[1]] !== '-') && !(GeneralCreateCommandUtility::areAllFieldsDefault($inlineFields[$fieldItem[1]], $table))) {
+                    if ((!empty($inlineFields[$firstFieldItemType]) || $inlineFields[$firstFieldItemType] !== '-') && !(GeneralCreateCommandUtility::areAllFieldsDefault($inlineFields[$firstFieldItemType], $table))) {
                         GeneralCreateCommandUtility::importStringInToFileAfterString(
                             'public/typo3conf/ext/dw_boilerplate/ext_tables.sql',
                             [
-                                '    ' . SQLUtility::addFieldsToSQLTable($inlineFields[$fieldItem[1]], $fieldItem[0], $table). ", \n"
+                                '    ' . (new SQLUtility)->addFieldsToSQLTable($inlineFields[$firstFieldItemType], $firstFieldItemName, $table). ", \n"
                             ],
                             [
                                 "# Table structure for table 'tx_contentelementregistry_domain_model_relation'",
@@ -189,7 +191,7 @@ $'.lcfirst($fieldItem[0]).'Columns = [
                         $needToCompareDatabase = true;
                     }
 
-                    self::checkAndAddInlineFields($staticName, $fieldItem[0],$inlineFields[$fieldItem[1]], $inlineFields);
+                    self::checkAndAddInlineFields($staticName, $firstFieldItemName,$inlineFields[$firstFieldItemType], $inlineFields);
                 }
             }
             return $needToCompareDatabase;

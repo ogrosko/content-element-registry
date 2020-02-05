@@ -196,7 +196,7 @@ $GLOBALS[\'TCA\'][\'pages\'] = array_replace_recursive($GLOBALS[\'TCA\'][\'pages
         if ($fields !== '-') {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/dw_page_types/ext_tables.sql',
-                ['    ' . SQLUtility::addFieldsToSQLTable($fields, $pageTypeName, $table). ", \n"],
+                ['    ' . (new SQLUtility)->addFieldsToSQLTable($fields, $pageTypeName, $table). ", \n"],
                 [
                     '#',
                     "# Table structure for table 'pages'",

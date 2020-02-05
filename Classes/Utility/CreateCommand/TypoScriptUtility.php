@@ -31,9 +31,9 @@ class TypoScriptUtility
                 $fieldName = $generalCreateCommandUtility->getFieldName($field);
                 $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
-                if ($fieldName === $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
+                if ($fieldName === $fieldType && $generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
 //                   Nothing to add (default fields)
-                } elseif ($fieldName !== $fieldType && $TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
+                } elseif ($fieldName !== $fieldType && $generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
                     $createdFields[] = $fieldType.'.mapOnProperty = '.str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName))));
                 } elseif ($TCAFieldTypes[$table][$fieldType]) {
                     $createdFields[] = strtolower($name).'_'.$fieldName.'.mapOnProperty = '.str_replace(' ','',lcfirst(ucwords(str_replace('_',' ',$fieldName))));

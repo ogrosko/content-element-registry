@@ -86,9 +86,9 @@ class TCAUtility
                 $fieldName = $generalCreateCommandUtility->getFieldName($field);
                 $fieldType = $generalCreateCommandUtility->getFieldType($field);
 
-                if ($TCAFieldTypes[$table][$fieldType]['isFieldDefault']) {
+                if ($generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
                     $createdFields[] = $fieldType;
-                } elseif ($TCAFieldTypes[$table][$fieldType]['isFieldDefault'] === false) {
+                } elseif (!$generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)) {
                     $createdFields[] = strtolower($name).'_'.$fieldName;
                 } else {
 //                    Fieldtype does not exist
@@ -114,10 +114,11 @@ class TCAUtility
             $fieldName = $generalCreateCommandUtility->getFieldName($field);
             $fieldType = $generalCreateCommandUtility->getFieldType($field);
             $fieldTitle = $generalCreateCommandUtility->getFieldTitle($field);
-            if ($fieldTitle !== $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'] && $TCAFieldTypes[$table][$fieldType]['isFieldDefault'])
+            if ($fieldTitle !== $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'] && $generalCreateCommandUtility->isFieldTypeDefault($TCAFieldTypes, $table, $fieldType))
             {
                 if ($TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed']) {
                     $fieldItem = $generalCreateCommandUtility->getFirstFieldItem($field);
+                    $fieldItemName = $generalCreateCommandUtility->getItemName($fieldItem);
 
                     $defaultFieldsWithAnotherTitle[] =
                         $extraSpaces . '            \''.$fieldType.'\' => [
@@ -128,16 +129,16 @@ class TCAUtility
                             '.$extraSpaces.'\'type\' => [
                                 '.$extraSpaces.'\'config\' => [
                                     '.$extraSpaces.'\'items\' => [
-                                        [\'LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.dwboilerplate_'.strtolower($contentElementName).'_'.strtolower($fieldItem[0]).'\', self::CONTENT_RELATION_'.strtoupper($fieldItem[0]).'],
+                                        [\'LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.dwboilerplate_'.strtolower($contentElementName).'_'.strtolower($fieldItemName).'\', self::CONTENT_RELATION_'.strtoupper($fieldItemName).'],
                                     '.$extraSpaces.'],
-                                    '.$extraSpaces.'\'default\' => self::CONTENT_RELATION_'.strtoupper($fieldItem[0]).'
+                                    '.$extraSpaces.'\'default\' => self::CONTENT_RELATION_'.strtoupper($fieldItemName).'
                                 '.$extraSpaces.'],
                             '.$extraSpaces.'],
                         '.$extraSpaces.'],
                     '.$extraSpaces.'],
                 '.$extraSpaces.'],
             '.$extraSpaces.'],';
-                    TranslationUtility::addStringToTranslation('public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf','tt_content.dwboilerplate_'.strtolower($contentElementName).'_'.strtolower($fieldItem[0]),str_replace('-', ' ', $fieldItem[2]));
+                    TranslationUtility::addStringToTranslation('public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf','tt_content.dwboilerplate_'.strtolower($contentElementName).'_'.strtolower($fieldItemName),str_replace('-', ' ', $generalCreateCommandUtility->getItemTitle($fieldItem)));
                 } else {
                     $defaultFieldsWithAnotherTitle[] =
                         $extraSpaces . '            \''.$fieldType.'\' => [

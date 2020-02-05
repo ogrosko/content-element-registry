@@ -1,8 +1,10 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config;
 
+use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\SQLUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TCAUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
+use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -91,6 +93,7 @@ class TCAFieldTypes
      */
     public function getDefaultTCAFieldTypes($table, $inlineRelativePath = '', $fieldItem = '', $allowReturn = false)
     {
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
         $defaultFieldTypes = $GLOBALS['TCA'][$table]['columns'];
         $result = [];
         $importedClasses = GeneralUtility::makeInstance(ImportedClasses::class);
@@ -127,7 +130,7 @@ class TCAFieldTypes
                             $result[$defaultFieldType]['importClass'][] = 'objectStorage';
                             if ($defaultFieldTypes[$defaultFieldType]['config']['foreign_table_field'] !== 'tablenames') {
                                 $result[$defaultFieldType]['modelDataTypes']['propertyDataType'] = 'null';
-                                $result[$defaultFieldType]['modelDataTypes']['propertyDataTypeDescribe'] = '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\Digitalwerk\DwBoilerplate\\' . $inlineRelativePath . '\\' . $fieldItem[0] . '>';
+                                $result[$defaultFieldType]['modelDataTypes']['propertyDataTypeDescribe'] = '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\Digitalwerk\DwBoilerplate\\' . $inlineRelativePath . '\\' . $generalCreateCommandUtility->getItemName($fieldItem) . '>';
                                 $result[$defaultFieldType]['modelDataTypes']['getterDataTypeDescribe'] = 'ObjectStorage';
                                 $result[$defaultFieldType]['modelDataTypes']['getterDataType'] = '? ObjectStorage';
                                 $result[$defaultFieldType]['inlineFieldsAllowed'] = true;
@@ -194,6 +197,8 @@ class TCAFieldTypes
      */
     public function getTypo3NewCustomFieldTypes($table, $contentElementOrPageTypeName, $secondDesignation, $fieldName, $fieldsToArray, $relativePath, $fieldTypeConfig, $fieldItem, $relativePathToClass, $inlineRelativePath)
     {
+        $sqlUtility = GeneralUtility::makeInstance(SQLUtility::class);
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
         $selectConfig = null;
         $checkConfig = null;
         $radioConfig = null;
@@ -238,7 +243,7 @@ class TCAFieldTypes
             'input' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'varchar(255) DEFAULT \'\' NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getVarchar255DataType(),
                 'config' => $this->getInputConfig(),
                 'TCAItemsAllowed' => false,
                 'needImportClass' => false,
@@ -253,7 +258,7 @@ class TCAFieldTypes
             'select' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'int(11) DEFAULT 0 NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getIntDataType(),
                 'config' => $selectConfig,
                 'TCAItemsAllowed' => true,
                 'needImportClass' => false,
@@ -268,7 +273,7 @@ class TCAFieldTypes
             'fal' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => true,
-                'tableFieldDataType' => 'int(11) DEFAULT 0 NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getIntDataType(),
                 'config' => $fieldName ? $this->getFalConfig($secondDesignation, $fieldName) : null,
                 'TCAItemsAllowed' => false,
                 'needImportClass' => true,
@@ -289,7 +294,7 @@ class TCAFieldTypes
             'radio' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'int(11) DEFAULT 0 NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getIntDataType(),
                 'config' => $radioConfig,
                 'TCAItemsAllowed' => true,
                 'needImportClass' => false,
@@ -304,7 +309,7 @@ class TCAFieldTypes
             'textarea' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'text',
+                'tableFieldDataType' => $sqlUtility->getTextDataType(),
                 'config' => $this->getTextAreaConfig(),
                 'TCAItemsAllowed' => false,
                 'needImportClass' => false,
@@ -319,7 +324,7 @@ class TCAFieldTypes
             'check' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'int(11) DEFAULT 0 NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getIntDataType(),
                 'config' => $checkConfig,
                 'TCAItemsAllowed' => true,
                 'needImportClass' => false,
@@ -334,7 +339,7 @@ class TCAFieldTypes
             'group' => [
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
-                'tableFieldDataType' => 'varchar(255) DEFAULT \'\' NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getVarchar255DataType(),
                 'config' => $this->getGroupConfig(),
                 'TCAItemsAllowed' => false,
                 'needImportClass' => true,
@@ -356,7 +361,7 @@ class TCAFieldTypes
                 'isFieldDefault' => false,
                 'defaultFieldName' => null,
                 'defaultFieldTitle' => null,
-                'tableFieldDataType' => 'int(11) unsigned DEFAULT \'0\' NOT NULL',
+                'tableFieldDataType' => $sqlUtility->getIntDataType(),
                 'config' => $inlineConfig,
                 'TCAItemsAllowed' => false,
                 'FlexFormItemsAllowed' => false,
@@ -369,7 +374,7 @@ class TCAFieldTypes
                 ],
                 'modelDataTypes' => [
                     'propertyDataType' => "null",
-                    'propertyDataTypeDescribe' => '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\Digitalwerk\DwBoilerplate\\' . $inlineRelativePath . '\\' . $fieldItem[0] . '>',
+                    'propertyDataTypeDescribe' => '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\Digitalwerk\DwBoilerplate\\' . $inlineRelativePath . '\\' . $generalCreateCommandUtility->getItemName($fieldItem) . '>',
                     'getterDataTypeDescribe' => 'ObjectStorage',
                     'getterDataType' => '? ObjectStorage',
                 ],
@@ -435,18 +440,20 @@ class TCAFieldTypes
      */
     public function getInlineConfig($pathToClass,$fieldName, $fieldItem, $contentElementName, $extraSpaces = ''): string
     {
+        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
         TranslationUtility::addStringToTranslation(
             'public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf',
-            'tt_content.dwboilerplate_' . strtolower($fieldName) . '_' . strtolower($fieldItem[0]),
-            str_replace('-', ' ', $fieldItem[2])
+            'tt_content.dwboilerplate_' . strtolower($fieldName) . '_' . strtolower($generalCreateCommandUtility->getItemName($fieldItem)),
+            str_replace('-', ' ', $generalCreateCommandUtility->getItemTitle($fieldItem))
             );
+        $fieldItemName = $generalCreateCommandUtility->getItemName($fieldItem);
         return '[
             ' . $extraSpaces. '\'type\' => \'inline\',
             ' . $extraSpaces. '\'foreign_table\' => \'tx_contentelementregistry_domain_model_relation\',
             ' . $extraSpaces. '\'foreign_field\' => \'content_element\',
             ' . $extraSpaces. '\'foreign_sortby\' => \'sorting\',
             ' . $extraSpaces. '\'foreign_match_fields\' => [
-                ' . $extraSpaces. '\'type\' => \Digitalwerk\DwBoilerplate\ContentElement\\' . $contentElementName . '::CONTENT_RELATION_' . strtoupper($fieldItem[0]) . ',
+                ' . $extraSpaces. '\'type\' => \Digitalwerk\DwBoilerplate\ContentElement\\' . $contentElementName . '::CONTENT_RELATION_' . strtoupper($fieldItemName) . ',
             ' . $extraSpaces. '],
             ' . $extraSpaces. '\'maxitems\' => 9999,
             ' . $extraSpaces. '\'appearance\' => [
@@ -462,9 +469,9 @@ class TCAFieldTypes
                     ' . $extraSpaces. '\'type\' => [
                         ' . $extraSpaces. '\'config\' => [
                             ' . $extraSpaces. '\'items\' => [
-                                ' . $extraSpaces. '[\'LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.dwboilerplate_' . strtolower($fieldName) . '_' . strtolower($fieldItem[0]) . '\', ' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($fieldItem[0]) . '],
+                                ' . $extraSpaces. '[\'LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:tt_content.dwboilerplate_' . strtolower($fieldName) . '_' . strtolower($fieldItemName) . '\', ' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($fieldItemName) . '],
                             ' . $extraSpaces. '],
-                            ' . $extraSpaces. '\'default\' => ' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($fieldItem[0]) . '
+                            ' . $extraSpaces. '\'default\' => ' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($fieldItemName) . '
                         ' . $extraSpaces. '],
                     ' . $extraSpaces. '],
                 ' . $extraSpaces. '],
