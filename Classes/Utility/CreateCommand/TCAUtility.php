@@ -203,7 +203,7 @@ class TCAUtility
         return
 '\''.strtolower($secondDesignation).'_'.$fieldName.'\' => [
     ' . $extraSpaces . '\'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_','',$extensionName) . '_'.strtolower($name).'.'. strtolower($secondDesignation).'_'.$fieldName.'\',
-    ' . $extraSpaces . '\'config\' => '.$fieldConfig.'
+    ' . $extraSpaces . '\'config\' => ' . $fieldConfig . '
 ' . $extraSpaces . '],';
     }
 }
