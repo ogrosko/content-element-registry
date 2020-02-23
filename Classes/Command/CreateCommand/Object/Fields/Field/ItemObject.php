@@ -2,10 +2,10 @@
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field;
 
 /**
- * Class Item
+ * Class ItemObject
  * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field
  */
-class Item
+class ItemObject
 {
     /**
      * @var string
@@ -36,6 +36,14 @@ class Item
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->getValue();
     }
 
     /**

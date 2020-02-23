@@ -1,28 +1,23 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\AddTo;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
- * Class Fields
+ * Class FieldsObject
  * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object
  */
-class Fields
+class FieldsObject
 {
     /**
-     * @var ObjectStorage<\Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field>
+     * @var ObjectStorage<\Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\FieldObject>
      */
     protected $fields = null;
 
     /**
-     * @return AddTo|null
+     * @var bool
      */
-    public function addTo(): ? Fields\AddTo
-    {
-        return GeneralUtility::makeInstance(AddTo::class);
-    }
+    protected $areDefault = false;
 
     /**
      * @return ObjectStorage
@@ -38,5 +33,21 @@ class Fields
     public function setFields(ObjectStorage $fields): void
     {
         $this->fields = $fields;
+    }
+
+    /**
+     * @return bool
+     */
+    public function areDefault(): bool
+    {
+        return $this->areDefault;
+    }
+
+    /**
+     * @param bool $areDefault
+     */
+    public function setAreDefault(bool $areDefault)
+    {
+        $this->areDefault = $areDefault;
     }
 }

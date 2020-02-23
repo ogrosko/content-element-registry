@@ -9,12 +9,12 @@ return [
         'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\PageType::class,
         'schedulable' => false,
     ],
-    'dw:defaultFieldTypes' => [
-        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\DefaultFieldTypes::class,
-        'schedulable' => false,
-    ],
     'dw:plugin' => [
         'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\Plugin::class,
+        'schedulable' => false,
+    ],
+    'dw:run' => [
+        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\Run::class,
         'schedulable' => false,
     ],
 ];

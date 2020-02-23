@@ -1,15 +1,15 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\Item;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\ModelDataTypes;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\ItemObject;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\ModelDataTypesObject;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
- * Class Field
+ * Class FieldObject
  * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields
  */
-class Field
+class FieldObject
 {
     /**
      * @var bool
@@ -37,7 +37,7 @@ class Field
     protected $name = '';
 
     /**
-     * @var ModelDataTypes
+     * @var ModelDataTypesObject
      */
     protected $modelDataTypes = null;
 
@@ -60,11 +60,6 @@ class Field
      * @var string
      */
     protected $title = '';
-
-    /**
-     * @var string
-     */
-    protected $config = '';
 
     /**
      * @var bool
@@ -92,7 +87,12 @@ class Field
     protected $defaultName = '';
 
     /**
-     * @var ObjectStorage<\Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\Item>
+     * @var string
+     */
+    protected $sqlDataType = '';
+
+    /**
+     * @var ObjectStorage<\Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\ItemObject>
      */
     protected $items = null;
 
@@ -129,9 +129,9 @@ class Field
     }
 
     /**
-     * @return Item
+     * @return ItemObject
      */
-    public function getFirstItem(): ? Item
+    public function getFirstItem(): ? ItemObject
     {
         return $this->getItems()[0];
     }
@@ -158,6 +158,30 @@ class Field
     public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSqlDataType(): ? string
+    {
+        return $this->sqlDataType;
+    }
+
+    /**
+     * @param string|null $sqlDataType
+     */
+    public function setSqlDataType(? string $sqlDataType)
+    {
+        $this->sqlDataType = $sqlDataType;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSqlDataType(): bool
+    {
+        return $this->getSqlDataType() !== null;
     }
 
     /**
@@ -353,34 +377,18 @@ class Field
     }
 
     /**
-     * @return ModelDataTypes
+     * @return ModelDataTypesObject
      */
-    public function getModelDataTypes(): ModelDataTypes
+    public function getModelDataTypes(): ModelDataTypesObject
     {
         return $this->modelDataTypes;
     }
 
     /**
-     * @param ModelDataTypes $modelDataTypes
+     * @param ModelDataTypesObject $modelDataTypes
      */
-    public function setModelDataTypes(ModelDataTypes $modelDataTypes): void
+    public function setModelDataTypes(ModelDataTypesObject $modelDataTypes): void
     {
         $this->modelDataTypes = $modelDataTypes;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getConfig(): ? string
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param string|null $config
-     */
-    public function setConfig(? string $config): void
-    {
-        $this->config = $config;
     }
 }

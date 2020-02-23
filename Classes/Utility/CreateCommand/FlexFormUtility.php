@@ -2,7 +2,7 @@
 namespace Digitalwerk\ContentElementRegistry\Utility\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFieldTypes;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypes;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use InvalidArgumentException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -65,7 +65,7 @@ class FlexFormUtility
 
         $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
         $flexFormFieldTypes = GeneralUtility::makeInstance(FlexFormFieldTypes::class);
-        $TCAFieldTypesAndImportedClasses = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypesAndImportedClasses = GeneralUtility::makeInstance(Typo3FieldTypes::class)->getTCAFieldTypes($table);
         $result = [];
 
             if ($TCAFieldTypesAndImportedClasses[$table][$fieldType]['FlexFormItemsAllowed'] === true) {

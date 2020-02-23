@@ -2,10 +2,10 @@
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field;
 
 /**
- * Class ModelDataTypes
+ * Class ModelDataTypesObject
  * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field
  */
-class ModelDataTypes
+class ModelDataTypesObject
 {
     /**
      * @var string

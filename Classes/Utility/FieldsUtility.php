@@ -1,98 +1,39 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Utility;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypes;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\Field\ItemObject;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\FieldsObject;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\FieldObject;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
- * Class Fields
+ * Class FieldsObject
  * @package Digitalwerk\ContentElementRegistry\Utility
  */
 class FieldsUtility
 {
     /**
-     * @param array $array
-     * @param string $key
-     * @param array $new
-     *
+     * @var array
+     */
+    protected $TCAFieldTypes = [];
+
+    /**
      * @return array
      */
-    public static function arrayInsertAfter( array $array, $key, array $new ) {
-        $keys = array_keys( $array );
-        $index = array_search( $key, $keys );
-        $pos = false === $index ? count( $array ) : $index + 1;
-        return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );
+    public function getTCAFieldTypes(): array
+    {
+        return $this->TCAFieldTypes;
     }
 
     /**
-     * @param string $filename
-     * @param array $newLine
-     * @param array $afterLines
+     * @param array $TCAFieldTypes
      */
-    public static function importStringInToFileAfterString(string $filename, array $newLine, array $afterLines)
+    public function setTCAFieldTypes(array $TCAFieldTypes): void
     {
-        $lines = file($filename);
-        $index = 0;
-        $editedAfterLines = [];
-
-        if (count($afterLines) === count(array_intersect($afterLines, array_map('trim', $lines)))) {
-            foreach ($lines as $line) {
-                if (trim($line) === $afterLines[0]) {
-                    break;
-                }
-                $index++;
-            }
-
-            for ($oldKey = 0; $oldKey <= count($afterLines)-1; $oldKey++) {
-                $editedAfterLines[$index] = $afterLines[$oldKey];
-                $index++;
-            }
-
-            if (count($editedAfterLines) === count(array_intersect_assoc($editedAfterLines, array_map('trim', $lines)))) {
-                $lines = self::arrayInsertAfter($lines, array_search(end($editedAfterLines), array_map('trim', $lines)), $newLine);
-                file_put_contents($filename, $lines);
-            }
-        }
-    }
-
-    /**
-     * @param $fields
-     * @param $name
-     * @param $table
-     * @param $extraSpace
-     * @return string
-     * Return field's name with --linebreak-- (format string)
-     */
-    public static function addFieldsToPalette($fields, $name, $table, $extraSpace)
-    {
-        if (!empty($fields)) {
-            $generalCreateCommandUtility = GeneralUtility::makeInstance(FieldsUtility::class);
-            $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
-            $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class);
-            $createdFields = [];
-
-
-            foreach ($fieldsToArray as $field) {
-                $fieldName = $generalCreateCommandUtility->getFieldName($field);
-                $fieldType = $generalCreateCommandUtility->getFieldType($field);
-
-                if ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['isFieldDefault']) {
-                    $createdFields[] = '--linebreak--, ' . $fieldType;
-                } elseif ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['isFieldDefault'] === false) {
-                    $createdFields[] = '--linebreak--, ' . strtolower($name).'_'.$fieldName;
-                } else {
-//                    Fieldtype does not exist
-                    throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.1');
-                }
-            }
-            return preg_replace('/--linebreak--, /', '', implode(",\n" . $extraSpace, $createdFields),1);
-        } else {
-            return '';
-        }
+        $this->TCAFieldTypes = $TCAFieldTypes;
     }
 
     /**
@@ -100,17 +41,16 @@ class FieldsUtility
      * @param $table
      * @return bool
      */
-    public static function areAllFieldsDefault($fields, $table)
+    public function areAllFieldsDefault($fields, $table)
     {
         if (!empty($fields)) {
-            $fieldsToArray = GeneralUtility::makeInstance(FieldsUtility::class)->fieldsToArray($fields);
-            $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class);
+            $TCAFieldTypes = $this->getTCAFieldTypes();
 
-            foreach ($fieldsToArray as $field) {
+            foreach ($fields as $field) {
                 $fieldType = explode(',', $field)[1];
 
-                if ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['isFieldDefault'] === true) {
-                } elseif ($TCAFieldTypes->getTCAFieldTypes($table)[$table][$fieldType]['isFieldDefault'] === false) {
+                if ($TCAFieldTypes[$table][$fieldType]['isFieldDefault'] === true) {
+                } elseif ($TCAFieldTypes[$table][$fieldType]['isFieldDefault'] === false) {
 
                     return false;
                     break;
@@ -217,30 +157,12 @@ class FieldsUtility
 
     /**
      * @param $table
-     * @param $contentElementName
-     * @param $secondDesignation
-     * @param $fieldName
-     * @param $field
-     * @param $relativePath
-     * @param $fieldType
-     * @param $firstItem
-     * @param $relativePathToClass
-     * @return string
-     */
-    public function getFieldConfig($table, $contentElementName, $secondDesignation, $fieldName, $field, $relativePath, $fieldType, $firstItem, $relativePathToClass)
-    {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class);
-        return $TCAFieldTypes->getTCAFieldTypes($table, $contentElementName, $secondDesignation, $fieldName, $field, $relativePath, $fieldType, $firstItem, $relativePathToClass)[$table][$fieldType]['config'];
-    }
-
-    /**
-     * @param $table
      * @param $fieldType
      * @return bool
      */
     public function isFieldTypeDefault($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['isFieldDefault'] === true;
     }
 
@@ -251,7 +173,7 @@ class FieldsUtility
      */
     public function needFieldImportClass($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['needImportClass'] === true;
     }
 
@@ -262,7 +184,7 @@ class FieldsUtility
      */
     public function needFieldImportClassDefaultFieldName($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['importClassConditional']['needDefaulFieldName'] === true;
     }
 
@@ -273,7 +195,7 @@ class FieldsUtility
      */
     public function getFieldDefaultTitle($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'];
     }
 
@@ -284,7 +206,7 @@ class FieldsUtility
      */
     public function isFieldTCAItemsAllowed($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['TCAItemsAllowed'] === true;
     }
 
@@ -295,7 +217,7 @@ class FieldsUtility
      */
     public function isFlexFormTCAItemsAllowed($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['FlexFormItemsAllowed'] === true;
     }
 
@@ -306,7 +228,7 @@ class FieldsUtility
      */
     public function isFieldInlineItemsAllowed($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed'] === true;
     }
 
@@ -317,61 +239,8 @@ class FieldsUtility
      */
     public function getFieldDefaultName($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['defaultFieldName'];
-    }
-
-    /**
-     * @param $table
-     * @param $fieldType
-     * @return string
-     */
-    public function getFieldModelDataTypeProperty($table, $fieldType)
-    {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
-        return $TCAFieldTypes[$table][$fieldType]['modelDataTypes']['propertyDataType'];
-    }
-
-    /**
-     * @param $table
-     * @param $fieldType
-     * @param $field
-     * @param string $inlineRelativePath
-     * @return mixed
-     */
-    public function getFieldModelDataTypePropertyDescribe($table, $fieldType, $field, $inlineRelativePath)
-    {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
-
-        if (self::isFieldInlineItemsAllowed($table, $fieldType)) {
-            $fieldItem = self::getFirstFieldItem($field);
-            $emptyFieldObject = new Field();
-            return GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table,'', '', '',$emptyFieldObject,'','',$fieldItem,'',$inlineRelativePath)[$table][$fieldType]['modelDataTypes']['propertyDataTypeDescribe'];
-        } else {
-            return $TCAFieldTypes[$table][$fieldType]['modelDataTypes']['propertyDataTypeDescribe'];
-        }
-    }
-
-    /**
-     * @param $table
-     * @param $fieldType
-     * @return string
-     */
-    public function getFieldModelDataTypeGetter($table, $fieldType)
-    {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
-        return $TCAFieldTypes[$table][$fieldType]['modelDataTypes']['getterDataType'];
-    }
-
-    /**
-     * @param $table
-     * @param $fieldType
-     * @return string
-     */
-    public function getFieldModelDataTypeGetterDescribe($table, $fieldType)
-    {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
-        return $TCAFieldTypes[$table][$fieldType]['modelDataTypes']['getterDataTypeDescribe'];
     }
 
     /**
@@ -381,7 +250,7 @@ class FieldsUtility
      */
     public function getFieldTrait($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['trait'];
     }
 
@@ -392,8 +261,20 @@ class FieldsUtility
      */
     public function getFieldImportClasses($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return $TCAFieldTypes[$table][$fieldType]['importClass'];
+    }
+
+    /**
+     * @param $table
+     * @param $fieldType
+     * @return string
+     */
+    protected function getFieldSQLDataType($table, $fieldType)
+    {
+        $TCAFieldTypes = $this->getTCAFieldTypes();
+
+        return $TCAFieldTypes[$table][$fieldType]['tableFieldDataType'];
     }
 
     /**
@@ -403,7 +284,7 @@ class FieldsUtility
      */
     public function isFieldTypeExist($table, $fieldType)
     {
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
+        $TCAFieldTypes = $this->getTCAFieldTypes();
         return !empty($TCAFieldTypes[$table][$fieldType]);
     }
 
@@ -418,7 +299,7 @@ class FieldsUtility
         array_pop($fieldsToArray);
 
         if (count($fieldsToArray) === 0 && $fields !== '-') {
-            throw new InvalidArgumentException('Field syntax error.');
+            throw new InvalidArgumentException('Field syntax error.2');
         }
 
         foreach ($fieldsToArray as $field) {
@@ -436,64 +317,68 @@ class FieldsUtility
     }
 
     /**
+     * @param $table
+     */
+    public function inicializeTCAFieldTypes($table)
+    {
+        $this->setTCAFieldTypes(
+            GeneralUtility::makeInstance(Typo3FieldTypes::class)->getTCAFieldTypes($table)
+        );
+    }
+
+    /**
      * @param $fields
      * @param $table
-     * @param $relativePathToModel [example: 'Domain\Model\ContentElement\']
-     * @param $name
-     * @param $secondDesignation
-     * @param $relativePathToClass
-     * @param $relativePathToModel2
-     * @return Fields
+     * @return FieldsObject
      */
-    public function generateObject($fields, $table, $relativePathToModel, $name, $secondDesignation, $relativePathToClass, $relativePathToModel2)
+    public function generateObject($fields, $table)
     {
-        $fields = self::fieldsToArray($fields);
-        $fieldObjectStorage = new ObjectStorage();
+        $this->inicializeTCAFieldTypes($table);
+        if ($fields !== '-' && !empty($fields)) {
+            $fields = self::fieldsToArray($fields);
+            $fieldObjectStorage = new ObjectStorage();
 
-        foreach ($fields as $field) {
-            $fieldToObject = new Field();
-            $fieldModelDataTypesToObject = new Field\ModelDataTypes();
-            $itemObjectStorage = new ObjectStorage();
-            $fieldToObject->setName(self::getFieldName($field));
-            $fieldToObject->setType(self::getFieldType($field));
-            $fieldToObject->setTitle(self::getFieldTitle($field));
-            $fieldToObject->setDefault(self::isFieldTypeDefault($table, self::getFieldType($field)));
-            $fieldToObject->setExist(self::isFieldTypeExist($table, self::getFieldType($field)));
-            $fieldToObject->setDefaultTitle(self::getFieldDefaultTitle($table, self::getFieldType($field)));
-            $fieldToObject->setNeedImportClass(self::needFieldImportClass($table, self::getFieldType($field)));
-            $fieldToObject->setNeedImportedClassDefaultName(self::needFieldImportClassDefaultFieldName($table, self::getFieldType($field)));
-            $fieldToObject->setDefaultName(self::getFieldDefaultName($table, self::getFieldType($field)));
-            $fieldToObject->setImportClasses(self::getFieldImportClasses($table, self::getFieldType($field)));
-            $fieldToObject->setTCAItemsAllowed(self::isFieldTCAItemsAllowed($table, self::getFieldType($field)));
-            $fieldToObject->setFlexFormItemsAllowed(self::isFlexFormTCAItemsAllowed($table, self::getFieldType($field)));
-            $fieldToObject->setInlineItemsAllowed(self::isFieldInlineItemsAllowed($table, self::getFieldType($field)));
-            $fieldToObject->setTrait(self::getFieldTrait($table, self::getFieldType($field)));
-            $fieldToObject->setConfig(self::getFieldConfig($table, $name, $secondDesignation, self::getFieldName($field), $field, $relativePathToModel2, self::getFieldType($field), $this->getFieldItems($field)[0], $relativePathToClass));
+            foreach ($fields as $field) {
+                $fieldToObject = new FieldObject();
+                $itemObjectStorage = new ObjectStorage();
+                $fieldToObject->setName(self::getFieldName($field));
+                $fieldToObject->setType(self::getFieldType($field));
+                $fieldToObject->setTitle(self::getFieldTitle($field));
+                $fieldToObject->setDefault(self::isFieldTypeDefault($table, self::getFieldType($field)));
+                $fieldToObject->setExist(self::isFieldTypeExist($table, self::getFieldType($field)));
+                $fieldToObject->setDefaultTitle(self::getFieldDefaultTitle($table, self::getFieldType($field)));
+                $fieldToObject->setNeedImportClass(self::needFieldImportClass($table, self::getFieldType($field)));
+                $fieldToObject->setNeedImportedClassDefaultName(self::needFieldImportClassDefaultFieldName($table, self::getFieldType($field)));
+                $fieldToObject->setDefaultName(self::getFieldDefaultName($table, self::getFieldType($field)));
+                $fieldToObject->setImportClasses(self::getFieldImportClasses($table, self::getFieldType($field)));
+                $fieldToObject->setTCAItemsAllowed(self::isFieldTCAItemsAllowed($table, self::getFieldType($field)));
+                $fieldToObject->setFlexFormItemsAllowed(self::isFlexFormTCAItemsAllowed($table, self::getFieldType($field)));
+                $fieldToObject->setInlineItemsAllowed(self::isFieldInlineItemsAllowed($table, self::getFieldType($field)));
+                $fieldToObject->setTrait(self::getFieldTrait($table, self::getFieldType($field)));
+                $fieldToObject->setSqlDataType($this->getFieldSQLDataType($table, $this->getFieldType($field)));
 
-            if ($this->hasItems($field)) {
-                foreach ($this->getFieldItems($field) as $item) {
-                    $itemToObject = new Field\Item();
-                    $itemToObject->setName($this->getItemName($item));
-                    $itemToObject->setValue($this->getItemValue($item));
-                    $itemToObject->setTitle($this->getItemTitle($item));
+                if ($this->hasItems($field)) {
+                    foreach ($this->getFieldItems($field) as $item) {
+                        $itemToObject = new ItemObject();
+                        $itemToObject->setName($this->getItemName($item));
+                        $itemToObject->setValue($this->getItemValue($item));
+                        $itemToObject->setTitle($this->getItemTitle($item));
 
-                    $itemObjectStorage->attach($itemToObject);
+                        $itemObjectStorage->attach($itemToObject);
+                    }
+                    $fieldToObject->setItems($itemObjectStorage);
                 }
-                $fieldToObject->setItems($itemObjectStorage);
+
+                $fieldObjectStorage->attach($fieldToObject);
             }
 
-            $fieldModelDataTypesToObject->setPropertyDataType(self::getFieldModelDataTypeProperty($table, self::getFieldType($field)));
-            $fieldModelDataTypesToObject->setGetterDataType(self::getFieldModelDataTypeGetter($table, self::getFieldType($field)));
-            $fieldModelDataTypesToObject->setGetterDataTypeDescribe(self::getFieldModelDataTypeGetterDescribe($table, self::getFieldType($field)));
-            $fieldModelDataTypesToObject->setPropertyDataTypeDescribe(self::getFieldModelDataTypePropertyDescribe($table, self::getFieldType($field), $field, $relativePathToModel));
-            $fieldToObject->setModelDataTypes($fieldModelDataTypesToObject);
+            $fieldsToObject = new FieldsObject();
+            $fieldsToObject->setAreDefault(self::areAllFieldsDefault($fields, $table));
+            $fieldsToObject->setFields($fieldObjectStorage);
 
-            $fieldObjectStorage->attach($fieldToObject);
+            return $fieldsToObject;
+        } else {
+            return null;
         }
-
-        $fields = new Fields();
-        $fields->setFields($fieldObjectStorage);
-
-        return $fields;
     }
 }

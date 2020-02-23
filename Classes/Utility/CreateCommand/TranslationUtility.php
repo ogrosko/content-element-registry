@@ -1,12 +1,8 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Utility\CreateCommand;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\TCAFieldTypes;
-use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use DOMDocument;
 use SimpleXMLElement;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class TranslationUtility
@@ -27,58 +23,6 @@ class TranslationUtility
         $transUnit = $body->addChild('trans-unit');
         $transUnit->addAttribute('id',$translationId);
         $transUnit->addChild('source', ''.str_replace('-',' ',$translationValue).'');
-
-        $dom = new DOMDocument('1.0');
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
-        $dom->loadXML($xml->asXML());
-        $formatXml = new SimpleXMLElement($dom->saveXML());
-        $formatXml->saveXML($file);
-    }
-
-    /**
-     * @param $file
-     * @param $table
-     * @param $contentElementName
-     * @param $secondDesignation
-     * @param $fields
-     * Create and add fields translation (XML format)
-     * @param $extensionName
-     */
-    public static function addFieldsTitleToTranslation($file, $table, $contentElementName, $secondDesignation, $fields, $extensionName)
-    {
-        $generalCreateCommandUtility = GeneralUtility::makeInstance(GeneralCreateCommandUtility::class);
-        $fieldsToArray = $generalCreateCommandUtility->fieldsToArray($fields);
-        $TCAFieldTypes = GeneralUtility::makeInstance(TCAFieldTypes::class)->getTCAFieldTypes($table);
-        $xml = simplexml_load_file($file);
-        $body = $xml->file->body;
-
-        foreach ($fieldsToArray as $field) {
-            $fieldName = $generalCreateCommandUtility->getFieldName($field);
-            $fieldType = $generalCreateCommandUtility->getFieldType($field);
-            $fieldTitle = $generalCreateCommandUtility->getFieldTitle($field);
-            $fieldItems = $generalCreateCommandUtility->getFieldItems($field);
-
-            if ($fieldTitle !== $TCAFieldTypes[$table][$fieldType]['defaultFieldTitle'])
-            {
-                $transUnitField = $body->addChild('trans-unit');
-                $transUnitField->addAttribute('id',$table.'.' . strtolower($extensionName) . '_'. strtolower($contentElementName).'.'. strtolower($secondDesignation).'_'. strtolower($fieldName).'');
-                $transUnitField->addChild('source', ''.str_replace('-',' ',$fieldTitle).'');
-            }
-
-            if ($TCAFieldTypes[$table][$fieldType]['TCAItemsAllowed'] === true) {
-                foreach ($fieldItems as $fieldItem) {
-                    $itemName = $generalCreateCommandUtility->getItemName($fieldItem);
-                    $itemTitle = $generalCreateCommandUtility->getItemTitle($fieldItem);
-
-                    $transUnitFieldValue1 = $body->addChild('trans-unit');
-                    $transUnitFieldValue1->addAttribute('id',$table . '.' . strtolower($extensionName) . '_'. strtolower($contentElementName).'.'. strtolower($secondDesignation).'_'. strtolower($fieldName) . '.' . strtolower($itemName));
-                    $transUnitFieldValue1->addChild('source', str_replace('-',' ',$itemTitle));
-                }
-            } elseif (!empty($fieldItems) && $TCAFieldTypes[$table][$fieldType]['FlexFormItemsAllowed'] !== true && $TCAFieldTypes[$table][$fieldType]['inlineFieldsAllowed'] !== true) {
-                throw new InvalidArgumentException('You can not add items to ' . $fieldType . ', because items is not allowed.');
-            }
-        }
 
         $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
