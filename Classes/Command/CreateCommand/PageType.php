@@ -19,11 +19,14 @@ class PageType extends Command
     protected function configure()
     {
         $this->setDescription('Create page type with some fields.');
+        $this->addArgument('table', InputArgument::REQUIRED,'Enter table of PageType.');
         $this->addArgument('name', InputArgument::REQUIRED,'Enter name of PageType.');
         $this->addArgument('title', InputArgument::REQUIRED,'Enter title of PageType.');
         $this->addArgument('doktype', InputArgument::REQUIRED,'Enter doktype of PageType.');
         $this->addArgument('auto-header', InputArgument::REQUIRED,'Set true, if auto generating header is needed.');
         $this->addArgument('fields', InputArgument::REQUIRED,'Add new fields. format: "fieldName,fieldType,fieldTitle/"');
+        $this->addArgument('inline-fields',InputArgument::IS_ARRAY ,'');
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -33,7 +36,8 @@ class PageType extends Command
         $pageTypeTitle = $input->getArgument('title');
         $autoHeader = $input->getArgument('auto-header');
         $fields = $input->getArgument('fields');
-        $table = 'pages';
+        $table = $input->getArgument('table');
+        $inlineFields = $input->getArgument('inline-fields');
         $extensionName = 'dw_page_types';
         $namespaceToContentElementModel = 'Digitalwerk\DwPageTypes\Domain\Model';
         $relativePathToModel = 'dw_page_types/Classes/Domain/Model';
@@ -47,6 +51,7 @@ class PageType extends Command
         $render->setInlineRelativePath($relativePathToModel);
         $render->setName($pageTypeName);
         $render->setTable($table);
+        $render->setInlineFields($inlineFields);
         $render->setModelNamespace($namespaceToContentElementModel);
         $render->setStaticName($pageTypeName);
         $render->setDoktype($doktype);
@@ -56,6 +61,8 @@ class PageType extends Command
         $render->icon()->copyPageTypeDefaultIcon();
         $render->model()->pageTypeTemplate();
         $render->tca()->pageTypeTemplate();
+        $render->inline()->render();
+        $render->typoScript()->pageTypeTypoScriptRegister();
 
         $render->translation()->addFieldsTitleToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf'

@@ -43,7 +43,7 @@ class FieldDataDescription
                 'check' => $fieldType === 'check' ? $this->getIntDescription() : null,
                 'textarea' => $fieldType === 'textarea' ? $this->getStringDescription() : null,
                 'group' => $fieldType === 'group' ? $this->getObjectStorageDescription() : null,
-                'inline' => $fieldType === 'inline' ? $this->getInlineDescription() : null,
+                'inline' => $fieldType === 'inline' ? $this->getInlineDescription($field) : null,
             ][$fieldType];
         }
         $modelDataTypes = new ModelDataTypesObject();
@@ -83,15 +83,16 @@ class FieldDataDescription
     }
 
     /**
+     * @param FieldObject $field
      * @return array
      */
-    public function getInlineDescription()
+    public function getInlineDescription(FieldObject $field)
     {
         $inlineRelativePath = $this->render->getModelNamespace();
 
         return [
             'null',
-            '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\\' . $inlineRelativePath . '\\' . $this->render->getName() . '>',
+            '\TYPO3\CMS\Extbase\Persistence\ObjectStorage<\\' . $inlineRelativePath . '\\' . $this->render->getName() . '\\' . $field->getFirstItem()->getName() . '>',
             'ObjectStorage',
             '? ObjectStorage'
         ];
@@ -161,7 +162,7 @@ class FieldDataDescription
 
             if ($defaultField['type'] === 'inline') {
                 if ($defaultField['foreign_table_field'] !== 'tablenames') {
-                    return $this->getInlineDescription();
+                    return $this->getInlineDescription($field);
                 } else {
                     if ($defaultField['maxitems'] === 1) {
                         return $this->getFileRefrenceDescription();

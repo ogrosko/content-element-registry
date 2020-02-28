@@ -43,14 +43,11 @@ class Inline
                     $firstFieldItemName = $field->getFirstItem()->getName();
                     $firstFieldItemType = $field->getFirstItem()->getType();
 
-//                    add constant
                     GeneralCreateCommandUtility::importStringInToFileAfterString(
-                        'public/typo3conf/ext/' . $extensionName . '/Classes/ContentElement/' . $staticName . '.php',
+                        'public/typo3conf/ext/' . $this->render->getInlineRelativePath() . '/' . $name . '.php',
                         ['   const CONTENT_RELATION_' . strtoupper($firstFieldItemName) . ' = \'' . str_replace('_', '', $extensionName) . '_' . strtolower($staticName) . '_' . strtolower($firstFieldItemName) . '\';' . "\n"],
-                        [
-                            'class ' . $staticName . ' extends AbstractContentElementRegistryItem',
-                            '{'
-                        ]
+                        '{',
+                        0
                     );
 
                     $newRender = GeneralUtility::makeInstance(Render::class);

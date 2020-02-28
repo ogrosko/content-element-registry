@@ -236,19 +236,10 @@ class Run extends Command
             'What do you want to create?',
             [self::CONTENT_ELEMENT,self::PAGE_TYPE, self::PLUGIN]
         );
+        $needCreate = $helper->ask($input, $output, $question);
 
-        if ($helper->ask($input, $output, $question) === self::CONTENT_ELEMENT) {
-            $question = new Question('Content element name (etc. NewContentElement), without spaces: ');
-            $name = $helper->ask($input, $output, $question);
-            $question = new Question('Content element title (etc. New-Content-Element), space is - : ');
-            $title = $helper->ask($input, $output, $question);
-            $question = new Question('Content element description (etc. New-Content-Element-description), space is - : ');
-            $description = $helper->ask($input, $output, $question);
-            $question = new Question('Enter table of content element :');
-
-            $this->setTable($helper->ask($input, $output, $question));
-            $table = $this->getTable();
-
+        if ($needCreate === self::CONTENT_ELEMENT) {
+            $this->addArgument('table');
             $this->addArgument('name');
             $this->addArgument('title');
             $this->addArgument('description');
@@ -257,44 +248,189 @@ class Run extends Command
 
             $input->setArgument(
                 'name',
-                $name
+                $this->askElementName(self::CONTENT_ELEMENT)
             );
             $input->setArgument(
                 'title',
-                $title
+                $this->askElementTitle(self::CONTENT_ELEMENT)
             );
             $input->setArgument(
                 'description',
-                $description
+                $this->askElementDescription(self::CONTENT_ELEMENT)
             );
-            $question = new ChoiceQuestion(
-                'Do you want to create some fields?',
-                [self::YES_SHORTCUT => self::YES, self::NO_SHORTCUT => self::NO]
+            $this->setTable(
+                $this->askTable(self::CONTENT_ELEMENT, 'tt_content')
             );
+            $input->setArgument(
+                'table',
+                $this->getTable()
+            );
+            $input = $this->askTCAFields($input);
 
-            if ($helper->ask($input, $output, $question) === self::YES_SHORTCUT) {
-                $this->setFieldTypes(
-                    GeneralUtility::makeInstance(Typo3FieldTypes::class)->getTCAFieldTypes($table)[$table]
-                );
-                $fieldsSetup = new FieldsSetup($this);
-                $fieldsSetup->createField();
-                $input->setArgument(
-                    'fields',
-                    $fieldsSetup->getFields()
-                );
-                $input->setArgument(
-                    'inline-fields',
-                    self::getInlineFields()
-                );
-
-            } else {
-                $input->setArgument(
-                    'fields',
-                    '-'
-                );
-            }
             GeneralUtility::makeInstance(ContentElement::class)->execute($input, $output);
+        } elseif ($needCreate === self::PAGE_TYPE) {
+            $this->addArgument('table');
+            $this->addArgument('doktype');
+            $this->addArgument('name');
+            $this->addArgument('title');
+            $this->addArgument('auto-header');
+            $this->addArgument('fields');
+            $this->addArgument('inline-fields');
+
+
+            $input->setArgument(
+                'doktype',
+                $this->askPageTypeDoktype()
+            );
+            $input->setArgument(
+                'name',
+                $this->askElementName(self::PAGE_TYPE)
+            );
+            $input->setArgument(
+                'title',
+                $this->askElementTitle(self::PAGE_TYPE)
+            );
+            $input->setArgument(
+                'auto-header',
+                $this->needPageTypeAutoHeader()
+            );
+            $this->setTable(
+                $this->askTable(self::PAGE_TYPE, 'pages')
+            );
+            $input->setArgument(
+                'table',
+                $this->getTable()
+            );
+            $input = $this->askTCAFields($input);
+            GeneralUtility::makeInstance(PageType::class)->execute($input, $output);
         }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return mixed
+     */
+    public function askTCAFields(InputInterface $input)
+    {
+        if ($this->needCreateFields()) {
+            $this->setFieldTypes(
+                GeneralUtility::makeInstance(Typo3FieldTypes::class)->getTCAFieldTypes($this->getTable())[$this->getTable()]
+            );
+
+            $fieldsSetup = new FieldsSetup($this);
+            $fieldsSetup->createField();
+
+            $input->setArgument(
+                'fields',
+                $fieldsSetup->getFields()
+            );
+            $input->setArgument(
+                'inline-fields',
+                self::getInlineFields()
+            );
+
+        } else {
+            $input->setArgument(
+                'fields',
+                '-'
+            );
+        }
+
+        return $input;
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function askElementName($name)
+    {
+        $question = new Question(
+            $name . ' name (etc. NewElement), without spaces: '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function askElementTitle($name)
+    {
+        $question = new Question(
+            $name . ' title (etc. New Element): '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function askElementDescription($name)
+    {
+        $question = new Question(
+            $name . ' description (etc. New Element description):  '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @param $name
+     * @param $default
+     * @return mixed
+     */
+    public function askTable($name, $default)
+    {
+        $question = new Question(
+            'Enter table of ' . lcfirst($name) . ' : ',
+            $default
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function askPageTypeDoktype()
+    {
+        $question = new Question(
+            'Enter doktype of new page type : '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function needPageTypeAutoHeader()
+    {
+        $question = new ChoiceQuestion(
+            'Do you want custom page type header?',
+            [self::YES_SHORTCUT => self::YES, self::NO_SHORTCUT => self::NO]
+        );
+        return $this->getQuestionHelper()
+                ->ask($this->getInput(), $this->getOutput(), $question) === self::YES_SHORTCUT ? 'true' : 'false';
     }
 
     /**
@@ -413,6 +549,20 @@ class Run extends Command
     {
         $question = new ChoiceQuestion(
             self::getColoredDeepLevel() . 'Do you want to create more fields?',
+            [self::YES_SHORTCUT => self::YES, self::NO_SHORTCUT => self::NO]
+        );
+
+        return $this->getQuestionHelper()
+                ->ask($this->getInput(), $this->getOutput(), $question) === self::YES_SHORTCUT;
+    }
+
+    /**
+     * @return bool
+     */
+    public function needCreateFields()
+    {
+        $question = new ChoiceQuestion(
+       'Do you want to create some fields?',
             [self::YES_SHORTCUT => self::YES, self::NO_SHORTCUT => self::NO]
         );
 

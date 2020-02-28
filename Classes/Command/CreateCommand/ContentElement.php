@@ -16,6 +16,7 @@ class ContentElement extends Command
 {
     protected function configure()
     {
+        $this->addArgument('table', InputArgument::REQUIRED,'Enter table of CE');
         $this->addArgument('name', InputArgument::REQUIRED,'Enter name of CE. Format: [NewContentElement]');
         $this->addArgument('title', InputArgument::REQUIRED,'Enter title of new CE. Format: [title-of-new-CE]');
         $this->addArgument('description', InputArgument::REQUIRED,'Enter description of new CE. Format: [description-of-new-CE]');
@@ -45,7 +46,7 @@ class ContentElement extends Command
         $fields = $input->getArgument('fields');
 
         $inlineFields = $input->getArgument('inline-fields');
-        $table = 'tt_content';
+        $table = $input->getArgument('table');
         $extensionName = 'dw_boilerplate';
         $namespaceToContentElementModel = 'Digitalwerk\DwBoilerplate\Domain\Model\ContentElement';
         $relativePathToModel = 'dw_boilerplate/Classes/Domain/Model/ContentElement';

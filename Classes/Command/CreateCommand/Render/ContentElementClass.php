@@ -91,6 +91,7 @@ class ContentElementClass
             $fieldName = $field->getName();
             $fieldType = $field->getType();
             $fieldTitle = $field->getTitle();
+            $pathToModel = '\\' . $this->render->getModelNamespace() . '\\' . $this->render->getName();
             if ($fieldTitle !== $field->getDefaultTitle() && $field->isDefault())
             {
                 if ($field->isInlineItemsAllowed()) {
@@ -105,9 +106,9 @@ class ContentElementClass
                             \'type\' => [
                                 \'config\' => [
                                     \'items\' => [
-                                        [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($contentElementName).'_'.strtolower($fieldItemName).'\', self::CONTENT_RELATION_'.strtoupper($fieldItemName).'],
+                                        [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($contentElementName).'_'.strtolower($fieldItemName).'\', ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($fieldItemName).'],
                                     ],
-                                    \'default\' => self::CONTENT_RELATION_'.strtoupper($fieldItemName).'
+                                    \'default\' => ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($fieldItemName).'
                                 ],
                             ],
                         ],

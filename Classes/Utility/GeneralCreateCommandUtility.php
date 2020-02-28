@@ -39,7 +39,8 @@ class GeneralCreateCommandUtility
                 GeneralCreateCommandUtility::importStringInToFileAfterString(
                     $defaultTemplate,
                     ["    <f:render partial=\"PageType/{dwPageType.modelName}/Header\" optional=\"1\" arguments=\"{dwPageType:dwPageType}\" /> \n"],
-                    ['<!--TYPO3SEARCH_begin-->']
+                    '<!--TYPO3SEARCH_begin-->',
+                    0
                 );
             }
 
@@ -97,32 +98,23 @@ class GeneralCreateCommandUtility
 
     /**
      * @param string $filename
-     * @param array $newLine
-     * @param array $afterLines
+     * @param array $newLines
+     * @param string $universalStringInFile
+     * @param int $linesAfterSpecificString
+     * @return bool
+     * if filename does not exist return false
      */
-    public static function importStringInToFileAfterString(string $filename, array $newLine, array $afterLines)
+    public static function importStringInToFileAfterString(string $filename, array $newLines, string $universalStringInFile, int $linesAfterSpecificString)
     {
         $lines = file($filename);
-        $index = 0;
-        $editedAfterLines = [];
-
-        if (count($afterLines) === count(array_intersect($afterLines, array_map('trim', $lines)))) {
-            foreach ($lines as $line) {
-                if (trim($line) === $afterLines[0]) {
-                    break;
-                }
-                $index++;
-            }
-
-            for ($oldKey = 0; $oldKey <= count($afterLines)-1; $oldKey++) {
-                $editedAfterLines[$index] = $afterLines[$oldKey];
-                $index++;
-            }
-
-            if (count($editedAfterLines) === count(array_intersect_assoc($editedAfterLines, array_map('trim', $lines)))) {
-                $lines = self::arrayInsertAfter($lines, array_search(end($editedAfterLines), array_map('trim', $lines)), $newLine);
-                file_put_contents($filename, $lines);
-            }
+        $trimmedLines = array_map('trim', $lines);
+        $numberOfMatchedLine = array_search($universalStringInFile, $trimmedLines);
+        if ($numberOfMatchedLine) {
+            $lines = self::arrayInsertAfter($lines,$numberOfMatchedLine + $linesAfterSpecificString, $newLines);
+            file_put_contents($filename, $lines);
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -90,6 +90,7 @@ class TCA
                 $fieldType = $field->getType();
                 $fieldTitle = $field->getTitle();
                 $extensionName = $this->render->getExtensionName();
+                $pathToModel = '\\' . $this->render->getModelNamespace() . '\\' . $this->render->getName();
 
                 if ($fieldTitle !== $field->getDefaultTitle() && $field->isDefault())
                 {
@@ -105,9 +106,9 @@ class TCA
                             '.$extraSpaces.'\'type\' => [
                                 '.$extraSpaces.'\'config\' => [
                                     '.$extraSpaces.'\'items\' => [
-                                        [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'_'.strtolower($firstFieldItemName).'\', self::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'],
+                                        [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'_'.strtolower($firstFieldItemName).'\', ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'],
                                     '.$extraSpaces.'],
-                                    '.$extraSpaces.'\'default\' => self::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'
+                                    '.$extraSpaces.'\'default\' => ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'
                                 '.$extraSpaces.'],
                             '.$extraSpaces.'],
                         '.$extraSpaces.'],
@@ -199,6 +200,7 @@ $' . lcfirst($this->render->getName()) . 'Columns = [
     {
         $staticName = $this->render->getStaticName();
         $name = $this->render->getName();
+        $pathToModel = '\\' . $this->render->getModelNamespace();
 
         $template [] = '<?php
 defined(\'TYPO3_MODE\') or die();
@@ -206,11 +208,11 @@ defined(\'TYPO3_MODE\') or die();
 $tempTca = [
     \'ctrl\' => [
         \'typeicon_classes\' => [
-            \Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($name).' => \Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($name).',
+            ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($name).' => ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($name).',
         ],
     ],
     \'types\' => [
-        \Digitalwerk\DwBoilerplate\ContentElement\\' . $staticName . '::CONTENT_RELATION_'.strtoupper($name).' => [
+        ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($name).' => [
             \'showitem\' => \'type, ' . $this->fieldsToShowItemsType() . '
                            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource\',';
 

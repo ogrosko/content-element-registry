@@ -41,11 +41,8 @@ class Icon
             [
                 "                'ContentElement/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
             ],
-            [
-                "'GridElement/2ColumnGrid',",
-                "'GridElement/AccordionContainer',",
-                "'GridElement/AccordionContainerItem',",
-            ]
+            "\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(",
+            1
         );
     }
 
@@ -70,11 +67,11 @@ class Icon
 
         copy(
             'public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg',
-            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . str_replace('_', '-', $extensionName) . '-' . $doktype . '.svg'
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/dw-page-type-' . $doktype . '.svg'
         );
         copy(
             'public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg',
-            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . str_replace('_', '-', $extensionName) . '-' . $doktype . '-not-in-menu.svg'
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/dw-page-type-' . $doktype . '-not-in-menu.svg'
         );
     }
 }

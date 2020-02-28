@@ -103,11 +103,8 @@ class TypoScript
             [
                 ' ' . $this->getTypoScriptMapping() . "\n"
             ],
-            [
-                'config.tx_extbase {',
-                'persistence {',
-                'classes {',
-            ]
+            'config.tx_extbase {',
+            2
         );
     }
 
@@ -121,26 +118,17 @@ class TypoScript
             [
                 $this->getTypoScriptMapping('{$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}') . " \n"
             ],
-            [
-                'config.tx_extbase {',
-                'persistence {',
-                'classes {'
-            ]
+            'config.tx_extbase {',
+            2
         );
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
             'public/typo3conf/ext/' . $extensionName . '/ext_typoscript_setup.typoscript',
             [
-                "          " . $modelNameSpace . "l\\" . $pageTypeName . " = " . $modelNameSpace . "\\" . $pageTypeName. " \n"
+                "          " . $modelNameSpace . "\\" . $pageTypeName . " = " . $modelNameSpace . "\\" . $pageTypeName. " \n"
             ],
-            [
-                'Digitalwerk\DwPageTypes\Domain\Model\DefaultPage {',
-                'mapping {',
-                'tableName = pages',
-                'recordType = {$PAGE_DOKTYPE_DEFAULT_PAGE}',
-                '}',
-                'subclasses {',
-            ]
+            'Digitalwerk\DwPageTypes\Domain\Model\DefaultPage {',
+            5
         );
     }
 }

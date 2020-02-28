@@ -123,17 +123,31 @@ class SQLDatabase
         $extensionName = $this->render->getExtensionName();
 
         if ((!empty($this->render->getInlineFields()[$fieldType])) && !$this->render->getFields()->areDefault()) {
-            GeneralCreateCommandUtility::importStringInToFileAfterString(
+            $successStringImported = GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
                 [
                     '    ' . $this->getSqlFields(). ", \n"
                 ],
-                [
-                    "# Table structure for table 'tx_contentelementregistry_domain_model_relation'",
-                    "#",
-                    "CREATE TABLE tx_contentelementregistry_domain_model_relation (",
-                ]
+                'CREATE TABLE tx_contentelementregistry_domain_model_relation (',
+                0
+
             );
+            if (!$successStringImported) {
+                GeneralCreateCommandUtility::importStringInToFileAfterString(
+                    'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
+                    [
+"#
+# Table structure for table 'tx_contentelementregistry_domain_model_relation'
+#
+CREATE TABLE tx_contentelementregistry_domain_model_relation (
+    " . $this->getSqlFields(). "
+);"
+                    ],
+                    ');',
+                    0
+
+                );
+            }
             $output = $this->render->getOutput();
             $output->writeln('<bg=red;options=bold>• Update/Compare Typo3 database. (Inline : ' . $this->render->getName() . ')</>');
         }
@@ -143,19 +157,32 @@ class SQLDatabase
     {
         $extensionName = $this->render->getExtensionName();
         $table = $this->render->getTable();
+        $fields = $this->render->getFields();
 
         if (!empty($fields) && !$fields->areDefault()) {
-            GeneralCreateCommandUtility::importStringInToFileAfterString(
+            $successStringImported = GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
                 [
                     '    ' . $this->getSqlFields(). ", \n"
                 ],
-                [
-                    "# Table structure for table '" . $table . "'",
-                    "#",
-                    'CREATE TABLE ' . $table . ' (',
-                ]
+                'CREATE TABLE ' . $table . ' (',
+                0
             );
+            if (!$successStringImported) {
+                GeneralCreateCommandUtility::importStringInToFileAfterString(
+                    'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
+                    [
+"#
+# Table structure for table '" . $table . "'
+#
+CREATE TABLE " . $table . " (
+    " . $this->getSqlFields(). "
+);"
+                    ],
+                    ');',
+                    0
+                );
+            }
             $output = $this->render->getOutput();
             $output->writeln('<bg=red;options=bold>• Update/Compare Typo3 database.</>');
         }

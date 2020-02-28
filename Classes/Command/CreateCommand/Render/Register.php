@@ -30,21 +30,18 @@ class Register
             [
                 "        Digitalwerk\DwPageTypes\Utility\PageTypeUtility::addPageDoktype(" . $pageTypeName . "::getDoktype()); \n"
             ],
-            [
-                'call_user_func(',
-                'function () {'
-            ]
+            'call_user_func(',
+            1
         );
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
             'public/typo3conf/ext/' . $extensionName . '/ext_tables.php',
             [
-                "use " . $this->render->getModelNamespace() . "\\" . $pageTypeName . ";\n"
+                "\nuse " . $this->render->getModelNamespace() . "\\" . $pageTypeName . ";"
             ],
-            [
-                '<?php',
-                ''
-            ]
+            '<?php',
+            0
+
         );
     }
 }

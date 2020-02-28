@@ -164,9 +164,10 @@ class FieldConfig
     {
         $extensionName = $this->render->getExtensionName();
         $fieldName = strtolower($field->getName());
-        $pathToClass = $this->render->getRelativePathToClass();
+        $pathToModel = '\\' . $this->render->getModelNamespace() . '\\' . $this->render->getName();
         $item = $field->getFirstItem();
         $table = $this->render->getTable();
+
 
         $this->render->translation()->addStringToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
@@ -180,7 +181,7 @@ class FieldConfig
             \'foreign_field\' => \'content_element\',
             \'foreign_sortby\' => \'sorting\',
             \'foreign_match_fields\' => [
-                \'type\' => ' . '\\' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($itemName) . ',
+                \'type\' => ' . $pathToModel . '::CONTENT_RELATION_' . strtoupper($itemName) . ',
             ],
             \'maxitems\' => 9999,
             \'appearance\' => [
@@ -196,9 +197,9 @@ class FieldConfig
                     \'type\' => [
                         \'config\' => [
                             \'items\' => [
-                                [\'LLL:EXT:dw_boilerplate/Resources/Private/Language/locallang_db.xlf:' . $table . '.dwboilerplate_' . strtolower($fieldName) . '_' . strtolower($itemName) . '\', ' . '\\' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($itemName) . '],
+                                [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_' . strtolower($fieldName) . '_' . strtolower($itemName) . '\', '  . $pathToModel . '::CONTENT_RELATION_' . strtoupper($itemName) . '],
                             ],
-                            \'default\' => ' . '\\' . $pathToClass . '::CONTENT_RELATION_' . strtoupper($itemName) . '
+                            \'default\' => '  . $pathToModel . '::CONTENT_RELATION_' . strtoupper($itemName) . '
                         ],
                     ],
                 ],
