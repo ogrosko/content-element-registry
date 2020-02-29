@@ -54,7 +54,7 @@ class ' . $controllerName . 'Controller extends ActionController
      */
     public function ' . $actionName . 'Action()
     {
-    
+
     }
 }';
 
@@ -84,13 +84,9 @@ class ' . $controllerName . 'Controller extends ActionController
             [
                 "                '" . $pluginName . "',\n"
             ],
-            [
-                '* Icon registration',
-                 '*/',
-                '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(',
-                '[',
-                '\'DefaultCategory\','
-            ]
+            '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(',
+            1
+
         );
 
 //        Configure plugin
@@ -109,10 +105,9 @@ class ' . $controllerName . 'Controller extends ActionController
         );
 "
             ],
-            [
-                'call_user_func(',
-                'function ($extKey) {'
-            ]
+            'call_user_func(',
+            1
+
         );
 
 
@@ -129,11 +124,9 @@ class ' . $controllerName . 'Controller extends ActionController
 );
 "
             ],
-            [
-                'use Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility;',
-                '',
-                'defined(\'TYPO3_MODE\') or die();',
-            ]
+            'defined(\'TYPO3_MODE\') or die();',
+            0
+
         );
 
 //        Add plugin flexform
@@ -143,10 +136,9 @@ class ' . $controllerName . 'Controller extends ActionController
                 [
                     "\nBoilerplateUtility::addPluginFlexForm('dw_page_types', '" . $pluginName . "');\n"
                 ],
-                [
-                    "'" . $pluginIconEdited . "'",
-                    ");",
-                ]
+                "'" . $pluginIconEdited . "'",
+                1
+
             );
 
             FlexFormUtility::createFlexForm(
@@ -175,14 +167,13 @@ class ' . $controllerName . 'Controller extends ActionController
     */
     public function " . $actionName . "Action()
     {
-    
+
     }
                     "
                 ],
-                [
-                    "class " . $controllerName . "Controller extends ActionController",
-                    "{",
-                ]
+                "class " . $controllerName . "Controller extends ActionController",
+                1
+
             );
         }
 //        Add plugin to wizzard
@@ -199,10 +190,9 @@ class ' . $controllerName . 'Controller extends ActionController
                             }
                         }\n"
             ],
-            [
-                "plugins {",
-                "elements {"
-            ]
+            "plugins {",
+            1
+
         );
 
 //        Add translations (title, description) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
