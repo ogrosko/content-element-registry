@@ -46,6 +46,7 @@ class FieldDataDescription
                 'inline' => $fieldType === 'inline' ? $this->getInlineDescription($field) : null,
             ][$fieldType];
         }
+
         $modelDataTypes = new ModelDataTypesObject();
         $modelDataTypes->setPropertyDataType($result[0]);
         $modelDataTypes->setPropertyDataTypeDescribe($result[1]);
@@ -159,23 +160,26 @@ class FieldDataDescription
         $table = $this->render->getTable();
         $fieldType = $field->getType();
         $defaultField = $GLOBALS['TCA'][$table]['columns'][$fieldType]['config'];
+        $result = '';
 
-            if ($defaultField['type'] === 'inline') {
-                if ($defaultField['foreign_table_field'] !== 'tablenames') {
-                    return $this->getInlineDescription($field);
+        if ($defaultField['type'] === 'inline') {
+            if ($defaultField['foreign_table_field'] !== 'tablenames') {
+                $result = $this->getInlineDescription($field);
+            } else {
+                if ($defaultField['maxitems'] === 1) {
+                    $result = $this->getFileRefrenceDescription();
                 } else {
-                    if ($defaultField['maxitems'] === 1) {
-                        return $this->getFileRefrenceDescription();
-                    } else {
-                        return $this->getObjectStorageAsFileRefrenceDescription();
-                    }
+                    $result = $this->getObjectStorageAsFileRefrenceDescription();
                 }
-            } elseif ($defaultField['type'] === 'group') {
-                return $this->getObjectStorageDescription();
-            } elseif ($defaultField['type'] === 'flex') {
-                return $this->getFlexFormDescription();
-            } elseif ($defaultField['type'] === 'text' || $defaultField['config']['type'] === 'input') {
-                return $this->getStringDescription();
             }
+        } elseif ($defaultField['type'] === 'group') {
+            $result = $this->getObjectStorageDescription();
+        } elseif ($defaultField['type'] === 'flex') {
+            $result = $this->getFlexFormDescription();
+        } elseif ($defaultField['type'] === 'text' || $defaultField['type'] === 'input') {
+            $result = $this->getStringDescription();
+        }
+
+        return $result;
     }
 }

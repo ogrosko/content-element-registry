@@ -65,13 +65,14 @@ class TypoScript
     {
         $mappingFields = $this->addFieldsToTypoScriptMapping();
         $table = $this->render->getTable();
-        $pathToModel = $this->render->getModelNamespace();
+        $pathToModel = $this->render->getModelNamespace() . '\\' . $this->render->getName();
         if (empty($recordType)) {
             $recordType =
                 str_replace('_', '', $this->render->getExtensionName()) .
                 '_' .
-                strtolower($this->render->getName()) .
-                '_' . strtolower(
+                strtolower($this->render->getStaticName()) .
+                '_' .
+                strtolower(
                     end(
                         explode('\\', $pathToModel)
                     )

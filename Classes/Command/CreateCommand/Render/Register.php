@@ -39,8 +39,8 @@ class Register
             [
                 "\nuse " . $this->render->getModelNamespace() . "\\" . $pageTypeName . ";"
             ],
-            '<?php',
-            0
+            '',
+            -1
 
         );
     }

@@ -69,11 +69,6 @@ class Render
     protected $name = '';
 
     /**
-     * @var int
-     */
-    protected $deepLevel = 0;
-
-    /**
      * @var string
      */
     protected $inlineRelativePath = '';
@@ -362,22 +357,6 @@ class Render
     public function setInput(InputInterface $input): void
     {
         $this->input = $input;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDeepLevel(): int
-    {
-        return $this->deepLevel;
-    }
-
-    /**
-     * @param int $deepLevel
-     */
-    public function setDeepLevel(int $deepLevel)
-    {
-        $this->deepLevel = $deepLevel;
     }
 
     /**

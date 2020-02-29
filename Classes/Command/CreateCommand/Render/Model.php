@@ -196,9 +196,11 @@ class Model
         if ($this->constants()) {
             $template[] = '    ' . $this->constants();
         }
-        if ($this->fields()) {
+
+        $fields = $this->fields();
+        if ($fields) {
             $template[] = '';
-            $template[] = '    ' . $this->fields();
+            $template[] = '    ' . $fields;
         }
         $template[] = '}';
 
@@ -233,9 +235,11 @@ class Model
         $template[] = '     * @var int';
         $template[] = '     */';
         $template[] = '    protected static $doktype = ' . $this->render->getDoktype() . ';';
-        if ($this->fields()) {
+
+        $fields = $this->fields();
+        if ($fields) {
             $template[] = '';
-            $template[] = '    ' . $this->fields();
+            $template[] = '    ' . $fields;
         }
         $template[] = '}';
 

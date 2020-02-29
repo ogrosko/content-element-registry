@@ -1,6 +1,7 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render;
 
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\Fields\FieldObject;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render;
 use Digitalwerk\ContentElementRegistry\Utility\FieldsUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
@@ -12,6 +13,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Inline
 {
+    const INLINE_RELATION_TABLE = 'tx_contentelementregistry_domain_model_relation';
+
     /**
      * @var Render
      */
@@ -30,14 +33,7 @@ class Inline
             $name = $this->render->getName();
             $staticName = $this->render->getStaticName();
 
-            if ($this->render->getDeepLevel() === 0) {
-                $table = $this->render->getTable();
-            } else {
-                $table = 'tx_contentelementregistry_domain_model_relation';
-            }
-
-            $this->render->setDeepLevel($this->render->getDeepLevel() + 1);
-
+            /** @var FieldObject $field */
             foreach ($fields->getFields() as $field) {
                 if ($field->isInlineItemsAllowed()) {
                     $firstFieldItemName = $field->getFirstItem()->getName();
@@ -54,13 +50,13 @@ class Inline
                     $newRender->setFields(
                         GeneralUtility::makeInstance(FieldsUtility::class)->generateObject(
                             $this->render->getInlineFields()[$firstFieldItemType],
-                            $this->render->getTable()
+                            self::INLINE_RELATION_TABLE
                         )
                     );
                     $newRender->setExtensionName($this->render->getExtensionName());
                     $newRender->setInlineRelativePath($this->render->getInlineRelativePath() . '/' .  $name);
                     $newRender->setName($firstFieldItemName);
-                    $newRender->setTable($table);
+                    $newRender->setTable(self::INLINE_RELATION_TABLE);
                     $newRender->setStaticName($this->render->getStaticName());
                     $newRender->setInlineFields($this->render->getInlineFields());
                     $newRender->setModelNamespace($this->render->getModelNamespace() . '\\' . $name);

@@ -101,6 +101,9 @@ class ContentElementClass
             '\''.$fieldType.'\' => [
                 \'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($contentElementName).'.'. strtolower($secondDesignation).'_'. strtolower($fieldName).'\',
                 \'config\' => [
+                    \'foreign_match_fields\' => [
+                        \'type\' => ' . $pathToModel . '::CONTENT_RELATION_' . strtoupper($fieldItemName) . ',
+                    ],
                     \'overrideChildTca\' => [
                         \'columns\' => [
                             \'type\' => [
@@ -108,7 +111,7 @@ class ContentElementClass
                                     \'items\' => [
                                         [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($contentElementName).'_'.strtolower($fieldItemName).'\', ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($fieldItemName).'],
                                     ],
-                                    \'default\' => ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($fieldItemName).'
+                                    \'default\' => ' . $pathToModel . '::CONTENT_RELATION_' . strtoupper($fieldItemName) . '
                                 ],
                             ],
                         ],
@@ -188,8 +191,9 @@ class ContentElementClass
         $template[] = 'class ' . $this->render->getName() . ' extends AbstractContentElementRegistryItem';
         $template[] = '{';
 
-        if ($this->getColumnMapping()) {
-            $template[] = $this->getColumnMapping();
+        $columnMapping = $this->getColumnMapping();
+        if ($columnMapping) {
+            $template[] = $columnMapping;
             $template[] = '';
         }
 
@@ -200,17 +204,20 @@ class ContentElementClass
         $template[] = '    public function __construct()';
         $template[] = '    {';
         $template[] = '        parent::__construct();';
-        if ($this->getFieldsToPalette()) {
+
+        $fieldsToPalette = $this->getFieldsToPalette();
+        if ($fieldsToPalette) {
             $template[] = '        $this->addPalette(';
             $template[] = '            \'default\',';
-            $template[] = "            '" . $this->getFieldsToPalette() . "'";
+            $template[] = "            '" . $fieldsToPalette . "'";
             $template[] = '        );';
         }
         $template[] = '    }';
 
-        if ($this->getColumnOverride()) {
+        $columnOverride = $this->getColumnOverride();
+        if ($columnOverride) {
             $template[] = '';
-            $template[] = $this->getColumnOverride();
+            $template[] = $columnOverride;
         }
         $template[] = '}';
 

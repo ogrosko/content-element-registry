@@ -29,17 +29,6 @@ class ContentElement extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-//        $helper = $this->getHelper('question');
-//
-//        $question = new Question('Enter name of Content element Class (etc. NewContentElement), without spaces: ');
-//        $name = $helper->ask($input, $output, $question);
-//
-//        $question = new Question('Enter title of Content element (etc. New-content-element), without spaces: ');
-//        $title = $helper->ask($input, $output, $question);
-//
-//        $question = new Question('Enter description of Content element (etc. New-content-element-description), without spaces: ');
-//        $description = $helper->ask($input, $output, $question);
-
         $name = $input->getArgument('name');
         $title = $input->getArgument('title');
         $description = $input->getArgument('description');

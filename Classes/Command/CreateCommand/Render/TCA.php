@@ -74,7 +74,11 @@ class TCA
         }
     }
 
-    public function columnsOverridesFields()
+    /**
+     * @param string $extraSpaces
+     * @return string
+     */
+    public function columnsOverridesFields($extraSpaces = '')
     {
         $fields = $this->render->getFields();
 
@@ -82,7 +86,6 @@ class TCA
             $table = $this->render->getTable();
             $staticName = $this->render->getStaticName();
             $name = $this->render->getName();
-            $extraSpaces = '';
             $defaultFieldsWithAnotherTitle = [];
 
             foreach ($fields->getFields() as $field) {
@@ -90,43 +93,13 @@ class TCA
                 $fieldType = $field->getType();
                 $fieldTitle = $field->getTitle();
                 $extensionName = $this->render->getExtensionName();
-                $pathToModel = '\\' . $this->render->getModelNamespace() . '\\' . $this->render->getName();
 
                 if ($fieldTitle !== $field->getDefaultTitle() && $field->isDefault())
                 {
-                    if ($field->isInlineItemsAllowed()) {
-                        $firstFieldItemName = $field->getFirstItem()->getName();
-
-                        $defaultFieldsWithAnotherTitle[] =
-                            $extraSpaces . '            \''.$fieldType.'\' => [
-                '.$extraSpaces.'\'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'.'. strtolower($name).'_'. strtolower($fieldName).'\',
-                '.$extraSpaces.'\'config\' => [
-                    '.$extraSpaces.'\'overrideChildTca\' => [
-                        '.$extraSpaces.'\'columns\' => [
-                            '.$extraSpaces.'\'type\' => [
-                                '.$extraSpaces.'\'config\' => [
-                                    '.$extraSpaces.'\'items\' => [
-                                        [\'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'_'.strtolower($firstFieldItemName).'\', ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'],
-                                    '.$extraSpaces.'],
-                                    '.$extraSpaces.'\'default\' => ' . $pathToModel . '::CONTENT_RELATION_'.strtoupper($firstFieldItemName).'
-                                '.$extraSpaces.'],
-                            '.$extraSpaces.'],
-                        '.$extraSpaces.'],
-                    '.$extraSpaces.'],
-                '.$extraSpaces.'],
-            '.$extraSpaces.'],';
-                        $this->render->translation()->addStringToTranslation(
-                            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
-                            $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'_'.strtolower($firstFieldItemName),
-                            str_replace('-', ' ', $field->getFirstItem()->getTitle())
-                        );
-                    } else {
                         $defaultFieldsWithAnotherTitle[] =
                             $extraSpaces . '            \''.$fieldType.'\' => [
                 '.$extraSpaces.'\'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:' . $table . '.' . str_replace('_', '', $extensionName) . '_'.strtolower($staticName).'.'. strtolower($name).'_'. strtolower($fieldName).'\',
             '.$extraSpaces.'],';
-                    }
-
                 }
             }
 
@@ -217,8 +190,8 @@ $tempTca = [
                            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource\',';
 
         if ($this->columnsOverridesFields()) {
-            $template[] = '\'columnsOverrides\' => [
-' . $this->columnsOverridesFields() . '
+            $template[] = '            \'columnsOverrides\' => [
+' . $this->columnsOverridesFields('    ') . '
             ],';
         }
 

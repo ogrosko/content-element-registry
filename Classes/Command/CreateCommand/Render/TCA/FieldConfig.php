@@ -120,7 +120,7 @@ class FieldConfig
         return '[
              \'type\' => \'check\',
              \'items\' => [
-                  ' . self::addFieldsItemsToTCA($field) . '
+                  ' . $this->addFieldsItemsToTCA($field) . '
               ],
               \'cols\' => \'3\',
         ],';
