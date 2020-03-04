@@ -29,6 +29,16 @@ class Render
     protected $fields = null;
 
     /**
+     * @var string
+     */
+    protected $elementType = '';
+
+    /**
+     * @var bool
+     */
+    protected $autoHeader = false;
+
+    /**
      * @var null
      */
     protected $optionalClass = null;
@@ -117,6 +127,38 @@ class Render
     public function setFields($fields)
     {
         $this->fields = $fields;
+    }
+
+    /**
+     * @return string
+     */
+    public function getElementType(): string
+    {
+        return $this->elementType;
+    }
+
+    /**
+     * @param string $elementType
+     */
+    public function setElementType(string $elementType): void
+    {
+        $this->elementType = $elementType;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoHeader(): bool
+    {
+        return $this->autoHeader;
+    }
+
+    /**
+     * @param bool|null $autoHeader
+     */
+    public function setAutoHeader(? bool $autoHeader): void
+    {
+        $this->autoHeader = $autoHeader;
     }
 
     /**

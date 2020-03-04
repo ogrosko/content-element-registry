@@ -10,51 +10,6 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 class GeneralCreateCommandUtility
 {
     /**
-     * @param $autoHeader
-     * @param $pageTypeName
-     */
-    public static function checkDefaultTemplateOptionalAndAddAutoHeader($autoHeader, $pageTypeName)
-    {
-        if ($autoHeader !== 'true' && $autoHeader !== 'false') {
-            throw new InvalidArgumentException('Syntax error in field "auto-header" : ' . $autoHeader . ' (must be false or true)');
-        }
-        $pageTypeTemplate = 'public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType/' . $pageTypeName . '/Header.html';
-        $pageTypeTemplateContent = '<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
-      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
-      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs/ViewHelpers"
-      data-namespace-typo3-fluid="true">
-
-<f:alias map="{' . strtolower($pageTypeName) . ':dwPageType}">
-
-</f:alias>
-
-</html>';
-
-        if ($autoHeader === 'true') {
-            //        Check default template if it is set to optional
-            $defaultTemplate = 'public/typo3conf/ext/dw_boilerplate/Resources/Private/Templates/Page/Default.html';
-            $defaultTemplateLines = file($defaultTemplate);
-            if (!(in_array('<f:render partial="PageType/{dwPageType.modelName}/Header" optional="1" arguments="{dwPageType:dwPageType}" />', array_map('trim', $defaultTemplateLines))))
-            {
-                GeneralCreateCommandUtility::importStringInToFileAfterString(
-                    $defaultTemplate,
-                    ["    <f:render partial=\"PageType/{dwPageType.modelName}/Header\" optional=\"1\" arguments=\"{dwPageType:dwPageType}\" /> \n"],
-                    '<!--TYPO3SEARCH_begin-->',
-                    0
-                );
-            }
-
-            if (!file_exists('public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType')) {
-                mkdir('public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType', 0777, true);
-            }
-            if (!file_exists('public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType/' . $pageTypeName)) {
-                mkdir('public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType/' . $pageTypeName, 0777, true);
-            }
-            file_put_contents($pageTypeTemplate, $pageTypeTemplateContent);
-        }
-    }
-
-    /**
      * @param $fields
      * @return array
      * Return converted fields from string to array
@@ -147,31 +102,11 @@ class GeneralCreateCommandUtility
 
     /**
      * @param $field
-     * @return array
-     */
-    public function getFieldItems($field)
-    {
-        $fieldItems = explode('*', explode(',', $field)[3]);
-        array_pop($fieldItems);
-        return $fieldItems;
-    }
-
-    /**
-     * @param $field
      * @return string
      */
     public function getFirstFieldItem($field)
     {
         return explode('*', explode(',', $field)[3])[0];
-    }
-
-    /**
-     * @param $field
-     * @return bool
-     */
-    public function hasItems($field)
-    {
-        return !empty(self::getFieldItems($field));
     }
 
     /**
@@ -196,28 +131,8 @@ class GeneralCreateCommandUtility
      * @param $item
      * @return string
      */
-    public function getItemValue($item)
-    {
-        return explode(';', $item)[1];
-    }
-
-    /**
-     * @param $item
-     * @return string
-     */
     public function getItemTitle($item)
     {
         return explode(';', $item)[2];
-    }
-
-    /**
-     * @param $TCAFieldTypes
-     * @param $table
-     * @param $fieldType
-     * @return bool
-     */
-    public function isFieldTypeDefault($TCAFieldTypes, $table, $fieldType)
-    {
-        return $TCAFieldTypes[$table][$fieldType]['isFieldDefault'];
     }
 }

@@ -113,40 +113,45 @@ class TCA
      */
     public function fieldsToColumn()
     {
-        $table = $this->render->getTable();
-        $name = $this->render->getStaticName();
-        $extensionName = $this->render->getExtensionName();
-        $extraSpaces2 = '    ';
+        $fields = $this->render->getFields();
 
-        $result = [];
+        if ($fields)
+        {
+            $table = $this->render->getTable();
+            $name = $this->render->getStaticName();
+            $extensionName = $this->render->getExtensionName();
+            $extraSpaces2 = '    ';
 
-        /** @var $field FieldObject  */
-        foreach ($this->render->getFields()->getFields() as $field) {
-            $fieldType = $field->getType();
-            $fieldItems = $field->getItems();
+            $result = [];
 
-            if ($field->exist()) {
-                if (!$field->isDefault()) {
-                    $result[] = $this->generateFieldInTCA($field);
+            /** @var $field FieldObject  */
+            foreach ($fields->getFields() as $field) {
+                $fieldType = $field->getType();
+                $fieldItems = $field->getItems();
+
+                if ($field->exist()) {
+                    if (!$field->isDefault()) {
+                        $result[] = $this->generateFieldInTCA($field);
+                    }
+
+                    if ($field->isFlexFormItemsAllowed()) {
+                        //Create FlexForm
+                        FlexFormUtility::createFlexForm(
+                            "public/typo3conf/ext/" . $extensionName . "/Configuration/FlexForms/ContentElement/" . str_replace('_', '', $extensionName) . "_" . strtolower($name) . '.xml',
+                            $fieldItems,
+                            $name,
+                            $table,
+                            true,
+                            $fieldType
+                        );
+                    }
+                } else {
+                    throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.4');
                 }
-
-                if ($field->isFlexFormItemsAllowed()) {
-                    //Create FlexForm
-                    FlexFormUtility::createFlexForm(
-                        "public/typo3conf/ext/" . $extensionName . "/Configuration/FlexForms/ContentElement/" . str_replace('_', '', $extensionName) . "_" . strtolower($name) . '.xml',
-                        $fieldItems,
-                        $name,
-                        $table,
-                        true,
-                        $fieldType
-                    );
-                }
-            } else {
-                throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.4');
             }
-        }
 
-        return implode("\n" . $extraSpaces2, $result);
+            return implode("\n" . $extraSpaces2, $result);
+        }
     }
 
     public function contentElementTemplate()

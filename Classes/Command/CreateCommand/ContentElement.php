@@ -52,13 +52,14 @@ class ContentElement extends Command
         $render->setInlineFields($inlineFields);
         $render->setModelNamespace($namespaceToContentElementModel);
         $render->setStaticName($name);
+        $render->setElementType('ContentElement');
         $render->setRelativePathToClass($relativePathToClass);
         $render->setOutput($output);
         $render->setInput($input);
 
         $render->contentElementClass()->template();
         $render->model()->contentElementAndInlinetemplate();
-        $render->template()->template();
+        $render->template()->contentElementTemplate();
         $render->tca()->contentElementTemplate();
         $render->icon()->copyContentElementDefaultIcon();
         $render->previewImage()->copyDefault();
@@ -77,8 +78,6 @@ class ContentElement extends Command
         $render->translation()->addFieldsTitleToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf'
         );
-
-
 
         $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/dw_boilerplate/Resources/Private/Templates/ContentElements</>');
         $output->writeln('<bg=red;options=bold>• Change Content element Icon.</>');

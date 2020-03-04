@@ -57,12 +57,15 @@ class PageType extends Command
         $render->setDoktype($doktype);
         $render->setInput($input);
         $render->setOutput($output);
+        $render->setElementType('PageType');
+        $render->setAutoHeader($autoHeader);
 
         $render->icon()->copyPageTypeDefaultIcon();
         $render->model()->pageTypeTemplate();
         $render->tca()->pageTypeTemplate();
         $render->inline()->render();
         $render->typoScript()->pageTypeTypoScriptRegister();
+        $render->template()->pageTypeTemplate();
 
         $render->translation()->addFieldsTitleToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf'
@@ -74,13 +77,9 @@ class PageType extends Command
         );
         $render->register()->pageTypeToExtTables();
         $render->sqlDatabase()->fields();
-        GeneralCreateCommandUtility::checkDefaultTemplateOptionalAndAddAutoHeader($autoHeader, $pageTypeName);
 
-        $output->writeln('<bg=green;options=bold>Page type ' . $pageTypeName . ' was created.</>');
         $output->writeln('<bg=red;options=bold>• Update/Compare Typo3 database.</>');
         $output->writeln('<bg=red;options=bold>• Change PageType Icon.</>');
-        if ($autoHeader === 'true') {
-            $output->writeln('<bg=red;options=bold>• Fill auto header template: public/typo3conf/ext/dw_boilerplate/Resources/Private/Partials/PageType</>');
-        }
+        $output->writeln('<bg=green;options=bold>Page type ' . $pageTypeName . ' was created.</>');
     }
 }

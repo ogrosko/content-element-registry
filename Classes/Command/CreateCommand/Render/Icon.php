@@ -39,7 +39,7 @@ class Icon
         GeneralCreateCommandUtility::importStringInToFileAfterString(
             'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
             [
-                "                'ContentElement/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
+                "                '" . $this->render->getElementType() . "/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
             ],
             "\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(",
             1
@@ -49,9 +49,12 @@ class Icon
     public function copyAndRegisterInlineDefaultIcon()
     {
         $extensionName = $this->render->getExtensionName();
+        if (!file_exists('public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . $this->render->getElementType())) {
+            mkdir('public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . $this->render->getElementType(), 0777, true);
+        }
         copy(
             'public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg',
-            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/ContentElement/' .
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . $this->render->getElementType() . '/' .
             str_replace('_', '', $extensionName) . '_' .
             strtolower($this->render->getStaticName()) . '_'.
             strtolower($this->render->getName()) . '.svg'

@@ -63,6 +63,7 @@ class Inline
                     $newRender->setRelativePathToClass($this->render->getRelativePathToClass());
                     $newRender->setOutput($this->render->getOutput());
                     $newRender->setInput($this->render->getInput());
+                    $newRender->setElementType($this->render->getElementType());
 
                     $newRender->model()->contentElementAndInlinetemplate();
                     $newRender->tca()->inlineTemplate();

@@ -115,6 +115,24 @@ class TypoScript
         $pageTypeName = $this->render->getName();
         $modelNameSpace = $this->render->getModelNamespace();
         GeneralCreateCommandUtility::importStringInToFileAfterString(
+            'public/typo3conf/ext/dw_boilerplate/Configuration/TypoScript/constants.typoscript',
+            [
+                "PAGE_DOKTYPE_" . strtoupper($pageTypeName) . " = " . $this->render->getDoktype() . " \n"
+            ],
+            '#Page types',
+            1
+        );
+
+        GeneralCreateCommandUtility::importStringInToFileAfterString(
+            'public/typo3conf/ext/dw_boilerplate/Configuration/TypoScript/Extensions/DwBoilerplate.typoscript',
+            [
+                '                ' . strtolower($pageTypeName) . ' = {$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}' . " \n"
+            ],
+            'doktype {',
+            1
+        );
+
+        GeneralCreateCommandUtility::importStringInToFileAfterString(
             'public/typo3conf/ext/' . $extensionName . '/ext_typoscript_setup.typoscript',
             [
                 $this->getTypoScriptMapping('{$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}') . " \n"

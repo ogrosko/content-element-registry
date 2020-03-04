@@ -421,7 +421,7 @@ class Run extends Command
     }
 
     /**
-     * @return string
+     * @return bool
      */
     public function needPageTypeAutoHeader()
     {
@@ -430,7 +430,7 @@ class Run extends Command
             [self::YES_SHORTCUT => self::YES, self::NO_SHORTCUT => self::NO]
         );
         return $this->getQuestionHelper()
-                ->ask($this->getInput(), $this->getOutput(), $question) === self::YES_SHORTCUT ? 'true' : 'false';
+                ->ask($this->getInput(), $this->getOutput(), $question) === self::YES_SHORTCUT ? true : false;
     }
 
     /**
