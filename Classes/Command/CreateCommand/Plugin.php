@@ -3,11 +3,13 @@ namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\FlexFormUtility;
 use Digitalwerk\ContentElementRegistry\Utility\CreateCommand\TranslationUtility;
+use Digitalwerk\ContentElementRegistry\Utility\FieldsUtility;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Plugin
@@ -34,7 +36,32 @@ class Plugin extends Command
         $pluginDescription = $input->getArgument('description');
         $controllerName = $input->getArgument('controller');
         $actionName = $input->getArgument('action');
-        $pluginFlexFormFields = $input->getArgument('fields');
+        $fields = $input->getArgument('fields');
+        $extensionName = 'dw_page_types';
+
+        $fields = GeneralUtility::makeInstance(FieldsUtility::class)->generateObject($fields, '');
+
+        $render = GeneralUtility::makeInstance(Render::class);
+        $render->setExtensionName($extensionName);
+        $render->setFields($fields);
+        $render->setName($pluginName);
+        $render->setStaticName($pluginName);
+        $render->setElementType('Plugin');
+        $render->setOutput($output);
+        $render->setInput($input);
+
+        $render->flexForm()->pluginTemplate();
+
+        $render->translation()->addStringToTranslation(
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
+            "plugin." . strtolower($pluginName) . ".title",
+            $pluginTitle
+        );
+        $render->translation()->addStringToTranslation(
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
+            "plugin." . strtolower($pluginName) . ".description",
+            $pluginDescription
+        );
 
         $pluginController = 'public/typo3conf/ext/dw_page_types/Classes/Controller/' . $controllerName  . 'Controller.php';
         $pluginControllerContent = '<?php
@@ -130,7 +157,7 @@ class ' . $controllerName . 'Controller extends ActionController
         );
 
 //        Add plugin flexform
-        if ($pluginFlexFormFields !== '-') {
+        if ($fields !== '-') {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/dw_page_types/Configuration/TCA/Overrides/tt_content.php',
                 [
@@ -140,13 +167,6 @@ class ' . $controllerName . 'Controller extends ActionController
                 1
 
             );
-
-            FlexFormUtility::createFlexForm(
-                'public/typo3conf/ext/dw_page_types/Configuration/FlexForms/' . $pluginName . '.xml',
-                $pluginFlexFormFields,
-                $pluginName,
-                '',
-                false);
         }
 
         if (!file_exists('public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName)) {
@@ -195,19 +215,6 @@ class ' . $controllerName . 'Controller extends ActionController
 
         );
 
-//        Add translations (title, description) to public/typo3conf/ext/dw_boilerplate/Resources/Private/Language/locallang_db.xlf
-        TranslationUtility::addStringToTranslation(
-            'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
-            "plugin." . strtolower($pluginName) . ".title",
-            $pluginTitle
-        );
-        TranslationUtility::addStringToTranslation(
-            'public/typo3conf/ext/dw_page_types/Resources/Private/Language/locallang_db.xlf',
-            "plugin." . strtolower($pluginName) . ".description",
-            $pluginDescription
-        );
-
-//        Plugin created message
         $output->writeln('<bg=green;options=bold>Plugin ' . $pluginName . ' was created.</>');
         $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName . '/' . ucfirst($actionName) . '.html</>');
         $output->writeln('<bg=red;options=bold>• Change Plugin Icon.</>');

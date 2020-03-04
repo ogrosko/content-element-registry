@@ -55,7 +55,7 @@ class FlexForm
      */
     public function addFieldsToFlexForm()
     {
-        $fields = $this->flexFormFields;
+        $fields = $this->getFlexFormFields();
         $name = $this->render->getName();
         $extensionName = $this->render->getExtensionName();
         $flexFormFieldTypes = GeneralUtility::makeInstance(FlexFormFieldTypes::class)->getFlexFormFieldTypes();
@@ -141,4 +141,19 @@ class FlexForm
             }
         }
     }
+
+    public function pluginTemplate()
+    {
+        $extensionName = $this->render->getExtensionName();
+        $name = $this->render->getName();
+
+        $this->setFlexFormFields($this->render->getFields());
+        if (!file_exists('public/typo3conf/ext/' . $extensionName . '/Configuration/FlexForms')) {
+            mkdir('public/typo3conf/ext/' . $extensionName . '/Configuration/FlexForms', 0777, true);
+        }
+        $this->createFlexForm(
+            "public/typo3conf/ext/" . $extensionName . "/Configuration/FlexForms/"  . $name . '.xml'
+        );
+    }
+
 }

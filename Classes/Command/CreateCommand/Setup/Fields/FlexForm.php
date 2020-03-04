@@ -52,12 +52,12 @@ class FlexForm
      */
     public function createFlexForm()
     {
-        $flexFormName = $this->run->askFlexFormName();
+        $flexFormName = 'NoDefined';
 
         $inlineKeysOfInlineFields = Run::getArrayKeyOfInlineFields();
         Run::setArrayKeyOfInlineFields(Run::getArrayKeyOfInlineFields() + 1);
 
-        $flexFormTitle = $this->run->askFlexFormTitle();
+        $flexFormTitle = 'NoDefined';
 
         $this->setFlexFormItem($flexFormName . ';' . $inlineKeysOfInlineFields . ';' . $flexFormTitle . '*');
         $this->run->getOutput()->writeln(Run::getColoredDeepLevel() . 'Create at least one flexForm field.');

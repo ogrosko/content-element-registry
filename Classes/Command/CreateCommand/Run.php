@@ -1,7 +1,10 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFieldTypes;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypes;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm\FlexFormFieldsSetup;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\FieldsSetup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -303,6 +306,47 @@ class Run extends Command
             );
             $input = $this->askTCAFields($input);
             GeneralUtility::makeInstance(PageType::class)->execute($input, $output);
+        } elseif ($needCreate === self::PLUGIN) {
+            $this->addArgument('name');
+            $this->addArgument('title');
+            $this->addArgument('description');
+            $this->addArgument('controller');
+            $this->addArgument('action');
+            $this->addArgument('fields');
+
+            $input->setArgument(
+                'name',
+                $this->askElementName(self::PLUGIN)
+            );
+            $input->setArgument(
+                'title',
+                $this->askElementTitle(self::PLUGIN)
+            );
+            $input->setArgument(
+                'description',
+                $this->askElementDescription(self::PLUGIN)
+            );
+            $input->setArgument(
+                'controller',
+                $this->askPluginController()
+            );
+            $input->setArgument(
+                'action',
+                $this->askPluginAction()
+            );
+
+            $this->setFieldTypes(
+                GeneralUtility::makeInstance(FlexFormFieldTypes::class)->getFlexFormFieldTypes()
+            );
+            $flexFormFields = new FlexFormFieldsSetup($this);
+            $flexFormFields->createField();
+
+            $input->setArgument(
+                'fields',
+                $flexFormFields->getFields()
+            );
+
+            GeneralUtility::makeInstance(Plugin::class)->execute($input, $output);
         }
     }
 
@@ -379,6 +423,36 @@ class Run extends Command
     {
         $question = new Question(
             $name . ' description (etc. New Element description):  '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function askPluginController()
+    {
+        $question = new Question(
+            'Enter name of plugin Controller :  '
+        );
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function askPluginAction()
+    {
+        $question = new Question(
+            'Enter name of plugin Action :  '
         );
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
@@ -522,32 +596,6 @@ class Run extends Command
     public function askInlineClassName()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Inline Class name (etc. Inline): ');
-        return $this->getQuestionHelper()->ask(
-            $this->getInput(),
-            $this->getOutput(),
-            $question
-        );
-    }
-
-    /**
-     * @return mixed
-     */
-    public function askFlexFormName()
-    {
-        $question = new Question(self::getColoredDeepLevel() . 'FlexForm name (etc. FlexForm): ');
-        return $this->getQuestionHelper()->ask(
-            $this->getInput(),
-            $this->getOutput(),
-            $question
-        );
-    }
-
-    /**
-     * @return mixed
-     */
-    public function askInlineTitle()
-    {
-        $question = new Question(self::getColoredDeepLevel() . 'Inline title (etc. Inline-title): ');
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
