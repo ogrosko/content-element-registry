@@ -65,6 +65,8 @@ class ContentElement extends Command
         $render->previewImage()->copyDefault();
         $render->inline()->render();
         $render->sqlDatabase()->fields();
+        $render->flexForm()->contentElementTemplate();
+
         $render->translation()->addStringToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
             $table . '.' . str_replace('_', '', $extensionName) . '_'. strtolower($name) . '.title',

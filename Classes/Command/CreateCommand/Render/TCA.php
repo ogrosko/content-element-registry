@@ -133,18 +133,6 @@ class TCA
                     if (!$field->isDefault()) {
                         $result[] = $this->generateFieldInTCA($field);
                     }
-
-                    if ($field->isFlexFormItemsAllowed()) {
-                        //Create FlexForm
-                        FlexFormUtility::createFlexForm(
-                            "public/typo3conf/ext/" . $extensionName . "/Configuration/FlexForms/ContentElement/" . str_replace('_', '', $extensionName) . "_" . strtolower($name) . '.xml',
-                            $fieldItems,
-                            $name,
-                            $table,
-                            true,
-                            $fieldType
-                        );
-                    }
                 } else {
                     throw new InvalidArgumentException('Field "' . $fieldType . '" does not exist.4');
                 }

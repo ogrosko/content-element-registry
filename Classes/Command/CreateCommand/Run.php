@@ -532,9 +532,35 @@ class Run extends Command
     /**
      * @return mixed
      */
+    public function askFlexFormName()
+    {
+        $question = new Question(self::getColoredDeepLevel() . 'FlexForm name (etc. FlexForm): ');
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return mixed
+     */
     public function askInlineTitle()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Inline title (etc. Inline-title): ');
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function askFlexFormTitle()
+    {
+        $question = new Question(self::getColoredDeepLevel() . 'FlexForm title : ');
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),

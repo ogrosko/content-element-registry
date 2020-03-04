@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\FieldsObject;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\ContentElementClass;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\FlexForm;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\Icon;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\Inline;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\Model;
@@ -479,6 +480,14 @@ class Render
     public function translation()
     {
         return GeneralUtility::makeInstance(Translation::class, $this);
+    }
+
+    /**
+     * @return FlexForm
+     */
+    public function flexForm()
+    {
+        return GeneralUtility::makeInstance(FlexForm::class, $this);
     }
 
     /**

@@ -18,33 +18,17 @@ class FlexFormFieldTypes
         $linkConfig = $this->getLinkConfig();
 
         return [
-            'plugins' => [
-                'input' => [
-                    'config' => $inputConfig
-                ],
-                'group' => [
-                    'config' => $groupConfig
-                ],
-                'textarea' => [
-                    'config' => $textareaConfig
-                ],
-                'link' => [
-                    'config' => $linkConfig
-                ],
+            'input' => [
+                'config' => $inputConfig
             ],
-            'contentElementsAndInlineRelationFields' => [
-                'input' => [
-                    'config' => $inputConfig
-                ],
-                'group' => [
-                    'config' => $groupConfig
-                ],
-                'textarea' => [
-                    'config' => $textareaConfig
-                ],
-                'link' => [
-                    'config' => $linkConfig
-                ],
+            'group' => [
+                'config' => $groupConfig
+            ],
+            'textarea' => [
+                'config' => $textareaConfig
+            ],
+            'link' => [
+                'config' => $linkConfig
             ],
         ];
     }
