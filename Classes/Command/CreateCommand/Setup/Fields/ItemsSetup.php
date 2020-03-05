@@ -1,7 +1,7 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Run;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\RunCreateCommand;
 
 /**
  * Class ItemsSetup
@@ -10,15 +10,15 @@ use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Run;
 class ItemsSetup
 {
     /**
-     * @var Run
+     * @var RunCreateCommand
      */
     protected $run = null;
 
     /**
      * FieldsSetup constructor.
-     * @param Run $run
+     * @param RunCreateCommand $run
      */
-    public function __construct(Run $run)
+    public function __construct(RunCreateCommand $run)
     {
         $this->run = $run;
     }
@@ -58,7 +58,7 @@ class ItemsSetup
         if ($this->run->needCreateMoreItems()) {
             $this->createItem();
         } else {
-            Run::setDeepLevel(substr(Run::getRawDeepLevel(), 0, -strlen(Run::DEEP_LEVEL_SPACES)));
+            RunCreateCommand::setDeepLevel(substr(RunCreateCommand::getRawDeepLevel(), 0, -strlen(RunCreateCommand::DEEP_LEVEL_SPACES)));
         }
     }
 }

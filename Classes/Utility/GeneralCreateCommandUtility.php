@@ -1,42 +1,12 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Utility;
 
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-
 /**
  * Class GeneralCreateCommandUtility
  * @package Digitalwerk\ContentElementRegistry\Utility
  */
 class GeneralCreateCommandUtility
 {
-    /**
-     * @param $fields
-     * @return array
-     * Return converted fields from string to array
-     */
-    public function fieldsToArray($fields)
-    {
-        $fieldsToArray = explode('/',$fields);
-        array_pop($fieldsToArray);
-
-        if (count($fieldsToArray) === 0 && $fields !== '-') {
-            throw new InvalidArgumentException('Field syntax error.');
-        }
-
-        foreach ($fieldsToArray as $field) {
-            if (count(explode(',', $field)) !== 3) {
-                if (count(explode(',', $field)) === 4 && count(explode(';', self::getFirstFieldItem($field))) !== 3) {
-                    throw new InvalidArgumentException('Field syntax error.');
-                }
-                if (count(explode(',', $field)) > 4) {
-                    throw new InvalidArgumentException('Field syntax error.');
-                }
-            }
-        }
-
-        return $fieldsToArray;
-    }
-
     /**
      * @param array $array
      * @param string $key
@@ -71,68 +41,5 @@ class GeneralCreateCommandUtility
         } else {
             return false;
         }
-    }
-
-    /**
-     * @param $field
-     * @return string
-     */
-    public function getFieldName($field)
-    {
-        return explode(',', $field)[0];
-    }
-
-    /**
-     * @param $field
-     * @return string
-     */
-    public function getFieldType($field)
-    {
-        return explode(',', $field)[1];
-    }
-
-    /**
-     * @param $field
-     * @return string
-     */
-    public function getFieldTitle($field)
-    {
-        return explode(',', $field)[2];
-    }
-
-    /**
-     * @param $field
-     * @return string
-     */
-    public function getFirstFieldItem($field)
-    {
-        return explode('*', explode(',', $field)[3])[0];
-    }
-
-    /**
-     * @param $item
-     * @return string
-     */
-    public function getItemName($item)
-    {
-        return explode(';', $item)[0];
-    }
-
-    /**
-     * @param $item
-     * @return string
-     */
-    public function getItemType($item)
-    {
-        return explode(';', $item)[1];
-    }
-
-    /**
-     * @param $item
-     * @return string
-     */
-    public function getItemTitle($item)
-    {
-        return explode(';', $item)[2];
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\RenderCreateCommand;
 use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 
 /**
@@ -17,9 +17,9 @@ class ControllerRender
 
     /**
      * Model constructor.
-     * @param Render $render
+     * @param RenderCreateCommand $render
      */
-    public function __construct(Render $render)
+    public function __construct(RenderCreateCommand $render)
     {
         $this->render = $render;
     }

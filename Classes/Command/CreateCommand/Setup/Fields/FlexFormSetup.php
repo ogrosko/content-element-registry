@@ -1,16 +1,16 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields;
 
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypesConfig;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFieldTypesConfig;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\RunCreateCommand;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\FieldsSetup;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm\FlexFormFieldsSetup;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class InlineSetup
+ * Class FlexForm
  * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields
  */
-class InlineSetup
+class FlexFormSetup
 {
     /**
      * @var RunCreateCommand
@@ -29,45 +29,44 @@ class InlineSetup
     /**
      * @var string
      */
-    protected $inlineItem = '';
+    protected $flexFormItem = '';
 
     /**
      * @return string
      */
-    public function getInlineItem(): string
+    public function getFlexFormItem(): string
     {
-        return $this->inlineItem;
+        return $this->flexFormItem;
     }
 
     /**
-     * @param string $inlineItem
+     * @param string $flexFormItem
      */
-    public function setInlineItem(string $inlineItem): void
+    public function setFlexFormItem(string $flexFormItem): void
     {
-        $this->inlineItem = $inlineItem;
+        $this->flexFormItem = $flexFormItem;
     }
 
     /**
      * @return string
      */
-    public function createInlineItem()
+    public function createFlexForm()
     {
-        $inlineName = $this->run->askInlineClassName();
+        $flexFormName = 'NoDefined';
 
         $inlineKeysOfInlineFields = RunCreateCommand::getArrayKeyOfInlineFields();
         RunCreateCommand::setArrayKeyOfInlineFields(RunCreateCommand::getArrayKeyOfInlineFields() + 1);
 
-        $inlineTitle = $this->run->askInlineTitle();
+        $flexFormTitle = 'NoDefined';
 
-        $this->setInlineItem($inlineName . ';' . $inlineKeysOfInlineFields . ';' . $inlineTitle . '*');
-        $this->run->getOutput()->writeln(RunCreateCommand::getColoredDeepLevel() . 'Create at least one inline field.');
+        $this->setFlexFormItem($flexFormName . ';' . $inlineKeysOfInlineFields . ';' . $flexFormTitle . '*');
+        $this->run->getOutput()->writeln(RunCreateCommand::getColoredDeepLevel() . 'Create at least one flexForm field.');
 
-        $table = $this->run->getInlineTable();
         $editedRunSetup = $this->run;
         $editedRunSetup->setFieldTypes(
-            GeneralUtility::makeInstance(Typo3FieldTypesConfig::class)->getTCAFieldTypes($table)[$table]
+            GeneralUtility::makeInstance(FlexFormFieldTypesConfig::class)->getFlexFormFieldTypes()
         );
-        $newInlineFields = new FieldsSetup($editedRunSetup);
+        $newInlineFields = new FlexFormFieldsSetup($editedRunSetup);
         $newInlineFields->createField();
         $inlineFields = RunCreateCommand::getInlineFields() + [$inlineKeysOfInlineFields => $newInlineFields->getFields()];
 

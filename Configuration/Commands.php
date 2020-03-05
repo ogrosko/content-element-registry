@@ -2,19 +2,19 @@
 
 return [
     'dw:contentElement' => [
-        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\ContentElement::class,
+        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\ContentElementCreateCommand::class,
         'schedulable' => false,
     ],
     'dw:pageType' => [
-        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\PageType::class,
+        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\PageTypeCreateCommand::class,
         'schedulable' => false,
     ],
     'dw:plugin' => [
-        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\Plugin::class,
+        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\PluginCreateCommand::class,
         'schedulable' => false,
     ],
     'dw:run' => [
-        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\Run::class,
+        'class' => \Digitalwerk\ContentElementRegistry\Command\CreateCommand\RunCreateCommand::class,
         'schedulable' => false,
     ],
 ];
