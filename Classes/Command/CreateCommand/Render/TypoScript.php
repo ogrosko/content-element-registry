@@ -150,4 +150,27 @@ class TypoScript
             5
         );
     }
+
+    public function addPluginToWizard()
+    {
+        $pluginName = $this->render->getName();
+
+        GeneralCreateCommandUtility::importStringInToFileAfterString(
+            'public/typo3conf/ext/dw_boilerplate/Configuration/TSconfig/Page/Includes/Mod.tsconfig',
+            [
+                "                        " . strtolower($pluginName) . " {
+                            iconIdentifier = ". $pluginName . "
+                            title = LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".title
+                            description = LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".description
+                            tt_content_defValues {
+                                CType = list
+                                list_type = dwpagetypes_" . strtolower($pluginName) . "
+                            }
+                        }\n"
+            ],
+            "plugins {",
+            1
+
+        );
+    }
 }

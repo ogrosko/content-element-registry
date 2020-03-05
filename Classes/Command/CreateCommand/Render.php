@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\FieldsObject;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\ContentElementClass;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\ControllerRender;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\FlexForm;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\Icon;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\Inline;
@@ -33,6 +34,16 @@ class Render
      * @var string
      */
     protected $elementType = '';
+
+    /**
+     * @var string
+     */
+    protected $title = '';
+
+    /**
+     * @var string
+     */
+    protected $controllerName = '';
 
     /**
      * @var bool
@@ -110,6 +121,11 @@ class Render
     protected $modelNamespace = '';
 
     /**
+     * @var string
+     */
+    protected $actionName = '';
+
+    /**
      * @var int
      */
     protected $doktype = 0;
@@ -181,6 +197,22 @@ class Render
     /**
      * @return string
      */
+    public function getActionName(): string
+    {
+        return $this->actionName;
+    }
+
+    /**
+     * @param string|null $actionName
+     */
+    public function setActionName(? string $actionName): void
+    {
+        $this->actionName = $actionName;
+    }
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
@@ -216,6 +248,22 @@ class Render
     public function getExtraSpaces()
     {
         return $this->extraSpaces;
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerName(): string
+    {
+        return $this->controllerName;
+    }
+
+    /**
+     * @param string|null $controllerName
+     */
+    public function setControllerName(? string $controllerName): void
+    {
+        $this->controllerName = $controllerName;
     }
 
     /**
@@ -320,6 +368,22 @@ class Render
     public function setInlineRelativePath($inlineRelativePath)
     {
         $this->inlineRelativePath = $inlineRelativePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     */
+    public function setTitle(? string $title): void
+    {
+        $this->title = $title;
     }
 
     /**
@@ -496,5 +560,13 @@ class Render
     public function register()
     {
         return GeneralUtility::makeInstance(Register::class, $this);
+    }
+
+    /**
+     * @return ControllerRender
+     */
+    public function controller()
+    {
+        return GeneralUtility::makeInstance(ControllerRender::class, $this);
     }
 }

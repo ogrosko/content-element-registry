@@ -62,7 +62,7 @@ class ContentElement extends Command
         $render->template()->contentElementTemplate();
         $render->tca()->contentElementTemplate();
         $render->icon()->copyContentElementDefaultIcon();
-        $render->previewImage()->copyDefault();
+        $render->previewImage()->copyContentElementDefault();
         $render->inline()->render();
         $render->sqlDatabase()->fields();
         $render->flexForm()->contentElementTemplate();

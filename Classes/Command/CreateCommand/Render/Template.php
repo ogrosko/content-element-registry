@@ -42,6 +42,32 @@ class Template
         );
     }
 
+    public function pluginTemplate()
+    {
+        $controllerName = $this->render->getControllerName();
+        $actionName = $this->render->getActionName();
+
+        if (!file_exists('public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName)) {
+            mkdir('public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName, 0777, true);
+        }
+
+        file_put_contents(
+            'public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName . '/' . ucfirst($actionName) . '.html',
+            '<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+
+</f:section>
+
+</html>'
+        );
+    }
+
     public function pageTypeTemplate()
     {
         $pageTypeName = $this->render->getName();

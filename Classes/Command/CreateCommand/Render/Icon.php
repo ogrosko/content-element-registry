@@ -30,25 +30,11 @@ class Icon
         );
     }
 
-    public function registerIcon()
-    {
-        $staticName = $this->render->getStaticName();
-        $name = $this->render->getName();
-        $extensionName = $this->render->getExtensionName();
-
-        GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
-            [
-                "                '" . $this->render->getElementType() . "/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
-            ],
-            "\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(",
-            1
-        );
-    }
-
     public function copyAndRegisterInlineDefaultIcon()
     {
         $extensionName = $this->render->getExtensionName();
+        $staticName = $this->render->getStaticName();
+        $name = $this->render->getName();
         if (!file_exists('public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . $this->render->getElementType())) {
             mkdir('public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/' . $this->render->getElementType(), 0777, true);
         }
@@ -60,7 +46,14 @@ class Icon
             strtolower($this->render->getName()) . '.svg'
         );
 
-        $this->registerIcon();
+        GeneralCreateCommandUtility::importStringInToFileAfterString(
+            'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
+            [
+                "                '" . $this->render->getElementType() . "/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
+            ],
+            "\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(",
+            1
+        );
     }
 
     public function copyPageTypeDefaultIcon()
@@ -75,6 +68,26 @@ class Icon
         copy(
             'public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg',
             'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/dw-page-type-' . $doktype . '-not-in-menu.svg'
+        );
+    }
+
+    public function copyPluginDefaultIcon()
+    {
+        $extensionName = $this->render->getExtensionName();
+        $pluginName = $this->render->getName();
+        copy(
+            "public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg",
+            "public/typo3conf/ext/" . $extensionName . "/Resources/Public/Icons/" . $pluginName . ".svg"
+        );
+
+        GeneralCreateCommandUtility::importStringInToFileAfterString(
+            'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
+            [
+                "                '" . $pluginName . "',\n"
+            ],
+            '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(',
+            1
+
         );
     }
 }
