@@ -3,7 +3,6 @@ namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFieldTypes;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypes;
-use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm\FlexFormFieldsSetup;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\FieldsSetup;
 use Symfony\Component\Console\Command\Command;
@@ -392,11 +391,40 @@ class Run extends Command
         $question = new Question(
             $name . ' name (etc. NewElement), without spaces: '
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
             $question
         );
+    }
+
+    /**
+     * @param Question $question
+     */
+    public function validateNotEmpty(Question $question) {
+        $question->setValidator(function ($answer) {
+            if (empty(trim($answer))) {
+                throw new \RuntimeException(
+                    'Answer can not be empty.'
+                );
+            }
+            return $answer;
+        });
+    }
+
+    /**
+     * @param Question $question
+     */
+    public function validateIsNumeric(Question $question) {
+        $question->setValidator(function ($answer) {
+            if (!is_numeric($answer)) {
+                throw new \RuntimeException(
+                    'Answer must be numeric.'
+                );
+            }
+            return $answer;
+        });
     }
 
     /**
@@ -408,6 +436,7 @@ class Run extends Command
         $question = new Question(
             $name . ' title (etc. New Element): '
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -424,6 +453,7 @@ class Run extends Command
         $question = new Question(
             $name . ' description (etc. New Element description):  '
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -439,6 +469,7 @@ class Run extends Command
         $question = new Question(
             'Enter name of plugin Controller :  '
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -454,6 +485,7 @@ class Run extends Command
         $question = new Question(
             'Enter name of plugin Action :  '
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -472,6 +504,7 @@ class Run extends Command
             'Enter table of ' . lcfirst($name) . ' : ',
             $default
         );
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -487,6 +520,8 @@ class Run extends Command
         $question = new Question(
             'Enter doktype of new page type : '
         );
+        $this->validateNotEmpty($question);
+        $this->validateIsNumeric($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -513,6 +548,7 @@ class Run extends Command
     public function askFieldName()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Field name (etc. new_field): ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -544,6 +580,7 @@ class Run extends Command
     public function askFieldTitle()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Field title (etc. New-Field): ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -557,6 +594,7 @@ class Run extends Command
     public function askItemName()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Item name (etc. item): ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -570,6 +608,7 @@ class Run extends Command
     public function askItemValue()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Item value (etc. 0 or some string): ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -583,6 +622,7 @@ class Run extends Command
     public function askItemTitle()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Item title (etc. New-Item): ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
@@ -596,19 +636,7 @@ class Run extends Command
     public function askInlineClassName()
     {
         $question = new Question(self::getColoredDeepLevel() . 'Inline Class name (etc. Inline): ');
-        return $this->getQuestionHelper()->ask(
-            $this->getInput(),
-            $this->getOutput(),
-            $question
-        );
-    }
-
-    /**
-     * @return mixed
-     */
-    public function askFlexFormTitle()
-    {
-        $question = new Question(self::getColoredDeepLevel() . 'FlexForm title : ');
+        $this->validateNotEmpty($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),
             $this->getOutput(),
