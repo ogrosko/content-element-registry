@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -29,18 +30,25 @@ class ContentElementCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $contentElementRegistryConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            ->get('content_element_registry');
+        $extensionName = explode(
+            '/',
+            explode(':',$contentElementRegistryConfiguration['contentElementsPaths'])[1]
+        )[0];
         $name = $input->getArgument('name');
         $title = $input->getArgument('title');
         $description = $input->getArgument('description');
         $fields = $input->getArgument('fields');
 
+        $extensionNameInNameSpace = str_replace(' ','',ucwords(str_replace('_',' ',$extensionName)));
         $inlineFields = $input->getArgument('inline-fields');
         $table = $input->getArgument('table');
-        $extensionName = 'dw_boilerplate';
-        $namespaceToContentElementModel = 'Digitalwerk\DwBoilerplate\Domain\Model\ContentElement';
+        $namespaceToContentElementModel = 'Digitalwerk\\' . $extensionNameInNameSpace . '\Domain\Model\ContentElement';
         $relativePathToModel = 'dw_boilerplate/Classes/Domain/Model/ContentElement';
-        $relativePathToClass = 'Digitalwerk\DwBoilerplate\ContentElement\\' . $name;
+        $relativePathToClass = 'Digitalwerk\\' . $extensionNameInNameSpace . '\ContentElement\\' . $name;
 
+        GeneralUtility::makeInstance(ExtensionFolderAndFileStructureCreateCommand::class, $extensionName)->checkContentElementCreateCommand();
         $fields = GeneralUtility::makeInstance(FieldsCreateCommandUtility::class)->generateObject($fields, $table);
 
         $render = GeneralUtility::makeInstance(RenderCreateCommand::class);

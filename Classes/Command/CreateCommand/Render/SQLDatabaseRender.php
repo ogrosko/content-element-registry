@@ -143,7 +143,7 @@ CREATE TABLE tx_contentelementregistry_domain_model_relation (
     " . $this->getSqlFields(). "
 );"
                     ],
-                    ');',
+                    '',
                     0
 
                 );
@@ -179,7 +179,7 @@ CREATE TABLE " . $table . " (
     " . $this->getSqlFields(). "
 );"
                     ],
-                    ');',
+                    '',
                     0
                 );
             }

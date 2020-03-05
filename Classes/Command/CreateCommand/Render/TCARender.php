@@ -117,17 +117,12 @@ class TCARender
 
         if ($fields)
         {
-            $table = $this->render->getTable();
-            $name = $this->render->getStaticName();
-            $extensionName = $this->render->getExtensionName();
             $extraSpaces2 = '    ';
-
             $result = [];
 
             /** @var $field FieldObject  */
             foreach ($fields->getFields() as $field) {
                 $fieldType = $field->getType();
-                $fieldItems = $field->getItems();
 
                 if ($field->exist()) {
                     if (!$field->isDefault()) {
