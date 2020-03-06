@@ -1,54 +1,57 @@
 <?php
-namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
+namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render;
+
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\RenderCreateCommand;
 
 /**
- * Class ExtensionFolderAndFileStructureCreateCommand
- * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand
+ * Class CheckRender
+ * @package Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render
  */
-class ExtensionFolderAndFileStructureCreateCommand
+class CheckRender
 {
     /**
-     * @var string
+     * @var null
      */
-    protected $extensionName = '';
+    protected $render = null;
 
     /**
-     * CheckExtensionFolderStructureCreateCommand constructor.
-     * @param string $extensionName
+     * TCA constructor.
+     * @param RenderCreateCommand $render
      */
-    public function __construct(string $extensionName)
+    public function __construct(RenderCreateCommand $render)
     {
-        $this->extensionName = $extensionName;
+        $this->render = $render;
     }
 
-    public function checkContentElementCreateCommand()
+    public function contentElementCreateCommand()
     {
+        $extensionName = $this->render->getExtensionName();
         $requiredFolders = [
-            'public/typo3conf/ext/' . $this->extensionName . '/Classes/ContentElement',
-            'public/typo3conf/ext/' . $this->extensionName . '/Classes/Domain/Model/ContentElement',
-            'public/typo3conf/ext/' . $this->extensionName . '/Resources/Private/Templates/ContentElements',
-            'public/typo3conf/ext/' . $this->extensionName . '/Configuration/TCA/Overrides',
-            'public/typo3conf/ext/' . $this->extensionName . '/Resources/Public/Icons/ContentElement',
-            'public/typo3conf/ext/' . $this->extensionName . '/Resources/Public/Images/ContentElementPreviews',
-            'public/typo3conf/ext/' . $this->extensionName . '/Resources/Private/Language'
+            'public/typo3conf/ext/' . $extensionName . '/Classes/ContentElement',
+            'public/typo3conf/ext/' . $extensionName . '/Classes/Domain/Model/ContentElement',
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Templates/ContentElements',
+            'public/typo3conf/ext/' . $extensionName . '/Configuration/TCA/Overrides',
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/ContentElement',
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Images/ContentElementPreviews',
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language'
         ];
         $this->checkAndCreateFolders($requiredFolders);
 
         $requiredFiles = [
-            'public/typo3conf/ext/' . $this->extensionName . '/ext_localconf.php' => [
-                'path' => 'public/typo3conf/ext/' . $this->extensionName . '/ext_localconf.php',
+            'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php' => [
+                'path' => 'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
                 'data' => $this->extLocalConfContentElementCreateCommandBasicStructure()
             ],
-            'public/typo3conf/ext/' . $this->extensionName . '/ext_tables.sql' => [
-                'path' => 'public/typo3conf/ext/' . $this->extensionName . '/ext_tables.sql',
+            'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql' => [
+                'path' => 'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
                 'data' => "\n"
             ],
-            'public/typo3conf/ext/' . $this->extensionName . '/ext_typoscript_setup.typoscript' => [
-                'path' => 'public/typo3conf/ext/' . $this->extensionName . '/ext_typoscript_setup.typoscript',
+            'public/typo3conf/ext/' . $extensionName . '/ext_typoscript_setup.typoscript' => [
+                'path' => 'public/typo3conf/ext/' . $extensionName . '/ext_typoscript_setup.typoscript',
                 'data' => $this->typoScriptContentElementCreateCommandBasicStructure()
             ],
-            'public/typo3conf/ext/' . $this->extensionName . '/Resources/Private/Language/locallang_db.xlf' => [
-                'path' => 'public/typo3conf/ext/' . $this->extensionName . '/Resources/Private/Language/locallang_db.xlf',
+            'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf' => [
+                'path' => 'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
                 'data' => $this->localLangContentElementCreateCommandBasicStructure()
             ]
         ];

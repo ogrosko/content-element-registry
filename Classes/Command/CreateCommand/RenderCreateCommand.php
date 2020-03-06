@@ -2,6 +2,7 @@
 namespace Digitalwerk\ContentElementRegistry\Command\CreateCommand;
 
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Object\FieldsObject;
+use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\CheckRender;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\ContentElementClassRender;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\ControllerRender;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Render\FlexFormRender;
@@ -568,5 +569,13 @@ class RenderCreateCommand
     public function controller()
     {
         return GeneralUtility::makeInstance(ControllerRender::class, $this);
+    }
+
+    /**
+     * @return CheckRender
+     */
+    public function check()
+    {
+        return GeneralUtility::makeInstance(CheckRender::class, $this);
     }
 }

@@ -48,7 +48,6 @@ class ContentElementCreateCommand extends Command
         $relativePathToModel = 'dw_boilerplate/Classes/Domain/Model/ContentElement';
         $relativePathToClass = 'Digitalwerk\\' . $extensionNameInNameSpace . '\ContentElement\\' . $name;
 
-        GeneralUtility::makeInstance(ExtensionFolderAndFileStructureCreateCommand::class, $extensionName)->checkContentElementCreateCommand();
         $fields = GeneralUtility::makeInstance(FieldsCreateCommandUtility::class)->generateObject($fields, $table);
 
         $render = GeneralUtility::makeInstance(RenderCreateCommand::class);
@@ -65,6 +64,7 @@ class ContentElementCreateCommand extends Command
         $render->setOutput($output);
         $render->setInput($input);
 
+        $render->check()->contentElementCreateCommand();
         $render->contentElementClass()->template();
         $render->model()->contentElementAndInlinetemplate();
         $render->template()->contentElementTemplate();
