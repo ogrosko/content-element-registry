@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -17,7 +18,9 @@ class PluginCreateCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription('Create basic content element.');
+        $this->addArgument('vendor', InputArgument::REQUIRED,'Enter vendor of plugin namespace');
+        $this->addArgument('main-extension', InputArgument::REQUIRED,'Enter main extension of plugin');
+        $this->addArgument('extension', InputArgument::REQUIRED,'Enter extension of plugin');
         $this->addArgument('name', InputArgument::REQUIRED,'Enter name of Plugin.');
         $this->addArgument('title', InputArgument::REQUIRED,'Enter title of Plugin.');
         $this->addArgument('description', InputArgument::REQUIRED,'Enter description of Plugin.');
@@ -34,7 +37,9 @@ class PluginCreateCommand extends Command
         $controllerName = $input->getArgument('controller');
         $actionName = $input->getArgument('action');
         $fields = $input->getArgument('fields');
-        $extensionName = 'dw_page_types';
+        $mainExtension = $input->getArgument('main-extension');
+        $vendor = $input->getArgument('vendor');
+        $extensionName = $input->getArgument('extension');
 
         $fields = GeneralUtility::makeInstance(FieldsCreateCommandUtility::class)->generateObject($fields, '');
 
@@ -49,6 +54,8 @@ class PluginCreateCommand extends Command
         $render->setControllerName($controllerName);
         $render->setActionName($actionName);
         $render->setTitle($pluginTitle);
+        $render->setVendor($vendor);
+        $render->setMainExtension($mainExtension);
 
         $render->flexForm()->pluginTemplate();
         $render->controller()->template();
@@ -70,7 +77,7 @@ class PluginCreateCommand extends Command
         );
 
         $output->writeln('<bg=green;options=bold>Plugin ' . $pluginName . ' was created.</>');
-        $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/dw_page_types/Resources/Private/Templates/' . $controllerName . '/' . ucfirst($actionName) . '.html</>');
+        $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/' . $extensionName . '/Resources/Private/Templates/' . $controllerName . '/' . ucfirst($actionName) . '.html</>');
         $output->writeln('<bg=red;options=bold>• Change Plugin Icon.</>');
         $output->writeln('<bg=red;options=bold>• Change Plugin Preview image.</>');
     }

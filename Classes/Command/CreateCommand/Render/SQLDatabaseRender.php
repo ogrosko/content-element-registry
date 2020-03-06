@@ -67,6 +67,20 @@ class SQLDatabaseRender
     }
 
     /**
+     * @param $tableName
+     * @return string
+     */
+    public function newSqlTable($tableName) {
+        return "
+#
+# Table structure for table '" . $tableName . "'
+#
+CREATE TABLE " . $tableName . " (
+    " . $this->getSqlFields(). "
+);";
+    }
+
+    /**
      * @return string
      * Return CE sql table fields (format string)
      */
@@ -136,12 +150,7 @@ class SQLDatabaseRender
                 GeneralCreateCommandUtility::importStringInToFileAfterString(
                     'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
                     [
-"#
-# Table structure for table 'tx_contentelementregistry_domain_model_relation'
-#
-CREATE TABLE tx_contentelementregistry_domain_model_relation (
-    " . $this->getSqlFields(). "
-);"
+                        $this->newSqlTable('tx_contentelementregistry_domain_model_relation')
                     ],
                     '',
                     0
@@ -172,12 +181,7 @@ CREATE TABLE tx_contentelementregistry_domain_model_relation (
                 GeneralCreateCommandUtility::importStringInToFileAfterString(
                     'public/typo3conf/ext/' . $extensionName . '/ext_tables.sql',
                     [
-"#
-# Table structure for table '" . $table . "'
-#
-CREATE TABLE " . $table . " (
-    " . $this->getSqlFields(). "
-);"
+                        $this->newSqlTable($table)
                     ],
                     '',
                     0

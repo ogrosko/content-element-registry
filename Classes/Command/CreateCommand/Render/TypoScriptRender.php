@@ -114,8 +114,9 @@ class TypoScriptRender
         $extensionName = $this->render->getExtensionName();
         $pageTypeName = $this->render->getName();
         $modelNameSpace = $this->render->getModelNamespace();
+        $mainExtension = $this->render->getMainExtension();
         GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/dw_boilerplate/Configuration/TypoScript/constants.typoscript',
+            'public/typo3conf/ext/' . $mainExtension . '/Configuration/TypoScript/constants.typoscript',
             [
                 "PAGE_DOKTYPE_" . strtoupper($pageTypeName) . " = " . $this->render->getDoktype() . " \n"
             ],
@@ -124,7 +125,7 @@ class TypoScriptRender
         );
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/dw_boilerplate/Configuration/TypoScript/Extensions/DwBoilerplate.typoscript',
+            'public/typo3conf/ext/' . $mainExtension . '/Configuration/TypoScript/Extensions/' . str_replace(' ','',ucwords(str_replace('_',' ', $mainExtension))) . '.typoscript',
             [
                 '                ' . strtolower($pageTypeName) . ' = {$PAGE_DOKTYPE_' . strtoupper($pageTypeName) . '}' . " \n"
             ],
@@ -154,17 +155,18 @@ class TypoScriptRender
     public function addPluginToWizard()
     {
         $pluginName = $this->render->getName();
+        $extensionName = $this->render->getExtensionName();
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/dw_boilerplate/Configuration/TSconfig/Page/Includes/Mod.tsconfig',
+            'public/typo3conf/ext/' . $this->render->getMainExtension() . '/Configuration/TSconfig/Page/Includes/Mod.tsconfig',
             [
                 "                        " . strtolower($pluginName) . " {
                             iconIdentifier = ". $pluginName . "
-                            title = LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".title
-                            description = LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".description
+                            title = LLL:EXT:" . $extensionName . "/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".title
+                            description = LLL:EXT:" . $extensionName . "/Resources/Private/Language/locallang_db.xlf:plugin." . strtolower($pluginName) . ".description
                             tt_content_defValues {
                                 CType = list
-                                list_type = dwpagetypes_" . strtolower($pluginName) . "
+                                list_type = " . str_replace('_', '', $extensionName) . "_" . strtolower($pluginName) . "
                             }
                         }\n"
             ],

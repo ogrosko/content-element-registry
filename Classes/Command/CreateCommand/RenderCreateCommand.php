@@ -34,6 +34,16 @@ class RenderCreateCommand
     /**
      * @var string
      */
+    protected $vendor = '';
+
+    /**
+     * @var string
+     */
+    protected $mainExtension = '';
+
+    /**
+     * @var string
+     */
     protected $elementType = '';
 
     /**
@@ -145,6 +155,38 @@ class RenderCreateCommand
     public function setFields($fields)
     {
         $this->fields = $fields;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVendor(): string
+    {
+        return $this->vendor;
+    }
+
+    /**
+     * @param string $vendor
+     */
+    public function setVendor(string $vendor): void
+    {
+        $this->vendor = $vendor;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainExtension(): string
+    {
+        return $this->mainExtension;
+    }
+
+    /**
+     * @param string $mainExtension
+     */
+    public function setMainExtension(string $mainExtension): void
+    {
+        $this->mainExtension = $mainExtension;
     }
 
     /**

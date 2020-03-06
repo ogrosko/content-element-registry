@@ -52,7 +52,7 @@ class RegisterRender
             $extensionName = $this->render->getExtensionName();
             $pluginIconEdited = 'EXT:' . $extensionName . '/Resources/Public/Icons/' . $pluginName . '.svg';
             GeneralCreateCommandUtility::importStringInToFileAfterString(
-                'public/typo3conf/ext/dw_page_types/Configuration/TCA/Overrides/tt_content.php',
+                'public/typo3conf/ext/' . $extensionName . '/Configuration/TCA/Overrides/tt_content.php',
                 [
                     "\nBoilerplateUtility::addPluginFlexForm('" . $extensionName . "', '" . $pluginName . "');\n"
                 ],
@@ -73,11 +73,11 @@ class RegisterRender
         $actionName = $this->render->getActionName();
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/dw_page_types/Configuration/TCA/Overrides/tt_content.php',
+            'public/typo3conf/ext/' . $extensionName . '/Configuration/TCA/Overrides/tt_content.php',
             [
                 "
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-'Digitalwerk.DwPageTypes',
+'Digitalwerk." . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . "',
 '" . $pluginName . "',
 '" . str_replace('-',' ',$pluginTitle) . "',
 '" . $pluginIconEdited . "'
@@ -89,14 +89,14 @@ class RegisterRender
         );
 
         GeneralCreateCommandUtility::importStringInToFileAfterString(
-            'public/typo3conf/ext/dw_page_types/ext_localconf.php',
+            'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
             [
                 "
         /**
          * " . str_replace('-',' ',$pluginTitle) . "
         */
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-         'Digitalwerk.DwPageTypes',
+         'Digitalwerk." . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . "',
           '" . $pluginName . "',
           ['" . $controllerName . "' => '". strtolower($actionName) . "'],
           ['" . $controllerName . "' => '']

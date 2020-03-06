@@ -214,11 +214,12 @@ $'.lcfirst($name).'Columns = [
     {
         $table = $this->render->getTable();
         $pageTypeName = $this->render->getName();
+        $extensionName = $this->render->getExtensionName();
         $doktype = $this->render->getDoktype();
             file_put_contents('public/typo3conf/ext/' . $this->render->getExtensionName() . '/Configuration/TCA/Overrides/' . $table . '_' . $this->render->getName() . '.php',
                 '<?php
 declare(strict_types=1);
-use Digitalwerk\DwPageTypes\Domain\Model;
+use Digitalwerk\\' . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . '\Domain\Model;
 
 defined(\'TYPO3_MODE\') or die();
 
@@ -228,7 +229,7 @@ Digitalwerk\DwPageTypes\Utility\PageTypeUtility::addTcaDoktype(Model\\' . $pageT
 $tca = [
     \'palettes\' => [
         \'' . lcfirst($pageTypeName) . '\' => [
-            \'label\' => \'LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label\',
+            \'label\' => \'LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label\',
             \'showitem\' => \'' . $this->fieldsToShowItemsType() . '\'
         ],
     ],
@@ -247,7 +248,7 @@ $' . lcfirst($pageTypeName) . 'Columns = [
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
     \'pages\',
-    \'--div--;LLL:EXT:dw_page_types/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label,
+    \'--div--;LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:page.type.' . $doktype . '.label,
                         --palette--;;' . lcfirst($pageTypeName) . '\',
     Model\\' . $pageTypeName . '::getDoktype(),
     \'after:subtitle\'

@@ -76,7 +76,7 @@ class CheckRender
     public function checkAndCreateFiles($requiredFiles)
     {
         foreach ($requiredFiles as $requiredFile) {
-            if (!file_exists($requiredFile)) {
+            if (!file_exists($requiredFile['path'])) {
                 file_put_contents(
                     $requiredFile['path'],
                     $requiredFile['data']
@@ -93,7 +93,6 @@ class CheckRender
         return 'config.tx_extbase {
   persistence {
     classes {
-
     }
   }
 }';

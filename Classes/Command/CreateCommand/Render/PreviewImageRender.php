@@ -37,7 +37,7 @@ class PreviewImageRender
     {
         copy(
             'public/typo3conf/ext/content_element_registry/Resources/Public/Images/NewContentElement1.png',
-            "public/typo3conf/ext/dw_boilerplate/Resources/Public/Images/ContentElementPreviews/plugins_".strtolower($this->render->getName()).".png"
+            "public/typo3conf/ext/" . $this->render->getMainExtension() . "/Resources/Public/Images/ContentElementPreviews/plugins_".strtolower($this->render->getName()).".png"
         );
     }
 }

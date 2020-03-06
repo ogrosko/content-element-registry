@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -19,6 +20,9 @@ class PageTypeCreateCommand extends Command
     protected function configure()
     {
         $this->setDescription('Create page type with some fields.');
+        $this->addArgument('vendor', InputArgument::REQUIRED,'Enter vendor of page type namespace');
+        $this->addArgument('main-extension', InputArgument::REQUIRED,'Enter main extension of page type');
+        $this->addArgument('extension', InputArgument::REQUIRED,'Enter extension of page type');
         $this->addArgument('table', InputArgument::REQUIRED,'Enter table of PageType.');
         $this->addArgument('name', InputArgument::REQUIRED,'Enter name of PageType.');
         $this->addArgument('title', InputArgument::REQUIRED,'Enter title of PageType.');
@@ -38,11 +42,12 @@ class PageTypeCreateCommand extends Command
         $fields = $input->getArgument('fields');
         $table = $input->getArgument('table');
         $inlineFields = $input->getArgument('inline-fields');
-        $extensionName = 'dw_page_types';
-        $namespaceToContentElementModel = 'Digitalwerk\DwPageTypes\Domain\Model';
-        $relativePathToModel = 'dw_page_types/Classes/Domain/Model';
+        $mainExtension = $input->getArgument('main-extension');
+        $vendor = $input->getArgument('vendor');
+        $extensionName = $input->getArgument('extension');
 
-
+        $namespaceToContentElementModel = $vendor . '\\' . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . '\Domain\Model';
+        $relativePathToModel = $extensionName . '/Classes/Domain/Model';
         $fields = GeneralUtility::makeInstance(FieldsCreateCommandUtility::class)->generateObject($fields, $table);
 
         $render = GeneralUtility::makeInstance(RenderCreateCommand::class);
@@ -59,6 +64,8 @@ class PageTypeCreateCommand extends Command
         $render->setOutput($output);
         $render->setElementType('PageType');
         $render->setAutoHeader($autoHeader);
+        $render->setVendor($vendor);
+        $render->setMainExtension($mainExtension);
 
         $render->icon()->copyPageTypeDefaultIcon();
         $render->model()->pageTypeTemplate();
@@ -66,7 +73,6 @@ class PageTypeCreateCommand extends Command
         $render->inline()->render();
         $render->typoScript()->pageTypeTypoScriptRegister();
         $render->template()->pageTypeTemplate();
-
         $render->translation()->addFieldsTitleToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf'
         );

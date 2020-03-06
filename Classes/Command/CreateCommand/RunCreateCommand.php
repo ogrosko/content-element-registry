@@ -5,11 +5,13 @@ use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFiel
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypesConfig;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm\FlexFormFieldsSetup;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\FieldsSetup;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -32,6 +34,16 @@ class RunCreateCommand extends Command
      * @var OutputInterface
      */
     protected $output = null;
+
+    /**
+     * @var string
+     */
+    protected $mainExtension = '';
+
+    /**
+     * @var string
+     */
+    protected $vendor = '';
 
     /**
      * @var InputInterface
@@ -87,6 +99,38 @@ class RunCreateCommand extends Command
     public static function getRawDeepLevel(): string
     {
         return self::$deepLevel;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVendor(): string
+    {
+        return $this->vendor;
+    }
+
+    /**
+     * @param string $vendor
+     */
+    public function setVendor(string $vendor): void
+    {
+        $this->vendor = $vendor;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainExtension(): string
+    {
+        return $this->mainExtension;
+    }
+
+    /**
+     * @param string $mainExtension
+     */
+    public function setMainExtension(string $mainExtension): void
+    {
+        $this->mainExtension = $mainExtension;
     }
 
     /**
@@ -225,127 +269,180 @@ class RunCreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Welcome in content element registry');
+        $contentElementRegistryConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            ->get('content_element_registry');
+        $mainExtension = explode(
+            '/',
+            explode(':',$contentElementRegistryConfiguration['contentElementsPaths'])[1]
+        )[0];
 
-        $this->setQuestionHelper(
-            $this->getHelper('question')
-        );
-        $this->setInput($input);
-        $this->setOutput($output);
-        $helper = $this->getQuestionHelper();
+        if ($mainExtension) {
+            $output->writeln('Welcome in content element registry');
 
-        $question = new ChoiceQuestion(
-            'What do you want to create?',
-            [self::CONTENT_ELEMENT,self::PAGE_TYPE, self::PLUGIN]
-        );
-        $needCreate = $helper->ask($input, $output, $question);
+            $this->setMainExtension($mainExtension);
+            $this->setVendor('Digitalwerk');
+            $this->setQuestionHelper(
+                $this->getHelper('question')
+            );
+            $this->setInput($input);
+            $this->setOutput($output);
+            $helper = $this->getQuestionHelper();
 
-        if ($needCreate === self::CONTENT_ELEMENT) {
-            $this->addArgument('table');
-            $this->addArgument('name');
-            $this->addArgument('title');
-            $this->addArgument('description');
-            $this->addArgument('fields');
-            $this->addArgument('inline-fields');
+            $question = new ChoiceQuestion(
+                'What do you want to create?',
+                [self::CONTENT_ELEMENT,self::PAGE_TYPE, self::PLUGIN]
+            );
+            $needCreate = $helper->ask($input, $output, $question);
 
-            $input->setArgument(
-                'name',
-                $this->askElementName(self::CONTENT_ELEMENT)
-            );
-            $input->setArgument(
-                'title',
-                $this->askElementTitle(self::CONTENT_ELEMENT)
-            );
-            $input->setArgument(
-                'description',
-                $this->askElementDescription(self::CONTENT_ELEMENT)
-            );
-            $this->setTable(
-                $this->askTable(self::CONTENT_ELEMENT, 'tt_content')
-            );
-            $input->setArgument(
-                'table',
-                $this->getTable()
-            );
-            $input = $this->askTCAFields($input);
+            if ($needCreate === self::CONTENT_ELEMENT) {
+                $this->addArgument('extension');
+                $this->addArgument('vendor');
+                $this->addArgument('table');
+                $this->addArgument('name');
+                $this->addArgument('title');
+                $this->addArgument('description');
+                $this->addArgument('fields');
+                $this->addArgument('inline-fields');
 
-            GeneralUtility::makeInstance(ContentElementCreateCommand::class)->execute($input, $output);
-        } elseif ($needCreate === self::PAGE_TYPE) {
-            $this->addArgument('table');
-            $this->addArgument('doktype');
-            $this->addArgument('name');
-            $this->addArgument('title');
-            $this->addArgument('auto-header');
-            $this->addArgument('fields');
-            $this->addArgument('inline-fields');
+                $input->setArgument(
+                    'extension',
+                    $this->getMainExtension()
+                );
+                $input->setArgument(
+                    'vendor',
+                    $this->getVendor()
+                );
+                $input->setArgument(
+                    'name',
+                    $this->askElementName(self::CONTENT_ELEMENT)
+                );
+                $input->setArgument(
+                    'title',
+                    $this->askElementTitle(self::CONTENT_ELEMENT)
+                );
+                $input->setArgument(
+                    'description',
+                    $this->askElementDescription(self::CONTENT_ELEMENT)
+                );
+                $this->setTable(
+                    $this->askTable(self::CONTENT_ELEMENT, 'tt_content')
+                );
+                $input->setArgument(
+                    'table',
+                    $this->getTable()
+                );
+                $input = $this->askTCAFields($input);
+
+                GeneralUtility::makeInstance(ContentElementCreateCommand::class)->execute($input, $output);
+            } elseif ($needCreate === self::PAGE_TYPE) {
+                $this->addArgument('main-extension');
+                $this->addArgument('extension');
+                $this->addArgument('vendor');
+                $this->addArgument('table');
+                $this->addArgument('doktype');
+                $this->addArgument('name');
+                $this->addArgument('title');
+                $this->addArgument('auto-header');
+                $this->addArgument('fields');
+                $this->addArgument('inline-fields');
 
 
-            $input->setArgument(
-                'doktype',
-                $this->askPageTypeDoktype()
-            );
-            $input->setArgument(
-                'name',
-                $this->askElementName(self::PAGE_TYPE)
-            );
-            $input->setArgument(
-                'title',
-                $this->askElementTitle(self::PAGE_TYPE)
-            );
-            $input->setArgument(
-                'auto-header',
-                $this->needPageTypeAutoHeader()
-            );
-            $this->setTable(
-                $this->askTable(self::PAGE_TYPE, 'pages')
-            );
-            $input->setArgument(
-                'table',
-                $this->getTable()
-            );
-            $input = $this->askTCAFields($input);
-            GeneralUtility::makeInstance(PageTypeCreateCommand::class)->execute($input, $output);
-        } elseif ($needCreate === self::PLUGIN) {
-            $this->addArgument('name');
-            $this->addArgument('title');
-            $this->addArgument('description');
-            $this->addArgument('controller');
-            $this->addArgument('action');
-            $this->addArgument('fields');
+                $input->setArgument(
+                    'extension',
+                    $this->askExtensionName()
+                );
+                $input->setArgument(
+                    'main-extension',
+                    $this->getMainExtension()
+                );
+                $input->setArgument(
+                    'vendor',
+                    $this->getVendor()
+                );
+                $input->setArgument(
+                    'doktype',
+                    $this->askPageTypeDoktype()
+                );
+                $input->setArgument(
+                    'name',
+                    $this->askElementName(self::PAGE_TYPE)
+                );
+                $input->setArgument(
+                    'title',
+                    $this->askElementTitle(self::PAGE_TYPE)
+                );
+                $input->setArgument(
+                    'auto-header',
+                    $this->needPageTypeAutoHeader()
+                );
+                $this->setTable(
+                    $this->askTable(self::PAGE_TYPE, 'pages')
+                );
+                $input->setArgument(
+                    'table',
+                    $this->getTable()
+                );
+                $input = $this->askTCAFields($input);
+                GeneralUtility::makeInstance(PageTypeCreateCommand::class)->execute($input, $output);
+            } elseif ($needCreate === self::PLUGIN) {
+                $this->addArgument('name');
+                $this->addArgument('title');
+                $this->addArgument('description');
+                $this->addArgument('controller');
+                $this->addArgument('action');
+                $this->addArgument('fields');
+                $this->addArgument('main-extension');
+                $this->addArgument('extension');
+                $this->addArgument('vendor');
 
-            $input->setArgument(
-                'name',
-                $this->askElementName(self::PLUGIN)
-            );
-            $input->setArgument(
-                'title',
-                $this->askElementTitle(self::PLUGIN)
-            );
-            $input->setArgument(
-                'description',
-                $this->askElementDescription(self::PLUGIN)
-            );
-            $input->setArgument(
-                'controller',
-                $this->askPluginController()
-            );
-            $input->setArgument(
-                'action',
-                $this->askPluginAction()
-            );
+                $input->setArgument(
+                    'extension',
+                    $this->askExtensionName()
+                );
+                $input->setArgument(
+                    'main-extension',
+                    $this->getMainExtension()
+                );
+                $input->setArgument(
+                    'vendor',
+                    $this->getVendor()
+                );
+                $input->setArgument(
+                    'name',
+                    $this->askElementName(self::PLUGIN)
+                );
+                $input->setArgument(
+                    'title',
+                    $this->askElementTitle(self::PLUGIN)
+                );
+                $input->setArgument(
+                    'description',
+                    $this->askElementDescription(self::PLUGIN)
+                );
+                $input->setArgument(
+                    'controller',
+                    $this->askPluginController()
+                );
+                $input->setArgument(
+                    'action',
+                    $this->askPluginAction()
+                );
 
-            $this->setFieldTypes(
-                GeneralUtility::makeInstance(FlexFormFieldTypesConfig::class)->getFlexFormFieldTypes()
-            );
-            $flexFormFields = new FlexFormFieldsSetup($this);
-            $flexFormFields->createField();
+                $this->setFieldTypes(
+                    GeneralUtility::makeInstance(FlexFormFieldTypesConfig::class)->getFlexFormFieldTypes()
+                );
+                $flexFormFields = new FlexFormFieldsSetup($this);
+                $flexFormFields->createField();
 
-            $input->setArgument(
-                'fields',
-                $flexFormFields->getFields()
-            );
+                $input->setArgument(
+                    'fields',
+                    $flexFormFields->getFields()
+                );
 
-            GeneralUtility::makeInstance(PluginCreateCommand::class)->execute($input, $output);
+                GeneralUtility::makeInstance(PluginCreateCommand::class)->execute($input, $output);
+            }
+        } else {
+            throw new InvalidArgumentException('Fill in contentelementregistry extension settings.');
         }
     }
 
@@ -383,6 +480,22 @@ class RunCreateCommand extends Command
     }
 
     /**
+     * @return mixed
+     */
+    public function askExtensionName()
+    {
+        $question = new Question(
+            'Enter extension name (etc. my_extension): '
+        );
+        $this->validateExtensionExist($question);
+        return $this->getQuestionHelper()->ask(
+            $this->getInput(),
+            $this->getOutput(),
+            $question
+        );
+    }
+
+    /**
      * @param $name
      * @return mixed
      */
@@ -407,6 +520,21 @@ class RunCreateCommand extends Command
             if (empty(trim($answer))) {
                 throw new \RuntimeException(
                     'Answer can not be empty.'
+                );
+            }
+            return $answer;
+        });
+    }
+
+    /**
+     * @param Question $question
+     */
+    public function validateExtensionExist(Question $question) {
+        $question->setValidator(function ($answer) {
+
+            if (empty(trim($answer)) || !file_exists('public/typo3conf/ext/' . trim($answer))) {
+                throw new \RuntimeException(
+                    'Extension does not exist.'
                 );
             }
             return $answer;
@@ -520,7 +648,6 @@ class RunCreateCommand extends Command
         $question = new Question(
             'Enter doktype of new page type : '
         );
-        $this->validateNotEmpty($question);
         $this->validateIsNumeric($question);
         return $this->getQuestionHelper()->ask(
             $this->getInput(),

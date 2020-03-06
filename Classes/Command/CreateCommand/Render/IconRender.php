@@ -11,6 +11,11 @@ use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 class IconRender
 {
     /**
+     * @var string
+     */
+    protected $registerIconsString = '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(';
+
+    /**
      * @var RenderCreateCommand
      */
     protected $render = null;
@@ -28,6 +33,25 @@ class IconRender
             'public/typo3conf/ext/content_element_registry/Resources/Public/Icons/CEDefaultIcon.svg',
             'public/typo3conf/ext/' . $extensionName . '/Resources/Public/Icons/ContentElement/' . str_replace('_', '', $extensionName) . '_' . strtolower($name) . '.svg'
         );
+    }
+
+    /**
+     * @param $iconPath
+     * @return string
+     */
+    public function createNewRegistrationIconsFunction($iconPath)
+    {
+        return
+            '
+        /**
+         * Icon registration
+         */
+        ' . $this->registerIconsString . '
+            [
+                "' . $iconPath . '",
+            ],
+            $extKey
+        );';
     }
 
     public function copyAndRegisterInlineDefaultIcon()
@@ -52,23 +76,16 @@ class IconRender
                 [
                     "                '" . $this->render->getElementType() . "/" . str_replace('_', '', $extensionName) . "_" . strtolower($staticName) . "_" . strtolower($name) . "', \n"
                 ],
-                "\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(",
+                $this->registerIconsString,
                 1
             )
         ) {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
                 [
-                    '
-        /**
-         * Icon registration
-         */
-        \Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(
-            [
-                "' . $this->render->getElementType() . '/' . str_replace('_', '', $extensionName) . '_' . strtolower($staticName) . '_' . strtolower($name) . '",
-            ],
-            $extKey
-        );'
+                    $this->createNewRegistrationIconsFunction(
+                        $this->render->getElementType() . '/' . str_replace('_', '', $extensionName) . '_' . strtolower($staticName) . '_' . strtolower($name)
+                    )
                 ],
                 'function ($extKey) {',
                 0
@@ -106,23 +123,14 @@ class IconRender
             [
                 "                '" . $pluginName . "',\n"
             ],
-            '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(',
+            $this->registerIconsString,
             1
             )
         ) {
             GeneralCreateCommandUtility::importStringInToFileAfterString(
                 'public/typo3conf/ext/' . $extensionName . '/ext_localconf.php',
                 [
-                    '
-        /**
-         * Icon registration
-         */
-        \Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(
-            [
-                "' . $pluginName . '",
-            ],
-            $extKey
-        );'
+                    $this->createNewRegistrationIconsFunction($pluginName)
                 ],
                 'function ($extKey) {',
                 0

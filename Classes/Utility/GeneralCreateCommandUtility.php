@@ -11,7 +11,6 @@ class GeneralCreateCommandUtility
      * @param array $array
      * @param string $key
      * @param array $new
-     *
      * @return array
      */
     public static function arrayInsertAfter( array $array, $key, array $new ) {

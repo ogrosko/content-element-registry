@@ -18,6 +18,8 @@ class ContentElementCreateCommand extends Command
     protected function configure()
     {
         $this->addArgument('table', InputArgument::REQUIRED,'Enter table of CE');
+        $this->addArgument('extension', InputArgument::REQUIRED,'Enter extension of CE');
+        $this->addArgument('vendor', InputArgument::REQUIRED,'Enter vendor of CE namespace');
         $this->addArgument('name', InputArgument::REQUIRED,'Enter name of CE. Format: [NewContentElement]');
         $this->addArgument('title', InputArgument::REQUIRED,'Enter title of new CE. Format: [title-of-new-CE]');
         $this->addArgument('description', InputArgument::REQUIRED,'Enter description of new CE. Format: [description-of-new-CE]');
@@ -30,24 +32,19 @@ class ContentElementCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $contentElementRegistryConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)
-            ->get('content_element_registry');
-        $extensionName = explode(
-            '/',
-            explode(':',$contentElementRegistryConfiguration['contentElementsPaths'])[1]
-        )[0];
         $name = $input->getArgument('name');
         $title = $input->getArgument('title');
         $description = $input->getArgument('description');
         $fields = $input->getArgument('fields');
-
-        $extensionNameInNameSpace = str_replace(' ','',ucwords(str_replace('_',' ',$extensionName)));
+        $vendor = $input->getArgument('vendor');
+        $extensionName = $input->getArgument('extension');
         $inlineFields = $input->getArgument('inline-fields');
         $table = $input->getArgument('table');
-        $namespaceToContentElementModel = 'Digitalwerk\\' . $extensionNameInNameSpace . '\Domain\Model\ContentElement';
-        $relativePathToModel = 'dw_boilerplate/Classes/Domain/Model/ContentElement';
-        $relativePathToClass = 'Digitalwerk\\' . $extensionNameInNameSpace . '\ContentElement\\' . $name;
 
+        $extensionNameInNameSpace = str_replace(' ','',ucwords(str_replace('_',' ',$extensionName)));
+        $namespaceToContentElementModel = $vendor . '\\' . $extensionNameInNameSpace . '\Domain\Model\ContentElement';
+        $relativePathToModel = $extensionName . '/Classes/Domain/Model/ContentElement';
+        $relativePathToClass = $vendor . '\\' . $extensionNameInNameSpace . '\ContentElement\\' . $name;
         $fields = GeneralUtility::makeInstance(FieldsCreateCommandUtility::class)->generateObject($fields, $table);
 
         $render = GeneralUtility::makeInstance(RenderCreateCommand::class);
@@ -63,6 +60,8 @@ class ContentElementCreateCommand extends Command
         $render->setRelativePathToClass($relativePathToClass);
         $render->setOutput($output);
         $render->setInput($input);
+        $render->setVendor($vendor);
+        $render->setMainExtension($extensionName);
 
         $render->check()->contentElementCreateCommand();
         $render->contentElementClass()->template();
@@ -74,7 +73,6 @@ class ContentElementCreateCommand extends Command
         $render->inline()->render();
         $render->sqlDatabase()->fields();
         $render->flexForm()->contentElementTemplate();
-
         $render->translation()->addStringToTranslation(
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf',
             $table . '.' . str_replace('_', '', $extensionName) . '_'. strtolower($name) . '.title',
@@ -89,7 +87,7 @@ class ContentElementCreateCommand extends Command
             'public/typo3conf/ext/' . $extensionName . '/Resources/Private/Language/locallang_db.xlf'
         );
 
-        $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/dw_boilerplate/Resources/Private/Templates/ContentElements</>');
+        $output->writeln('<bg=red;options=bold>• Fill template: public/typo3conf/ext/' . $extensionName . '/Resources/Private/Templates/ContentElements</>');
         $output->writeln('<bg=red;options=bold>• Change Content element Icon.</>');
         $output->writeln('<bg=red;options=bold>• Change Content element Preview image.</>');
         $output->writeln('<bg=green;options=bold>Content element '.$name.' was created.</>');

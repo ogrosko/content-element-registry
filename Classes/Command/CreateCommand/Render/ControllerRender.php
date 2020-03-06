@@ -36,13 +36,13 @@ class ControllerRender
                 'public/typo3conf/ext/' . $extensionName . '/Classes/Controller/' . $controllerName  . 'Controller.php',
                 '<?php
 declare(strict_types=1);
-namespace Digitalwerk\DwPageTypes\Controller;
+namespace Digitalwerk\\' . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . '\Controller;
 
 use Digitalwerk\DwBoilerplate\Controller\ActionController;
 
 /**
  * Class ' . $controllerName . 'Controller
- * @package Digitalwerk\DwPageTypes\Controller
+ * @package Digitalwerk\\' . str_replace(' ','',ucwords(str_replace('_',' ',$extensionName))) . '\Controller
  */
 class ' . $controllerName . 'Controller extends ActionController
 {
