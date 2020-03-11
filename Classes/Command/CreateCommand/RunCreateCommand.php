@@ -5,6 +5,7 @@ use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\FlexFormFiel
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Config\Typo3FieldTypesConfig;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\Fields\FlexForm\FlexFormFieldsSetup;
 use Digitalwerk\ContentElementRegistry\Command\CreateCommand\Setup\FieldsSetup;
+use Digitalwerk\ContentElementRegistry\Utility\GeneralCreateCommandUtility;
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -262,6 +263,18 @@ class RunCreateCommand extends Command
     }
 
     /**
+     * @return mixed
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
+     */
+    public function getExtensionConfiguration()
+    {
+        return GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            ->get('content_element_registry');
+    }
+
+
+    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void
@@ -269,18 +282,17 @@ class RunCreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $contentElementRegistryConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)
-            ->get('content_element_registry');
         $mainExtension = explode(
             '/',
-            explode(':',$contentElementRegistryConfiguration['contentElementsPaths'])[1]
+            explode(':',$this->getExtensionConfiguration()['contentElementsPaths'])[1]
         )[0];
+        $vendor = $this->getExtensionConfiguration()['elementsVendor'];
 
-        if ($mainExtension) {
+        if ($mainExtension && $vendor) {
             $output->writeln('Welcome in content element registry');
 
             $this->setMainExtension($mainExtension);
-            $this->setVendor('Digitalwerk');
+            $this->setVendor($vendor);
             $this->setQuestionHelper(
                 $this->getHelper('question')
             );

@@ -13,7 +13,7 @@ class IconRender
     /**
      * @var string
      */
-    protected $registerIconsString = '\Digitalwerk\DwBoilerplate\Utility\BoilerplateUtility::registerIcons(';
+    protected $registerIconsString = '\Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility::registerIcons(';
 
     /**
      * @var RenderCreateCommand

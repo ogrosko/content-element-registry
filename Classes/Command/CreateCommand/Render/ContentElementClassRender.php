@@ -177,16 +177,17 @@ class ContentElementClassRender
 
     public function template()
     {
+        $vendor = $this->render->getVendor();
         $extensionName = str_replace(' ','',ucwords(str_replace('_',' ', $this->render->getExtensionName())));
         $template[] = '<?php';
         $template[] = 'declare(strict_types=1);';
-        $template[] = 'namespace Digitalwerk\\' . $extensionName . '\ContentElement;';
+        $template[] = 'namespace ' . $vendor . '\\' . $extensionName . '\ContentElement;';
         $template[] = '';
         $template[] = 'use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;';
         $template[] = '';
         $template[] = '/**';
         $template[] = ' * Class ' . $this->render->getName();
-        $template[] = ' * @package Digitalwerk\\' . $extensionName . '\ContentElement';
+        $template[] = ' * @package ' . $vendor . '\\' . $extensionName . '\ContentElement';
         $template[] = ' */';
         $template[] = 'class ' . $this->render->getName() . ' extends AbstractContentElementRegistryItem';
         $template[] = '{';

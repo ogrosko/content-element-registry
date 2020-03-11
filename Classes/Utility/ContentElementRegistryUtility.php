@@ -86,4 +86,23 @@ class ContentElementRegistryUtility
     {
         return strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $string));
     }
+
+    /**
+     * SVG icon registration helper
+     *
+     * @param array $icons
+     * @param string $extKey
+     */
+    public static function registerIcons(array $icons, string $extKey): void
+    {
+        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+        foreach ($icons as $icon) {
+            $iconName = stripos($icon, '/') === false ? $icon : end(explode('/', $icon));
+            $iconRegistry->registerIcon(
+                $iconName,
+                \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+                ['source' => "EXT:{$extKey}/Resources/Public/Icons/{$icon}.svg"]
+            );
+        }
+    }
 }
