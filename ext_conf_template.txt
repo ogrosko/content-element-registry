@@ -1,4 +1,2 @@
 # cat=basic; type=string; label=Content element class path:Path to Content elements classes directory. Can be comma separated list of paths. Example: EXT:your_ext_1/Classes/ContentElement/,EXT:your_ext_2/Classes/ContentElement/
 contentElementsPaths =
-# cat=basic; type=string; label=Elements vendor (e.g. MyVendor)
-elementsVendor =
