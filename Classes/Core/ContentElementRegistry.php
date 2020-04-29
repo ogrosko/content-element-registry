@@ -129,10 +129,10 @@ class ContentElementRegistry implements SingletonInterface
         \uasort($this->contentElements, function (AbstractContentElementRegistryItem $a, AbstractContentElementRegistryItem $b) {
             if ($a->getGroupName() === $b->getGroupName()) {
                 return \strcmp($a->getIdentifier(), $b->getIdentifier());
-            }
+                }
 
-            return \strcmp($a->getGroupName(), $b->getGroupName());
-        });
+                return \strcmp($a->getGroupName(), $b->getGroupName());
+            });
     }
 
     /**
@@ -191,6 +191,7 @@ class ContentElementRegistry implements SingletonInterface
      * @return array
      *
      * @throws \ReflectionException
+     * @deprecated TypoScript persistence config only until TYPO3 9
      */
     public function getBaseTypoScriptPersistenceConfig()
     {
@@ -220,6 +221,46 @@ class ContentElementRegistry implements SingletonInterface
                 foreach ($this->columnsMapping as $column => $property) {
                     $config[$className]['mapping']['columns'][$column] = [
                         'mapOnProperty' => $property,
+                    ];
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * Generate PHP persistence config for TYPO3 v10+
+     *
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function getBasePersistenceConfig()
+    {
+        $config = [];
+        $className = $this->getDomainModelClassName();
+
+        if ($className) {
+            $config[$className] = [
+                'tableName' => 'tt_content',
+            ];
+
+            // Add Subclasses
+            if (!empty($this->contentElements)) {
+                /** @var AbstractContentElementRegistryItem $contentElement */
+                foreach ($this->contentElements as $contentElement) {
+                    $ceClassName = $contentElement->getDomainModelClassName();
+                    if ($ceClassName) {
+                        $config[$className]['subclasses'][$ceClassName] = $ceClassName;
+                    }
+                }
+            }
+
+            // Add columns mappings
+            if (!empty($this->columnsMapping)) {
+                foreach ($this->columnsMapping as $column => $property) {
+                    $config[$className]['properties'][$property] = [
+                        'fieldName' => $column,
                     ];
                 }
             }

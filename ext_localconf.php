@@ -1,7 +1,5 @@
 <?php
 
-use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
-
 defined('TYPO3_MODE') or die();
 
 (static function ($extKey) {
@@ -9,12 +7,15 @@ defined('TYPO3_MODE') or die();
         \TYPO3\CMS\Core\Imaging\IconRegistry::class
     );
     $contentElementsRegistry = \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::getInstance();
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-        ContentElementRegistryUtility::convertArrayToTypoScript(
-            $contentElementsRegistry->getBaseTypoScriptPersistenceConfig(),
-            'config.tx_extbase.persistence.classes'
-        )
-    );
+
+    if (\version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.0.0', '<')) {
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
+            \Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility::convertArrayToTypoScript(
+                $contentElementsRegistry->getBaseTypoScriptPersistenceConfig(),
+                'config.tx_extbase.persistence.classes'
+            )
+        );
+    }
 
     /** @var \Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem $contentElement */
     foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
@@ -29,7 +30,7 @@ defined('TYPO3_MODE') or die();
 
         //Register CE wizard item
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-            ContentElementRegistryUtility::convertArrayToTypoScript(
+            \Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility::convertArrayToTypoScript(
                 $contentElement->getWizardPageTSconfig(),
                 'mod.wizards.newContentElement.wizardItems'
             )
@@ -39,17 +40,18 @@ defined('TYPO3_MODE') or die();
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
             $extKey,
             'setup',
-            ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
+            \Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
         );
 
-
-        //Add TypoScript setup for Extbase persistence mapping
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-            ContentElementRegistryUtility::convertArrayToTypoScript(
-                $contentElement->getTypoScriptPersistenceConfig(),
-                'config.tx_extbase.persistence.classes'
-            )
-        );
+        if (\version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.0.0', '<')) {
+            //Add TypoScript setup for Extbase persistence mapping
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
+                \Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility::convertArrayToTypoScript(
+                    $contentElement->getTypoScriptPersistenceConfig(),
+                    'config.tx_extbase.persistence.classes'
+                )
+            );
+        }
 
         //Register CE preview template
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem'][$contentElement->getCType()] =

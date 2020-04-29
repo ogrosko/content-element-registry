@@ -301,8 +301,9 @@ abstract class AbstractContentElementRegistryItem
      * Get CE Extbase typoscript config
      *
      * @return array
-     *
      * @throws \ReflectionException
+     * @deprecated TypoScript persistence config only until TYPO3 9
+     *
      */
     public function getTypoScriptPersistenceConfig()
     {
@@ -322,6 +323,37 @@ abstract class AbstractContentElementRegistryItem
                 foreach ($this->columnsMapping as $column => $property) {
                     $config[$className]['mapping']['columns'][$column] = [
                         'mapOnProperty' => $property,
+                    ];
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * Get CE Extbase persistence config for TYPO3 v10+
+     *
+     * @return array
+     *
+     * @throws \ReflectionException
+     */
+    public function getPersistenceConfig()
+    {
+        $config = [];
+        $className = $this->getDomainModelClassName();
+
+        if ($className) {
+            $config[$className] = [
+                'tableName' => 'tt_content',
+                'recordType' => $this->getCType(),
+            ];
+
+            // Add columns mappings
+            if (!empty($this->columnsMapping)) {
+                foreach ($this->columnsMapping as $column => $property) {
+                    $config[$className]['properties'][$property] = [
+                        'fieldName' => $column,
                     ];
                 }
             }
