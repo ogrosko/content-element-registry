@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\Hook;
 
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
@@ -14,11 +17,9 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class ContentElementPreviewRenderer
- * @package Digitalwerk\ContentElementRegistry\Hook
  */
 class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterface
 {
-
     /**
      * Preprocesses the preview rendering of a content element.
      *
@@ -35,7 +36,6 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
         &$itemContent,
         array &$row
     ) {
-
         $contentElementRegistry = ContentElementRegistry::getInstance();
         if ($contentElementRegistry->existsContentElement($row['CType'])) {
             /** @var AbstractContentElementRegistryItem $contentElement */
@@ -53,7 +53,7 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
                     'contentElement' => $this->getDataMapper()->map(
                         ContentElement::class,
                         [$row]
-                    )[0]
+                    )[0],
                 ],
                 true
             );
@@ -63,6 +63,7 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
     /**
      * @param PageLayoutView $pageLayoutView
      * @param array $row
+     *
      * @return string
      */
     private function getEditContentLink(PageLayoutView $pageLayoutView, array $row)

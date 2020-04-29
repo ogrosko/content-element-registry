@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\DataProcessing;
 
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
@@ -10,11 +13,9 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
 /**
  * Class ContentElementObjectDataProcessor
- * @package Digitalwerk\ContentElementRegistry\DataProcessing
  */
 class ContentElementObjectDataProcessor implements DataProcessorInterface
 {
-
     /**
      * Process content object data
      *
@@ -22,6 +23,7 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
      * @param array $contentObjectConfiguration The configuration of Content Object
      * @param array $processorConfiguration The configuration of this processor
      * @param array $processedData Key/value store of processed data (e.g. to be passed to a Fluid View)
+     *
      * @return array the processed data as key/value store
      */
     public function process(

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\ContentElement;
 
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
@@ -8,11 +11,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class AbstractContentElementRegistryItem
- * @package Digitalwerk\ContentElementRegistry\ContentElement
  */
 abstract class AbstractContentElementRegistryItem
 {
-
     /**
      * Palettes
      *
@@ -53,6 +54,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE name
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getName()
@@ -64,6 +66,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE template name
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getTemplateName()
@@ -75,17 +78,19 @@ abstract class AbstractContentElementRegistryItem
      * Get CE identifier
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getIdentifier()
     {
-        return \strtolower(\sprintf("%s_%s", $this->getExtensionName(), $this->getName()));
+        return \strtolower(\sprintf('%s_%s', $this->getExtensionName(), $this->getName()));
     }
 
     /**
      * get CE CType
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getCType()
@@ -97,6 +102,7 @@ abstract class AbstractContentElementRegistryItem
      * Get extension key
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getExtensionKey()
@@ -108,6 +114,7 @@ abstract class AbstractContentElementRegistryItem
      * Get extension name
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getExtensionName()
@@ -119,6 +126,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE icon identifier
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getIconIdentifier()
@@ -130,6 +138,7 @@ abstract class AbstractContentElementRegistryItem
      * Get path to icons
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getIconsPath(): string
@@ -141,13 +150,14 @@ abstract class AbstractContentElementRegistryItem
      * Get CE icon path
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getIconSrcPath()
     {
         $iconSource = "{$this->getIconsPath()}{$this->getIconIdentifier()}.svg";
         if (!file_exists(GeneralUtility::getFileAbsFileName($iconSource))) {
-            $iconSource = "EXT:".ContentElementRegistry::EXTENSION_KEY."/Resources/Public/Icons/CEDefaultIcon.svg";
+            $iconSource = 'EXT:' . ContentElementRegistry::EXTENSION_KEY . '/Resources/Public/Icons/CEDefaultIcon.svg';
         }
 
         return $iconSource;
@@ -157,6 +167,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE LLL title
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getTitle()
@@ -168,6 +179,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE LLL description
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getDescription()
@@ -209,6 +221,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE PageTSconfig
      *
      * @return array
+     *
      * @throws \ReflectionException
      */
     public function getWizardPageTSconfig()
@@ -262,11 +275,11 @@ abstract class AbstractContentElementRegistryItem
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:extended";
     }
 
-
     /**
      * Get CE tt_content typoscript config
      *
      * @return array
+     *
      * @throws \ReflectionException
      */
     public function getTypoScriptConfiguration()
@@ -274,12 +287,12 @@ abstract class AbstractContentElementRegistryItem
         return [
             'tt_content' => [
                 $this->getCType() => '< lib.contentElement',
-                $this->getCType().'.' => [
+                $this->getCType() . '.' => [
                     'templateName' => $this->getTemplateName(),
                     'dataProcessing.' => [
-                        '0' => ContentElementObjectDataProcessor::class
+                        '0' => ContentElementObjectDataProcessor::class,
                     ],
-                ]
+                ],
             ],
         ];
     }
@@ -288,6 +301,7 @@ abstract class AbstractContentElementRegistryItem
      * Get CE Extbase typoscript config
      *
      * @return array
+     *
      * @throws \ReflectionException
      */
     public function getTypoScriptPersistenceConfig()
@@ -320,6 +334,7 @@ abstract class AbstractContentElementRegistryItem
      * Return related Domain Object class name
      *
      * @return bool|string
+     *
      * @throws \ReflectionException
      */
     public function getDomainModelClassName()
@@ -362,11 +377,12 @@ abstract class AbstractContentElementRegistryItem
      *
      * @param string $name Palette name
      * @param string $showItem Pallete showitem string
+     *
      * @throws \Exception
      */
     protected function addPalette($name, $showItem)
     {
-        $paletteIdentifier = \sprintf("%s_%s", $this->getIdentifier(), $name);
+        $paletteIdentifier = \sprintf('%s_%s', $this->getIdentifier(), $name);
         if (\array_key_exists($paletteIdentifier, $this->palettes)) {
             throw new \Exception("Palette with name {$paletteIdentifier} already exists", 1540890148);
         }
@@ -404,6 +420,7 @@ abstract class AbstractContentElementRegistryItem
 
     /**
      * @return bool
+     *
      * @throws \ReflectionException
      */
     public function flexFormDefinitionExists(): bool
@@ -417,6 +434,7 @@ abstract class AbstractContentElementRegistryItem
 
     /**
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getFlexFormFormDefinition(): string

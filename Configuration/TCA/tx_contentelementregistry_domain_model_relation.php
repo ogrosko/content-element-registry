@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:content_element_registry/Resources/Private/Language/locallang_db.xlf:tx_contentelementregistry_domain_model_relation',
@@ -26,7 +28,7 @@ return [
         'typeicon_column' => 'type',
         'typeicon_classes' => [
             '' => 'actions-swap',
-        ]
+        ],
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, type',
@@ -34,7 +36,7 @@ return [
     'types' => [
         '0' => [
             'showitem' => 'type, 
-                       --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource'
+                       --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource',
         ],
     ],
     'columns' => [
@@ -49,8 +51,8 @@ return [
                     [
                         'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
                         -1,
-                        'flags-multiple'
-                    ]
+                        'flags-multiple',
+                    ],
                 ],
                 'default' => 0,
             ],
@@ -90,15 +92,15 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/Resources/Private/Language/locallang_core.xlf:labels.enabled'
-                    ]
+                        '0' => 'LLL:EXT:lang/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                    ],
                 ],
             ],
         ],
         'starttime' => [
             'exclude' => true,
             'behaviour' => [
-                'allowLanguageSynchronization' => true
+                'allowLanguageSynchronization' => true,
             ],
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
@@ -112,7 +114,7 @@ return [
         'endtime' => [
             'exclude' => true,
             'behaviour' => [
-                'allowLanguageSynchronization' => true
+                'allowLanguageSynchronization' => true,
             ],
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
@@ -122,7 +124,7 @@ return [
                 'eval' => 'datetime',
                 'default' => 0,
                 'range' => [
-                    'upper' => mktime(0, 0, 0, 1, 1, 2038)
+                    'upper' => mktime(0, 0, 0, 1, 1, 2038),
                 ],
             ],
         ],
@@ -138,7 +140,7 @@ return [
                 ],
                 'size' => 1,
                 'maxitems' => 1,
-                'eval' => ''
+                'eval' => '',
             ],
         ],
         'title' => [
@@ -147,7 +149,7 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim'
+                'eval' => 'trim',
             ],
         ],
         'description' => [
@@ -156,7 +158,7 @@ return [
             'config' => [
                 'type' => 'text',
                 'rows' => 5,
-                'eval' => 'trim'
+                'eval' => 'trim',
             ],
         ],
         'media' => [
@@ -170,43 +172,42 @@ return [
                             '0' => [
                                 'showitem' => '
                                     --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
+                                    --palette--;;filePalette',
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
                                 'showitem' => '
                                     --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
+                                    --palette--;;filePalette',
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
                                 'showitem' => '
                                     --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
+                                    --palette--;;filePalette',
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
                                 'showitem' => '
                                     --palette--;;audioOverlayPalette,
-                                    --palette--;;filePalette'
+                                    --palette--;;filePalette',
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
                                 'showitem' => '
                                     --palette--;;videoOverlayPalette,
-                                    --palette--;;filePalette'
+                                    --palette--;;filePalette',
                             ],
                             \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
                                 'showitem' => '
                                     --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
-                            ]
+                                    --palette--;;filePalette',
+                            ],
                         ],
                     ],
-                    'maxitems' => 1
+                    'maxitems' => 1,
                 ]
             ),
-
         ],
         'content_element' => [
             'config' => [
-                'type' => 'passthrough'
+                'type' => 'passthrough',
             ],
         ],
     ],

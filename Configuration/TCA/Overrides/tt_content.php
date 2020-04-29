@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 defined('TYPO3_MODE') or die();
 
 $contentElementsRegistry = \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::getInstance();
@@ -14,7 +16,7 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
             'CType',
             [
                 $contentElement->getGroupLabel(),
-                '--div--'
+                '--div--',
             ],
             'text',
             'before'
@@ -28,7 +30,7 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
         [
             $contentElement->getTitle(),
             $contentElement->getCType(),
-            $contentElement->getIconIdentifier()
+            $contentElement->getIconIdentifier(),
         ],
         'text',
         'before'
@@ -52,7 +54,6 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
     ];
 }
 
-
 $tmpColumns = [
     'tx_contentelementregistry_relations' => [
         'label' => 'Content relation (Label should be always rewrited by subType)',
@@ -68,7 +69,7 @@ $tmpColumns = [
                 'levelLinksPosition' => 'top',
                 'showSynchronizationLink' => 1,
                 'showPossibleLocalizationRecords' => 1,
-                'showAllLocalizationLink' => 1
+                'showAllLocalizationLink' => 1,
             ],
         ],
     ],

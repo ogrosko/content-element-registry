@@ -1,11 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\Core;
 
 /**
  * Class ContentElementRegistryException
- * @package Digitalwerk\ContentElementRegistry\Core
  */
 class ContentElementRegistryException extends \Exception
 {
-
 }

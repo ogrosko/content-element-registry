@@ -1,22 +1,24 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\Utility;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ContentElementRegistryUtility
- * @package Digitalwerk\ContentElementRegistry\Utility
  */
 class ContentElementRegistryUtility
 {
-
     /**
      * Converts given array to TypoScript
      *
      * @param array $typoScriptArray The array to convert to string
      * @param string $addKey Prefix given values with given key (eg. lib.whatever = {...})
-     * @param integer $tab Internal
-     * @param boolean $init Internal
+     * @param int $tab Internal
+     * @param bool $init Internal
+     *
      * @return string TypoScript
      */
     public static function convertArrayToTypoScript(array $typoScriptArray, $addKey = '', $tab = 0, $init = true)
@@ -25,13 +27,13 @@ class ContentElementRegistryUtility
         if ($addKey !== '') {
             $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . $addKey . " {\n";
             if ($init === true) {
-                $tab++;
+                ++$tab;
             }
         }
-        $tab++;
+        ++$tab;
         foreach ($typoScriptArray as $key => $value) {
             if (!is_array($value)) {
-                if (GeneralUtility::isFirstPartOfStr($value, ":=") === true) {
+                if (GeneralUtility::isFirstPartOfStr($value, ':=') === true) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key $value\n";
                 } elseif (strpos($value, "\n") === false) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key = $value\n";
@@ -43,12 +45,13 @@ class ContentElementRegistryUtility
             }
         }
         if ($addKey !== '') {
-            $tab--;
+            --$tab;
             $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . '}';
             if ($init !== true) {
                 $typoScript .= "\n";
             }
         }
+
         return $typoScript;
     }
 
@@ -57,16 +60,18 @@ class ContentElementRegistryUtility
      *
      * @param string $class
      * @param string $key
+     *
      * @return array|mixed
+     *
      * @throws \ReflectionException
      */
     public static function getNamespaceConfiguration($class, $key = null)
     {
-        list($vendorName, $extensionName, $modelName) = GeneralUtility::trimExplode('\\', $class);
+        [$vendorName, $extensionName, $modelName] = GeneralUtility::trimExplode('\\', $class);
         $data = [
-            'vendorName'    => $vendorName,
+            'vendorName' => $vendorName,
             'extensionName' => $extensionName,
-            'modelName'     => $modelName,
+            'modelName' => $modelName,
         ];
 
         if (null !== $key and \array_key_exists($key, $data)) {
@@ -80,6 +85,7 @@ class ContentElementRegistryUtility
      * Convert camelCaseString to camel-case-dashed-string
      *
      * @param string $string
+     *
      * @return string
      */
     public static function camelCase2Dashed(string $string): string

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\Core;
 
 use Composer\Autoload\ClassMapGenerator;
@@ -9,15 +12,12 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class ContentElementRegistry
- * @package Digitalwerk\ContentElementRegistry\Core
  */
 class ContentElementRegistry implements SingletonInterface
 {
-
     /**
      * Extension key
      */
@@ -101,6 +101,7 @@ class ContentElementRegistry implements SingletonInterface
      * Registration of new CE
      *
      * @param AbstractContentElementRegistryItem $element
+     *
      * @throws ContentElementRegistryException
      */
     public function registerContentElement(AbstractContentElementRegistryItem $element)
@@ -119,18 +120,17 @@ class ContentElementRegistry implements SingletonInterface
     public function getContentElements()
     {
         $this->sortContentElements();
+
         return $this->contentElements;
     }
 
-    /**
-     * @return void
-     */
     private function sortContentElements()
     {
         \uasort($this->contentElements, function (AbstractContentElementRegistryItem $a, AbstractContentElementRegistryItem $b) {
             if ($a->getGroupName() === $b->getGroupName()) {
                 return \strcmp($a->getIdentifier(), $b->getIdentifier());
             }
+
             return \strcmp($a->getGroupName(), $b->getGroupName());
         });
     }
@@ -139,22 +139,25 @@ class ContentElementRegistry implements SingletonInterface
      * CE getter
      *
      * @param string $elementIdentifier
+     *
      * @return AbstractContentElementRegistryItem
+     *
      * @throws ContentElementRegistryException
      */
     public function getContentElement(string $elementIdentifier)
     {
         if ($this->existsContentElement($elementIdentifier)) {
             return $this->contentElements[$elementIdentifier];
-        } else {
-            throw new ContentElementRegistryException("Content Element '{$elementIdentifier}' doesn't exists or is not registered", 1542115424);
         }
+
+        throw new ContentElementRegistryException("Content Element '{$elementIdentifier}' doesn't exists or is not registered", 1542115424);
     }
 
     /**
      * Check if CE is registered
      *
      * @param string $elementIdentifier
+     *
      * @return bool
      */
     public function existsContentElement(string $elementIdentifier)
@@ -186,6 +189,7 @@ class ContentElementRegistry implements SingletonInterface
      *   }
      *
      * @return array
+     *
      * @throws \ReflectionException
      */
     public function getBaseTypoScriptPersistenceConfig()
@@ -228,6 +232,7 @@ class ContentElementRegistry implements SingletonInterface
      * Return related Domain Object class name
      *
      * @return bool|string
+     *
      * @throws \ReflectionException
      */
     public function getDomainModelClassName()
@@ -249,6 +254,7 @@ class ContentElementRegistry implements SingletonInterface
      * Retrieve extension configuration
      *
      * @param null $configurationKey
+     *
      * @return array|mixed
      */
     private function getExtConf($configurationKey = null)

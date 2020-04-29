@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Digitalwerk\ContentElementRegistry\Domain\Model;
 
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
@@ -7,11 +10,9 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Class ContentElement
- * @package Digitalwerk\CEs\Domain\Model
  */
 class ContentElement extends AbstractEntity
 {
-
     /**
      * @var string
      */
@@ -70,7 +71,7 @@ class ContentElement extends AbstractEntity
     /**
      * @var ContentObjectRenderer
      */
-    protected $cObj = null;
+    protected $cObj;
 
     /**
      * @var array
@@ -81,6 +82,7 @@ class ContentElement extends AbstractEntity
      * Get Model name
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public static function getModelName(): string
@@ -156,17 +158,18 @@ class ContentElement extends AbstractEntity
      * Get Css class
      *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getCssClass(): string
     {
         $cssClass = $this->cssClass ?: ContentElementRegistryUtility::camelCase2Dashed($this::getModelName());
-        return \sprintf("%s%s", $this->cssClassPrefix, $cssClass);
+
+        return \sprintf('%s%s', $this->cssClassPrefix, $cssClass);
     }
 
     /**
      * Set css class modifiers
-     * @return void
      */
     public function initializeCssClassModifiers(): void
     {
@@ -174,7 +177,9 @@ class ContentElement extends AbstractEntity
 
     /**
      * Get css class with modifiers string
+     *
      * @return string
+     *
      * @throws \ReflectionException
      */
     public function getCssClassWithModifiers(): string
