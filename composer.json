@@ -5,7 +5,11 @@
 	"version": "0.0.6",
 	"license": "GPL-2.0+",
 	"require": {
-		"typo3/cms-core": "^8.7 || ^9.5"
+		"typo3/cms-core": "^8.7 || ^9.5 || ^10.4",
+		"typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4",
+		"typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4",
+		"typo3/cms-backend": "^8.7 || ^9.5 || ^10.4"
+	},
 	"require-dev": {
 		"ssch/typo3-rector": "dev-master",
 		"symplify/easy-coding-standard": "^7"
