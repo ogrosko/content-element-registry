@@ -228,7 +228,7 @@ abstract class AbstractContentElementRegistryItem
     {
         $config = [];
 
-        if (false === $this->hiddenInWizard) {
+        if (!$this->hiddenInWizard) {
             $config[$this->wizardTabName] = [
                 'elements' => [
                     $this->getCType() => [

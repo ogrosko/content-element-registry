@@ -1,0 +1,25 @@
+imports:
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-76.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-80.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-81.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-86.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-87.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-90.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-93.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-94.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-95.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-100.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-101.yaml' }
+    - { resource: 'vendor/ssch/typo3-rector/config/typo3-102.yaml' }
+
+parameters:
+    exclude_paths:
+        - 'Tests/*'
+    sets:
+        - 'code-quality'
+        - 'php55'
+        - 'php56'
+        - 'php70'
+        - 'php71'
+        - 'php72'
+        - 'php73'

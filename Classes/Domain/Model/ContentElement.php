@@ -103,7 +103,7 @@ class ContentElement extends AbstractEntity
      */
     public function getLayout(): string
     {
-        return $this->layout == '0' ? 'Default' : $this->layout;
+        return $this->layout === '0' ? 'Default' : $this->layout;
     }
 
     /**

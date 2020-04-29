@@ -26,14 +26,14 @@ class ContentElementRegistryUtility
         $typoScript = '';
         if ($addKey !== '') {
             $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . $addKey . " {\n";
-            if ($init === true) {
+            if ($init) {
                 ++$tab;
             }
         }
         ++$tab;
         foreach ($typoScriptArray as $key => $value) {
             if (!is_array($value)) {
-                if (GeneralUtility::isFirstPartOfStr($value, ':=') === true) {
+                if (GeneralUtility::isFirstPartOfStr($value, ':=')) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key $value\n";
                 } elseif (strpos($value, "\n") === false) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key = $value\n";
@@ -47,7 +47,7 @@ class ContentElementRegistryUtility
         if ($addKey !== '') {
             --$tab;
             $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . '}';
-            if ($init !== true) {
+            if (!$init) {
                 $typoScript .= "\n";
             }
         }
@@ -103,7 +103,8 @@ class ContentElementRegistryUtility
     {
         $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
         foreach ($icons as $icon) {
-            $iconName = stripos($icon, '/') === false ? $icon : end(explode('/', $icon));
+            $explode = explode('/', $icon);
+            $iconName = stripos($icon, '/') === false ? $icon : end($explode);
             $iconRegistry->registerIcon(
                 $iconName,
                 \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
