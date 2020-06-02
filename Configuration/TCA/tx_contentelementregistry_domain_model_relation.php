@@ -33,7 +33,7 @@ return [
     ],
     'types' => [
         '0' => [
-            'showitem' => 'type, 
+            'showitem' => 'type,
                        --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden, starttime, endtime, sys_language_uid, l10n_parent, l10n_diffsource'
         ],
     ],
@@ -207,6 +207,24 @@ return [
         'content_element' => [
             'config' => [
                 'type' => 'passthrough'
+            ],
+        ],
+        'inline_relation' => [
+            'label' => 'Content relation (Label should be always rewrited by subType)',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_contentelementregistry_domain_model_relation',
+                'foreign_field' => 'content_element',
+                'foreign_sortby' => 'sorting',
+                'maxitems' => 9999,
+                'appearance' => [
+                    'useSortable' => true,
+                    'collapseAll' => 1,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
+                ],
             ],
         ],
     ],
