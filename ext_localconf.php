@@ -58,5 +58,5 @@ call_user_func(
                 \Digitalwerk\ContentElementRegistry\Hook\ContentElementPreviewRenderer::class;
         }
     },
-    $_EXTKEY
+    'content_element_registry'
 );
