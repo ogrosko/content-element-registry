@@ -2,7 +2,7 @@
 	"name": "digitalwerk/content-element-registry",
 	"type": "typo3-cms-extension",
 	"description": "Content element registry helper for registering Typo3 content elements",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"license": "GPL-2.0+",
 	"require": {
 		"typo3/cms-core": "^8.7 || ^9.5"
