@@ -142,6 +142,7 @@ return [
             ],
         ],
         'title' => [
+            'l10n_mode' => 'prefixLangTitle',
             'exclude' => true,
             'label' => 'LLL:EXT:content_element_registry/Resources/Private/Language/locallang_db.xlf:tx_contentelementregistry_domain_model_relation.title',
             'config' => [
@@ -151,6 +152,7 @@ return [
             ],
         ],
         'description' => [
+            'l10n_mode' => 'prefixLangTitle',
             'exclude' => true,
             'label' => 'LLL:EXT:content_element_registry/Resources/Private/Language/locallang_db.xlf:tx_contentelementregistry_domain_model_relation.description',
             'config' => [
