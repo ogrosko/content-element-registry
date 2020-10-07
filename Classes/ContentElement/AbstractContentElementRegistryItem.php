@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\ContentElement;
 
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use Digitalwerk\ContentElementRegistry\DataProcessing\ContentElementObjectDataProcessor;
+use Digitalwerk\ContentElementRegistry\DataProcessing\HeadlessDataProcessor;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -41,6 +42,11 @@ abstract class AbstractContentElementRegistryItem
      * @var bool
      */
     protected $hiddenInWizard = false;
+
+    /**
+     * @var bool
+     */
+    protected $isHeadless = false;
 
     /**
      * AbstractContentElementRegistryItem constructor.
@@ -271,6 +277,20 @@ abstract class AbstractContentElementRegistryItem
      */
     public function getTypoScriptConfiguration()
     {
+        if ($this->isHeadless()) {
+            return [
+                'tt_content' => [
+                    $this->getCType() => 'JSON',
+                    $this->getCType().'.' => [
+                        'dataProcessing.' => [
+                            '0' => HeadlessDataProcessor::class,
+                            '0.as' => 'fields',
+                        ],
+                    ]
+                ],
+            ];
+        }
+
         return [
             'tt_content' => [
                 $this->getCType() => '< lib.contentElement',
@@ -282,38 +302,6 @@ abstract class AbstractContentElementRegistryItem
                 ]
             ],
         ];
-    }
-
-    /**
-     * Get CE Extbase typoscript config
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    public function getTypoScriptPersistenceConfig()
-    {
-        $config = [];
-        $className = $this->getDomainModelClassName();
-
-        if ($className) {
-            $config[$className] = [
-                'mapping' => [
-                    'tableName' => 'tt_content',
-                    'recordType' => $this->getCType(),
-                ],
-            ];
-
-            // Add columns mappings
-            if (!empty($this->columnsMapping)) {
-                foreach ($this->columnsMapping as $column => $property) {
-                    $config[$className]['mapping']['columns'][$column] = [
-                        'mapOnProperty' => $property,
-                    ];
-                }
-            }
-        }
-
-        return $config;
     }
 
     /**
@@ -422,5 +410,26 @@ abstract class AbstractContentElementRegistryItem
     public function getFlexFormFormDefinition(): string
     {
         return "FILE:EXT:{$this->getExtensionKey()}/Configuration/FlexForms/ContentElement/{$this->getIdentifier()}.xml";
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHeadless(): bool
+    {
+        return $this->isHeadless;
+    }
+
+    /**
+     * @param bool $isHeadless
+     */
+    public function setIsHeadless(bool $isHeadless)
+    {
+        $this->isHeadless = $isHeadless;
+    }
+
+    public function jsonSerialize()
+    {
+        return [];
     }
 }

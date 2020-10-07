@@ -1,2 +1,4 @@
 # cat=basic; type=string; label=Content element class path:Path to Content elements classes directory. Can be comma separated list of paths. Example: EXT:your_ext_1/Classes/ContentElement/,EXT:your_ext_2/Classes/ContentElement/
 contentElementsPaths =
+# cat=basic; type=boolean; label=Is Headless:Used for PWA Typo3 in combination with headless typo3 extension
+isHeadless = 0

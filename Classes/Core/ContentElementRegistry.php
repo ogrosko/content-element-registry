@@ -6,8 +6,8 @@ use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegi
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
@@ -46,7 +46,11 @@ class ContentElementRegistry implements SingletonInterface
      */
     public function __construct()
     {
+        if ($this->isHeadless() && !ExtensionManagementUtility::isLoaded('headless')) {
+            throw new ContentElementRegistryException("ContentElementRegistry extension is in headless mode but 'headless' extension not loaded", 1602071578);
+        }
         $this->registerContentElements();
+        $this->generateExtbasePersistenceClasses();
         $this->emitRegisterContentElementRegistryClass();
     }
 
@@ -82,6 +86,7 @@ class ContentElementRegistry implements SingletonInterface
      *
      * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
      * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
+     * @deprecated in favor of https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/10.4/Deprecation-90625-ExtbaseSignalSlotDispatcher.html
      */
     private function emitRegisterContentElementRegistryClass()
     {
@@ -108,6 +113,7 @@ class ContentElementRegistry implements SingletonInterface
         if ($this->existsContentElement($element->getIdentifier())) {
             throw new ContentElementRegistryException("Content Element '{$element->getIdentifier()}' already registered", 1540825475);
         }
+        $element->setIsHeadless($this->isHeadless());
         $this->contentElements[$element->getIdentifier()] = $element;
     }
 
@@ -163,68 +169,6 @@ class ContentElementRegistry implements SingletonInterface
     }
 
     /**
-     * Get config.tx_extbase for Domains. This generates something like this:
-     *
-     *  config.tx_extbase {
-     *       persistence {
-     *           classes {
-     *                Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement {
-     *                   subclasses {
-     *                       ...
-     *                   }
-     *                   mapping {
-     *                       tableName = tt_content
-     *                       columns {
-     *                           CType.mapOnProperty = CType
-     *                           sectionIndex.mapOnProperty = sectionIndex
-     *                           header.mapOnProperty = header
-     *                       }
-     *                   }
-     *               }
-     *           }
-     *       }
-     *   }
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    public function getBaseTypoScriptPersistenceConfig()
-    {
-        $config = [];
-        $className = $this->getDomainModelClassName();
-
-        if ($className) {
-            $config[$className] = [
-                'mapping' => [
-                    'tableName' => 'tt_content',
-                ],
-            ];
-
-            // Add Subclasses
-            if (!empty($this->contentElements)) {
-                /** @var AbstractContentElementRegistryItem $contentElement */
-                foreach ($this->contentElements as $contentElement) {
-                    $ceClassName = $contentElement->getDomainModelClassName();
-                    if ($ceClassName) {
-                        $config[$className]['subclasses'][$ceClassName] = $ceClassName;
-                    }
-                }
-            }
-
-            // Add columns mappings
-            if (!empty($this->columnsMapping)) {
-                foreach ($this->columnsMapping as $column => $property) {
-                    $config[$className]['mapping']['columns'][$column] = [
-                        'mapOnProperty' => $property,
-                    ];
-                }
-            }
-        }
-
-        return $config;
-    }
-
-    /**
      * Return related Domain Object class name
      *
      * @return bool|string
@@ -253,20 +197,66 @@ class ContentElementRegistry implements SingletonInterface
      */
     private function getExtConf($configurationKey = null)
     {
-        $extConf = [];
-
-        if (\version_compare(VersionNumberUtility::getCurrentTypo3Version(), '9.0.0', '<')) {
-            if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY])) {
-                $extConf = \unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][self::EXTENSION_KEY]);
-            }
-        } else {
-            $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY);
-        }
+        $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY);
 
         if (null !== $configurationKey and isset($extConf[$configurationKey])) {
             return $extConf[$configurationKey];
         }
 
         return $extConf;
+    }
+
+    /**
+     * Check if CER is in headless mode
+     * @return bool
+     */
+    protected function isHeadless(): bool
+    {
+        return (bool)$this->getExtConf('isHeadless');
+    }
+
+    /**
+     * Generate Extbase persistence class file
+     * @see https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/10.0/Breaking-87623-ReplaceConfigpersistenceclassesTyposcriptConfiguration.html
+     */
+    protected function generateExtbasePersistenceClasses()
+    {
+        $fileNamePath = GeneralUtility::getFileAbsFileName('EXT:'.self::EXTENSION_KEY.'/Configuration/Extbase/Persistence/Classes.php');
+        //TODO: do it with some templating engine and dynamic
+        $content = <<<EOD
+        <?php
+        declare(strict_types = 1);
+        
+        return [
+            \Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement::class => [
+                'tableName' => 'tt_content',
+                'properties' => [
+                     'CType' => [
+                        'fieldName' => 'CType'
+                     ],
+                     'header' => [
+                         'fieldName' => 'header'
+                     ],
+                     'sectionIndex' => [
+                         'fieldName' => 'sectionIndex'
+                     ],
+                ],
+                'subclasses' => [
+                    \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class => \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class,
+                ]
+            ],
+            \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class => [
+                'tableName' => 'tt_content',
+                'recordType' => 'dsboilerplate_regulartextelement',
+                'properties' => [
+                    'text' => [
+                        'fieldName' => 'bodytext'
+                    ]
+                ]
+            ]
+        ];
+        EOD;
+
+        GeneralUtility::writeFile($fileNamePath, $content);
     }
 }

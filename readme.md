@@ -428,6 +428,10 @@ class YourNewContentElement extends ContentElement
  
 }
 ```
+##Changelog
 
+### v1.0.0
 
-
+ - dropped support for typo3 8 and typo3 9
+ - supported only typo3 v10.4
+ - experimental headless support

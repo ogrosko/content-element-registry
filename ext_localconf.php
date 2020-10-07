@@ -1,6 +1,7 @@
 <?php
 
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 defined('TYPO3_MODE') or die();
 
@@ -11,12 +12,6 @@ call_user_func(
             \TYPO3\CMS\Core\Imaging\IconRegistry::class
         );
         $contentElementsRegistry = \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::getInstance();
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-            ContentElementRegistryUtility::convertArrayToTypoScript(
-                $contentElementsRegistry->getBaseTypoScriptPersistenceConfig(),
-                'config.tx_extbase.persistence.classes'
-            )
-        );
 
         /** @var \Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem $contentElement */
         foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
@@ -44,14 +39,6 @@ call_user_func(
                 ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
             );
 
-
-            //Add TypoScript setup for Extbase persistence mapping
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
-                ContentElementRegistryUtility::convertArrayToTypoScript(
-                    $contentElement->getTypoScriptPersistenceConfig(),
-                    'config.tx_extbase.persistence.classes'
-                )
-            );
 
             //Register CE preview template
             $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem'][$contentElement->getCType()] =

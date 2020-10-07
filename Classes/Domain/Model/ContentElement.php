@@ -9,7 +9,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  * Class ContentElement
  * @package Digitalwerk\CEs\Domain\Model
  */
-class ContentElement extends AbstractEntity
+class ContentElement extends AbstractEntity implements \JsonSerializable
 {
 
     /**
@@ -229,4 +229,23 @@ class ContentElement extends AbstractEntity
     {
         $this->contentObjectConfiguration = $contentObjectConfiguration;
     }
+
+    /**
+     * @param array $data
+     * @return array|mixed
+     * @throws \ReflectionException
+     */
+    public function jsonSerialize($data = [])
+    {
+        return array_merge([
+            'CType' => $this->getCType(),
+            'sectionIndex' => $this->isSectionIndex(),
+            'cssClassWithModifiers' => $this->getCssClassWithModifiers(),
+            'languageUid' => $this->getLanguageUid(),
+            'uid' => $this->getUid(),
+            'pid' => $this->getPid(),
+            'cssClass' => $this->getCssClass()
+        ], $data);
+    }
+
 }
