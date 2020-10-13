@@ -432,4 +432,12 @@ abstract class AbstractContentElementRegistryItem
     {
         return [];
     }
+
+    /**
+     * @return array
+     */
+    public function getColumnsMapping(): array
+    {
+        return $this->columnsMapping;
+    }
 }

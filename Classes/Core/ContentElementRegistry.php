@@ -6,10 +6,10 @@ use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegi
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class ContentElementRegistry
@@ -221,42 +221,71 @@ class ContentElementRegistry implements SingletonInterface
      */
     protected function generateExtbasePersistenceClasses()
     {
-        $fileNamePath = GeneralUtility::getFileAbsFileName('EXT:'.self::EXTENSION_KEY.'/Configuration/Extbase/Persistence/Classes.php');
-        //TODO: do it with some templating engine and dynamic
-        $content = <<<EOD
-        <?php
-        declare(strict_types = 1);
-        
-        return [
-            \Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement::class => [
-                'tableName' => 'tt_content',
-                'properties' => [
-                     'CType' => [
-                        'fieldName' => 'CType'
-                     ],
-                     'header' => [
-                         'fieldName' => 'header'
-                     ],
-                     'sectionIndex' => [
-                         'fieldName' => 'sectionIndex'
-                     ],
-                ],
-                'subclasses' => [
-                    \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class => \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class,
-                ]
-            ],
-            \DevSK\DsBoilerplate\Domain\Model\ContentElement\RegularTextElement::class => [
-                'tableName' => 'tt_content',
-                'recordType' => 'dsboilerplate_regulartextelement',
-                'properties' => [
-                    'text' => [
-                        'fieldName' => 'bodytext'
-                    ]
-                ]
-            ]
-        ];
-        EOD;
+        if ($this->contentElements) {
+            $persistenceClassesFile = GeneralUtility::getFileAbsFileName('EXT:'.self::EXTENSION_KEY.'/Configuration/Extbase/Persistence/Classes.php');
+            $definedClasses = [];
 
-        GeneralUtility::writeFile($fileNamePath, $content);
+            /**
+             * @var string $CType
+             * @var AbstractContentElementRegistryItem $contentElement
+             */
+            foreach ($this->contentElements as $CType => $contentElement) {
+                $contentElementName = explode('\\', get_class($contentElement));
+                $contentElementName = end($contentElementName);
+                $contentElementObjectClass = 'DevSK\DsBoilerplate\Domain\Model\ContentElement\\' . $contentElementName;
+
+                $content = [
+                    \Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement::class => [
+                        'tableName' => 'tt_content',
+                        'properties' => [
+                            'CType' => [
+                                'fieldName' => 'CType'
+                            ],
+                            'header' => [
+                                'fieldName' => 'header'
+                            ],
+                            'sectionIndex' => [
+                                'fieldName' => 'sectionIndex'
+                            ],
+                        ],
+                        'subclasses' => [
+                            $contentElementObjectClass => $contentElementObjectClass,
+                        ]
+                    ],
+                    $contentElementObjectClass => [
+                        'tableName' => 'tt_content',
+                        'recordType' => $CType
+                    ]
+                ];
+
+                if ($contentElement->getColumnsMapping()) {
+                    foreach ($contentElement->getColumnsMapping() as $columnMappingValue => $columnMappingKey) {
+                        $content[$contentElementObjectClass]['properties'][$columnMappingKey] = [
+                            'fieldName' => $columnMappingValue
+                        ];
+                    }
+                }
+
+                ArrayUtility::mergeRecursiveWithOverrule(
+                    $definedClasses,
+                    $content,
+                    true,
+                    false
+                );
+            }
+        }
+
+        file_put_contents($persistenceClassesFile, $this->generateClassesFileFromArray($definedClasses));
+    }
+
+    private function generateClassesFileFromArray(array $definedClasses) {
+        $file[] = '<?php';
+        $file[] = 'declare(strict_types=1);';
+        $file[] = '';
+        if (!empty($definedClasses)) {
+            $file[] = 'return ' . var_export($definedClasses, true) . ';';
+        }
+
+        return implode("\n", $file);
     }
 }
