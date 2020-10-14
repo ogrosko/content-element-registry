@@ -3,6 +3,7 @@ namespace Digitalwerk\ContentElementRegistry\Core;
 
 use Composer\Autoload\ClassMapGenerator;
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
+use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -223,31 +224,26 @@ class ContentElementRegistry implements SingletonInterface
     {
         if ($this->contentElements) {
             $persistenceClassesFile = GeneralUtility::getFileAbsFileName('EXT:'.self::EXTENSION_KEY.'/Configuration/Extbase/Persistence/Classes.php');
-            $definedClasses = [];
+
+            $definedClasses = [
+                ContentElement::class => [
+                    'tableName' => 'tt_content',
+                ],
+            ];
+            foreach ($this->columnsMapping as $columnMappingValue => $columnMappingKey) {
+                $definedClasses[ContentElement::class]['properties'][$columnMappingKey] = [
+                    'fieldName' => $columnMappingValue
+                ];
+            }
 
             /**
              * @var string $CType
              * @var AbstractContentElementRegistryItem $contentElement
              */
             foreach ($this->contentElements as $CType => $contentElement) {
-                $contentElementName = explode('\\', get_class($contentElement));
-                $contentElementName = end($contentElementName);
-                $contentElementObjectClass = 'DevSK\DsBoilerplate\Domain\Model\ContentElement\\' . $contentElementName;
-
+                $contentElementObjectClass = $contentElement->getDomainModelClassName();
                 $content = [
-                    \Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement::class => [
-                        'tableName' => 'tt_content',
-                        'properties' => [
-                            'CType' => [
-                                'fieldName' => 'CType'
-                            ],
-                            'header' => [
-                                'fieldName' => 'header'
-                            ],
-                            'sectionIndex' => [
-                                'fieldName' => 'sectionIndex'
-                            ],
-                        ],
+                    ContentElement::class => [
                         'subclasses' => [
                             $contentElementObjectClass => $contentElementObjectClass,
                         ]
@@ -273,9 +269,9 @@ class ContentElementRegistry implements SingletonInterface
                     false
                 );
             }
-        }
 
-        file_put_contents($persistenceClassesFile, $this->generateClassesFileFromArray($definedClasses));
+            file_put_contents($persistenceClassesFile, $this->generateClassesFileFromArray($definedClasses));
+        }
     }
 
     private function generateClassesFileFromArray(array $definedClasses) {
