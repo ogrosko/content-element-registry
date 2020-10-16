@@ -270,11 +270,18 @@ class ContentElementRegistry implements SingletonInterface
                 );
             }
 
-            file_put_contents($persistenceClassesFile, $this->generateClassesFileFromArray($definedClasses));
+            file_put_contents($persistenceClassesFile, $this->generateExtbaseClassesFileFromArray($definedClasses));
         }
     }
 
-    private function generateClassesFileFromArray(array $definedClasses) {
+    /**
+     * Generate data for Extbase Persistence Classes
+     *
+     * @param array $definedClasses
+     * @return string
+     */
+    private function generateExtbaseClassesFileFromArray(array $definedClasses)
+    {
         $file[] = '<?php';
         $file[] = 'declare(strict_types=1);';
         $file[] = '';

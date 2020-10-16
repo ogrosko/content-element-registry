@@ -280,13 +280,19 @@ abstract class AbstractContentElementRegistryItem
         if ($this->isHeadless()) {
             return [
                 'tt_content' => [
-                    $this->getCType() => 'JSON',
+                    //TODO: define inheritance
+//                    $this->getCType() => '< lib.contentElementWithHeader',
+                    $this->getCType() => '< lib.contentElement',
                     $this->getCType().'.' => [
-                        'dataProcessing.' => [
-                            '0' => HeadlessDataProcessor::class,
-                            '0.as' => 'fields',
+                        'fields' => [
+                            'content' => [
+                                'dataProcessing.' => [
+                                    '0' => HeadlessDataProcessor::class,
+                                    '0.as' => 'fields',
+                                ],
+                            ],
                         ],
-                    ]
+                    ],
                 ],
             ];
         }
