@@ -4,13 +4,14 @@ namespace Digitalwerk\ContentElementRegistry\Core;
 use Composer\Autoload\ClassMapGenerator;
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
+use Digitalwerk\ContentElementRegistry\Events\ContentElementRegistryClassEvent;
 use Digitalwerk\ContentElementRegistry\Utility\ContentElementRegistryUtility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Class ContentElementRegistry
@@ -44,6 +45,7 @@ class ContentElementRegistry implements SingletonInterface
 
     /**
      * ContentElementsRegistry constructor.
+     * @throws ContentElementRegistryException
      */
     public function __construct()
     {
@@ -84,15 +86,12 @@ class ContentElementRegistry implements SingletonInterface
 
     /**
      * Emit registerContentElementRegistryClass signal
-     *
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
-     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
-     * @deprecated in favor of https://docs.typo3.org/c/typo3/cms-core/master/en-us/Changelog/10.4/Deprecation-90625-ExtbaseSignalSlotDispatcher.html
      */
     private function emitRegisterContentElementRegistryClass()
     {
-        $dispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $dispatcher->dispatch(__CLASS__, 'registerContentElementRegistryClass', [$this]);
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+        $dispatcher->dispatch(new ContentElementRegistryClassEvent($this));
     }
 
     /**
@@ -107,7 +106,7 @@ class ContentElementRegistry implements SingletonInterface
      * Registration of new CE
      *
      * @param AbstractContentElementRegistryItem $element
-     * @throws ContentElementRegistryException
+     * @throws ContentElementRegistryException|\ReflectionException
      */
     public function registerContentElement(AbstractContentElementRegistryItem $element)
     {
@@ -131,15 +130,19 @@ class ContentElementRegistry implements SingletonInterface
 
     /**
      * @return void
+     * @throws \ReflectionException
      */
     private function sortContentElements()
     {
-        \uasort($this->contentElements, function (AbstractContentElementRegistryItem $a, AbstractContentElementRegistryItem $b) {
-            if ($a->getGroupName() === $b->getGroupName()) {
-                return \strcmp($a->getIdentifier(), $b->getIdentifier());
+        \uasort(
+            $this->contentElements,
+            function (AbstractContentElementRegistryItem $a, AbstractContentElementRegistryItem $b) {
+                if ($a->getGroupName() === $b->getGroupName()) {
+                    return \strcmp($a->getIdentifier(), $b->getIdentifier());
+                }
+                return \strcmp($a->getGroupName(), $b->getGroupName());
             }
-            return \strcmp($a->getGroupName(), $b->getGroupName());
-        });
+        );
     }
 
     /**

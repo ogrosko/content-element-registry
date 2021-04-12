@@ -5,7 +5,6 @@ use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
@@ -15,7 +14,6 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
  */
 class HeadlessDataProcessor implements DataProcessorInterface
 {
-
     /**
      * Process content object data
      *
@@ -24,13 +22,14 @@ class HeadlessDataProcessor implements DataProcessorInterface
      * @param array $processorConfiguration The configuration of this processor
      * @param array $processedData Key/value store of processed data (e.g. to be passed to a Fluid View)
      * @return array the processed data as key/value store
+     * @throws \ReflectionException
      */
     public function process(
         ContentObjectRenderer $cObj,
         array $contentObjectConfiguration,
         array $processorConfiguration,
         array $processedData
-    ) {
+    ): array {
         /** @var ContentElement $contentElement */
         $contentElement = $this->getDataMapper()->map(
             ContentElement::class,
@@ -50,7 +49,7 @@ class HeadlessDataProcessor implements DataProcessorInterface
     /**
      * @return DataMapper
      */
-    protected function getDataMapper()
+    protected function getDataMapper(): DataMapper
     {
         return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }

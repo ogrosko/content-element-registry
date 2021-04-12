@@ -14,7 +14,6 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
  */
 class ContentElementObjectDataProcessor implements DataProcessorInterface
 {
-
     /**
      * Process content object data
      *
@@ -29,7 +28,7 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
         array $contentObjectConfiguration,
         array $processorConfiguration,
         array $processedData
-    ) {
+    ): array {
         /** @var ContentElement $contentElement */
         $contentElement = $this->getDataMapper()->map(
             ContentElement::class,
@@ -47,7 +46,7 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
     /**
      * @return DataMapper
      */
-    protected function getDataMapper()
+    protected function getDataMapper(): DataMapper
     {
         return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }

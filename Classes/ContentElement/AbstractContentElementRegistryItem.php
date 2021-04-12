@@ -13,7 +13,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractContentElementRegistryItem
 {
-
     /**
      * Palettes
      *
@@ -61,7 +60,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getName()
+    public function getName(): string
     {
         return (new \ReflectionClass($this))->getShortName();
     }
@@ -72,7 +71,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getTemplateName()
+    public function getTemplateName(): string
     {
         return $this->getName();
     }
@@ -83,7 +82,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return \strtolower(\sprintf("%s_%s", $this->getExtensionName(), $this->getName()));
     }
@@ -94,7 +93,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getCType()
+    public function getCType(): string
     {
         return $this->getIdentifier();
     }
@@ -105,7 +104,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getExtensionKey()
+    public function getExtensionKey(): string
     {
         return GeneralUtility::camelCaseToLowerCaseUnderscored($this->getExtensionName());
     }
@@ -114,9 +113,8 @@ abstract class AbstractContentElementRegistryItem
      * Get extension name
      *
      * @return string
-     * @throws \ReflectionException
      */
-    public function getExtensionName()
+    public function getExtensionName(): string
     {
         return ContentElementRegistryUtility::getNamespaceConfiguration(static::class, 'extensionName');
     }
@@ -127,7 +125,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getIconIdentifier()
+    public function getIconIdentifier(): string
     {
         return $this->getIdentifier();
     }
@@ -149,7 +147,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getIconSrcPath()
+    public function getIconSrcPath(): string
     {
         $iconSource = "{$this->getIconsPath()}{$this->getIconIdentifier()}.svg";
         if (!file_exists(GeneralUtility::getFileAbsFileName($iconSource))) {
@@ -165,7 +163,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return "LLL:EXT:{$this->getExtensionKey()}/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.title";
     }
@@ -176,7 +174,7 @@ abstract class AbstractContentElementRegistryItem
      * @return string
      * @throws \ReflectionException
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return "LLL:EXT:{$this->getExtensionKey()}/Resources/Private/Language/locallang_db.xlf:tt_content.{$this->getIdentifier()}.description";
     }
@@ -186,7 +184,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    protected function getWizardTabHeader()
+    protected function getWizardTabHeader(): string
     {
         return "LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:{$this->wizardTabName}";
     }
@@ -196,7 +194,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    public function getGroupName()
+    public function getGroupName(): string
     {
         return $this->wizardTabName;
     }
@@ -206,7 +204,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    public function getGroupLabel()
+    public function getGroupLabel(): string
     {
         return $this->getWizardTabHeader();
     }
@@ -217,7 +215,7 @@ abstract class AbstractContentElementRegistryItem
      * @return array
      * @throws \ReflectionException
      */
-    public function getWizardPageTSconfig()
+    public function getWizardPageTSconfig(): array
     {
         $config = [];
 
@@ -246,7 +244,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    public function getTCAShowItemConfig()
+    public function getTCAShowItemConfig(): string
     {
         return "--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
                     --palette--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:palette.general;general,
@@ -275,7 +273,7 @@ abstract class AbstractContentElementRegistryItem
      * @return array
      * @throws \ReflectionException
      */
-    public function getTypoScriptConfiguration()
+    public function getTypoScriptConfiguration(): array
     {
         if ($this->isHeadless()) {
             return [
@@ -336,7 +334,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    protected function getAdditionalTCAConfig()
+    protected function getAdditionalTCAConfig(): string
     {
         return '';
     }
@@ -346,7 +344,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return array
      */
-    public function getColumnsOverrides()
+    public function getColumnsOverrides(): array
     {
         return [];
     }
@@ -358,7 +356,7 @@ abstract class AbstractContentElementRegistryItem
      * @param string $showItem Pallete showitem string
      * @throws \Exception
      */
-    protected function addPalette($name, $showItem)
+    protected function addPalette(string $name, string $showItem)
     {
         $paletteIdentifier = \sprintf("%s_%s", $this->getIdentifier(), $name);
         if (\array_key_exists($paletteIdentifier, $this->palettes)) {
@@ -376,7 +374,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return string
      */
-    private function getPalettesShowItemString()
+    private function getPalettesShowItemString(): string
     {
         $palettesString = '';
         foreach ($this->palettes as $paletteName => $paletteConfig) {
@@ -391,7 +389,7 @@ abstract class AbstractContentElementRegistryItem
      *
      * @return array
      */
-    public function getPalettes()
+    public function getPalettes(): array
     {
         return $this->palettes;
     }
@@ -434,7 +432,7 @@ abstract class AbstractContentElementRegistryItem
         $this->isHeadless = $isHeadless;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [];
     }

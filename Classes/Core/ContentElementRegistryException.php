@@ -7,5 +7,4 @@ namespace Digitalwerk\ContentElementRegistry\Core;
  */
 class ContentElementRegistryException extends \Exception
 {
-
 }

@@ -19,8 +19,12 @@ class ContentElementRegistryUtility
      * @param boolean $init Internal
      * @return string TypoScript
      */
-    public static function convertArrayToTypoScript(array $typoScriptArray, $addKey = '', $tab = 0, $init = true)
-    {
+    public static function convertArrayToTypoScript(
+        array $typoScriptArray,
+        $addKey = '',
+        $tab = 0,
+        $init = true
+    ): string {
         $typoScript = '';
         if ($addKey !== '') {
             $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . $addKey . " {\n";
@@ -36,7 +40,8 @@ class ContentElementRegistryUtility
                 } elseif (strpos($value, "\n") === false) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key = $value\n";
                 } else {
-                    $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key (\n$value\n" . str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . ")\n";
+                    $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key (\n$value\n" .
+                        str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . ")\n";
                 }
             } else {
                 $typoScript .= self::convertArrayToTypoScript($value, $key, $tab, false);
@@ -56,11 +61,10 @@ class ContentElementRegistryUtility
      * Gets namespace information
      *
      * @param string $class
-     * @param string $key
-     * @return array|mixed
-     * @throws \ReflectionException
+     * @param null $key
+     * @return array|string
      */
-    public static function getNamespaceConfiguration($class, $key = null)
+    public static function getNamespaceConfiguration(string $class, $key = null)
     {
         list($vendorName, $extensionName, $modelName) = GeneralUtility::trimExplode('\\', $class);
         $data = [
@@ -95,7 +99,7 @@ class ContentElementRegistryUtility
      */
     public static function registerIcons(array $icons, string $extKey): void
     {
-        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+        $iconRegistry = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
         foreach ($icons as $icon) {
             $iconName = stripos($icon, '/') === false ? $icon : end(explode('/', $icon));
             $iconRegistry->registerIcon(

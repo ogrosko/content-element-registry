@@ -17,46 +17,40 @@ It can be done in two ways:
 **Example:** `EXT:your_ext_1/Classes/ContentElements/,EXT:your_ext_2/Classes/ContentElements/`
 ![](./Resources/Public/Images/ExtConfSettings.png)
 
-2. By registering Signal slot in `ext_localconf.php` of your extension as follows:
+2. By registering Listener in `Services.yaml` of your extension as follows:
 
-```php
-<?php
-defined('TYPO3_MODE') or die();
-
-call_user_func(
-    function ($extKey) {
-        $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            \TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class
-        );
-        $signalSlotDispatcher->connect(
-            \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::class,
-            'registerContentElementRegistryClass',
-            \YourVendor\YourExtension\YourClass::class,
-            'yourMethodName'
-        );
-    },
-    $_EXTKEY
-);
+```yaml
+  Vendor\Extension\EventListeners\ContentElementRegistryListener:
+    tags:
+      - name: event.listener
+        identifier: 'contentElementRegistryListener'
+        event: Digitalwerk\ContentElementRegistry\Events\ContentElementRegistryClassEvent
 
 ```
 
-Method `\YourVendor\YourExtension\YourClass::yourMethodName` can looks like this:
+Method `Vendor\Extension\EventListeners\ContentElementRegistryListener` can looks like this:
 
 ```php
 <?php
 declare(strict_types=1);
-namespace \YourVendor\YourExtension;
+namespace Vendor\Extension\EventListeners;
 
-class YourClass
+class ContentElementRegistryListener
 {
     /**
-     * @param \YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry
+     * @param RegisterContentElementRegistryClassEvent $event
      */
-    public function registerContentElements(\YourVendor\ContentElementRegistry\Core\ContentElementRegistry $contentElementRegistry)
+    public function __invoke(RegisterContentElementRegistryClassEvent $event): void
     {
-        $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(PATH_typo3conf.'ext/your_extension/Classes/ContentElement/');
+        $contentElementRegistry = $event->getContentElementRegistry();
+        $contentElementsClassMap = \Composer\Autoload\ClassMapGenerator::createMap(
+            \TYPO3\CMS\Core\Core\Environment::getPublicPath() .
+            '/typo3conf/ext/your_extension/Classes/ContentElement/'
+        );
         foreach ($contentElementsClassMap as $elementClass => $elementClassPath) {
-            $contentElementRegistry->registerContentElement(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass));
+            $contentElementRegistry->registerContentElement(
+                \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($elementClass)
+            );
         }
     }
 }
@@ -194,7 +188,7 @@ Content of template can looks like this:
 </html>
 ```
 
-Whether you use `<f:layout />` and `<f:section />` it's fully up to you. You can also add section 
+Whether you use `<f:layout />` and `<f:section />` it's fully up to you. You can also add section
 `<f:section name="Preview">` which is used for BE preview.
 
 ### CE Icon
@@ -203,7 +197,7 @@ If you don't want to use the defaut icon, you can change it:
 
 ### CE Domain Model
 Model name is matched by CE class name. E.g. if is registered CE with class name `YourNewContentElement` this model can
-exists in `EXT:your_extension/Classes/Domain/Model/YourNewContentElement.php` Content of model can 
+exists in `EXT:your_extension/Classes/Domain/Model/YourNewContentElement.php` Content of model can
 looks like this:
 ```php
 <?php
@@ -221,7 +215,7 @@ class YourNewContentElement extends ContentElement
 
 }
 ```
-Into class you can write some `functions, getters, setters, etc`. Some of them are inherited from 
+Into class you can write some `functions, getters, setters, etc`. Some of them are inherited from
 `DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement` (take a look ;).
 
 ##### Model in template
@@ -302,7 +296,7 @@ $tempTca = [
     ],
     'types' => [
         'yourextension_yournewcontentelement_yournewrelation' => [
-                    'showitem' => '--palette--;;mediaPalette,',           
+                    'showitem' => '--palette--;;mediaPalette,',
                 ],
     ],
     'palettes' => [
@@ -393,7 +387,7 @@ class YourNewRelation extends Relation
      * @var string
      */
     protected $type = '';
-    
+
     /**
      * @return string
      */
@@ -410,9 +404,9 @@ In Class of CE you can map field, when you want to use it in model, e.g. `tx_con
 but after mapping `'tx_contentelementregistry_relations' => 'relations'`,`tx_contentelementregistry_relations` is called in the model `relations`.
  ```php
 namespace \YourVendor\YourExtension\Domain\Model\ContentElement;
- 
+
 use DigitalWerk\ContentElementRegistry\Domain\Model\ContentElement;
- 
+
 /**
  * Class YourNewContentElement
  * @package YourVendor\YourExtension\Domain\Model\ContentElement
@@ -425,7 +419,7 @@ class YourNewContentElement extends ContentElement
    protected $columnsMapping = [
        'tx_contentelementregistry_relations' => 'relations',
    ];
- 
+
 }
 ```
 ##Changelog

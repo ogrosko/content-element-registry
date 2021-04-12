@@ -1,15 +1,18 @@
 <?php
+
+use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3_MODE') or die();
 
-$contentElementsRegistry = \Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry::getInstance();
+$contentElementsRegistry = ContentElementRegistry::getInstance();
 
 $ceGroup = '';
-/** @var \Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem $contentElement */
 foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
     //Add CE CType select group
     if ($contentElement->getGroupName() !== $ceGroup) {
         $ceGroup = $contentElement->getGroupName();
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTcaSelectItem(
+        ExtensionManagementUtility::addTcaSelectItem(
             'tt_content',
             'CType',
             [
@@ -22,7 +25,7 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
     }
 
     //Add CE CType in tt_content TCA select item
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTcaSelectItem(
+    ExtensionManagementUtility::addTcaSelectItem(
         'tt_content',
         'CType',
         [
@@ -74,4 +77,4 @@ $tmpColumns = [
     ],
 ];
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', $tmpColumns);
+ExtensionManagementUtility::addTCAcolumns('tt_content', $tmpColumns);

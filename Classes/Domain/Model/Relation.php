@@ -10,7 +10,6 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
  */
 abstract class Relation extends AbstractEntity
 {
-
     /**
      * @var string
      */

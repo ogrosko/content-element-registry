@@ -11,7 +11,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 class ContentElement extends AbstractEntity implements \JsonSerializable
 {
-
     /**
      * @var string
      */
