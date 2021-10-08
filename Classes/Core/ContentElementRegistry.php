@@ -74,9 +74,11 @@ class ContentElementRegistry implements SingletonInterface
                 if (\file_exists($contentElementsPath) and \is_dir($contentElementsPath)) {
                     $contentElementsClasses = ClassMapGenerator::createMap($contentElementsPath);
                     foreach ($contentElementsClasses as $contentElementClass => $contentElementClassPath) {
-                        $contentElement = GeneralUtility::makeInstance($contentElementClass);
-                        if ($contentElement instanceof AbstractContentElementRegistryItem) {
-                            $this->registerContentElement($contentElement);
+                        $reflection = new \ReflectionClass($contentElementClass);
+                        if ($reflection->isInstantiable()
+                            && $reflection->isSubclassOf(AbstractContentElementRegistryItem::class)
+                        ) {
+                            $this->registerContentElement(GeneralUtility::makeInstance($contentElementClass));
                         }
                     }
                 }
