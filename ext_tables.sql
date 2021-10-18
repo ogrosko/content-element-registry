@@ -18,7 +18,8 @@ CREATE TABLE tx_contentelementregistry_domain_model_relation (
 	title varchar(255) DEFAULT '' NOT NULL,
 	description text,
 	media int(11) unsigned DEFAULT '0' NOT NULL,
-    inline_relation int(11) unsigned DEFAULT '0' NOT NULL,
+    inline_relations int(11) unsigned DEFAULT '0' NOT NULL,
+    self_relation int(11) unsigned DEFAULT '0' NOT NULL,
 
 	tstamp int(11) unsigned DEFAULT '0' NOT NULL,
 	crdate int(11) unsigned DEFAULT '0' NOT NULL,

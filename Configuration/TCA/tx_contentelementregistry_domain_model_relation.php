@@ -208,12 +208,12 @@ return [
                 'type' => 'passthrough'
             ],
         ],
-        'inline_relation' => [
+        'inline_relations' => [
             'label' => 'Content relation (Label should be always rewrited by subType)',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_contentelementregistry_domain_model_relation',
-                'foreign_field' => 'content_element',
+                'foreign_field' => 'self_relation',
                 'foreign_sortby' => 'sorting',
                 'maxitems' => 9999,
                 'appearance' => [
@@ -224,6 +224,11 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+            ],
+        ],
+        'self_relation' => [
+            'config' => [
+                'type' => 'passthrough'
             ],
         ],
     ],
