@@ -1,7 +1,9 @@
 <?php
 namespace Digitalwerk\ContentElementRegistry\Domain\Model;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Service\FlexFormService;
 
 /**
  * Class ContentElement
@@ -68,5 +70,13 @@ class ContentElement extends AbstractEntity
     public function getLanguageUid()
     {
         return $this->_languageUid;
+    }
+
+    /**
+     * @return FlexFormService
+     */
+    protected function getFlexFormService()
+    {
+        return GeneralUtility::makeInstance(FlexFormService::class);
     }
 }
