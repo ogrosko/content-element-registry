@@ -10,6 +10,7 @@ return [
         'cruser_id' => 'cruser_id',
         'versioningWS' => true,
         'languageField' => 'sys_language_uid',
+        'translationSource' => 'l10n_source',
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
@@ -207,12 +208,12 @@ return [
                 'type' => 'passthrough'
             ],
         ],
-        'inline_relation' => [
+        'inline_relations' => [
             'label' => 'Content relation (Label should be always rewrited by subType)',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_contentelementregistry_domain_model_relation',
-                'foreign_field' => 'content_element',
+                'foreign_field' => 'self_relation',
                 'foreign_sortby' => 'sorting',
                 'maxitems' => 9999,
                 'appearance' => [
@@ -223,6 +224,11 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1
                 ],
+            ],
+        ],
+        'self_relation' => [
+            'config' => [
+                'type' => 'passthrough'
             ],
         ],
     ],

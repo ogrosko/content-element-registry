@@ -44,16 +44,18 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
             $view = GeneralUtility::makeInstance(StandaloneView::class);
             $view->setPartialRootPaths(["EXT:{$contentElement->getExtensionKey()}/Resources/Private/Partials"]);
             $view->setTemplatePathAndFilename("EXT:{$contentElement->getExtensionKey()}/Resources/Private/Templates/ContentElements/{$contentElement->getTemplateName()}.html");
+            $contentElementObject = $this->getDataMapper()->map(
+                ContentElement::class,
+                [$row]
+            )[0];
 
             $itemContent = $this->getEditContentLink($parentObject, $row);
             $itemContent .= $view->renderSection(
                 'Preview',
                 [
                     'data' => $row,
-                    'contentElement' => $this->getDataMapper()->map(
-                        ContentElement::class,
-                        [$row]
-                    )[0]
+                    'contentElement' => $contentElementObject,
+                    'ce' => $contentElementObject,
                 ],
                 true
             );
