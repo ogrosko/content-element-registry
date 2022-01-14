@@ -4,12 +4,11 @@ namespace Digitalwerk\ContentElementRegistry\Hook;
 use Digitalwerk\ContentElementRegistry\ContentElement\AbstractContentElementRegistryItem;
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
+use Digitalwerk\ContentElementRegistry\Traits\Injection\InjectDataMapper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -18,6 +17,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterface
 {
+    use InjectDataMapper;
 
     /**
      * Preprocesses the preview rendering of a content element.
@@ -44,7 +44,7 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
             $view = GeneralUtility::makeInstance(StandaloneView::class);
             $view->setPartialRootPaths(["EXT:{$contentElement->getExtensionKey()}/Resources/Private/Partials"]);
             $view->setTemplatePathAndFilename("EXT:{$contentElement->getExtensionKey()}/Resources/Private/Templates/ContentElements/{$contentElement->getTemplateName()}.html");
-            $contentElementObject = $this->getDataMapper()->map(
+            $contentElementObject = $this->dataMapper->map(
                 ContentElement::class,
                 [$row]
             )[0];
@@ -77,13 +77,5 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
                         $row
                     )}
                 </strong>";
-    }
-
-    /**
-     * @return DataMapper
-     */
-    protected function getDataMapper()
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }
 }

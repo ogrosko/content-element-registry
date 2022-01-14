@@ -2,9 +2,7 @@
 namespace Digitalwerk\ContentElementRegistry\DataProcessing;
 
 use Digitalwerk\ContentElementRegistry\Domain\Model\ContentElement;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use Digitalwerk\ContentElementRegistry\Traits\Injection\InjectDataMapper;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
@@ -14,6 +12,8 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
  */
 class ContentElementObjectDataProcessor implements DataProcessorInterface
 {
+    use InjectDataMapper;
+
     /**
      * Process content object data
      *
@@ -30,7 +30,7 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
         array $processedData
     ): array {
         /** @var ContentElement $contentElement */
-        $contentElement = $this->getDataMapper()->map(
+        $contentElement = $this->dataMapper->map(
             ContentElement::class,
             [$cObj->data]
         )[0];
@@ -41,13 +41,5 @@ class ContentElementObjectDataProcessor implements DataProcessorInterface
         $processedData['ce'] = $processedData['contentElement'] = $contentElement;
 
         return $processedData;
-    }
-
-    /**
-     * @return DataMapper
-     */
-    protected function getDataMapper(): DataMapper
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class)->get(DataMapper::class);
     }
 }

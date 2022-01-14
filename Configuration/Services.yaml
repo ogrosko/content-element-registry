@@ -1,0 +1,10 @@
+services:
+  #Dependencies injection activation
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Digitalwerk\ContentElementRegistry\:
+    resource: '../Classes/*'
+    exclude: '../Classes/Domain/Model/*'

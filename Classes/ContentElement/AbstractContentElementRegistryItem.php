@@ -278,8 +278,6 @@ abstract class AbstractContentElementRegistryItem
         if ($this->isHeadless()) {
             return [
                 'tt_content' => [
-                    //TODO: define inheritance
-//                    $this->getCType() => '< lib.contentElementWithHeader',
                     $this->getCType() => '< lib.contentElement',
                     $this->getCType().'.' => [
                         'fields' => [
