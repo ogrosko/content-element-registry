@@ -216,7 +216,7 @@ class ContentElementRegistry implements SingletonInterface
      */
     protected function isHeadless(): bool
     {
-        return (bool)$this->getExtConf('isHeadless');
+        return $this->getExtConf('isHeadless') === '1';
     }
 
     /**
