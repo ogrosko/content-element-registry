@@ -3,9 +3,9 @@
 	"type": "typo3-cms-extension",
 	"description": "Content element registry helper for registering Typo3 content elements",
 	"version": "11.5.1",
-	"license": "GPL-2.0+",
+	"license": "GPL-2.0-or-later",
 	"require": {
-		"typo3/cms-core": "10.0.0-11.5.999"
+		"typo3/cms-core": ">=10 <12"
 	},
 	"autoload": {
 		"psr-4": {
