@@ -42,12 +42,11 @@ call_user_func(
                 'setup',
                 ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
             );
-
-
-            //Register CE preview template
-            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem'][$contentElement->getCType()] =
-                ContentElementPreviewRenderer::class;
         }
+
+        //Register CE preview template
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem'][ContentElementRegistry::EXTENSION_KEY] =
+            ContentElementPreviewRenderer::class;
     },
     'content_element_registry'
 );
