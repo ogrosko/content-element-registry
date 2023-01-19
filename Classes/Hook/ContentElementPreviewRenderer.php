@@ -10,6 +10,7 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use function Symfony\Component\String\u;
 
 /**
  * Class ContentElementPreviewRenderer
@@ -50,7 +51,9 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
             )[0];
 
             $itemContent = $this->getEditContentLink($parentObject, $row);
-            $itemContent .= $view->renderSection(
+
+            /** Render preview */
+            $preview = $view->renderSection(
                 'Preview',
                 [
                     'data' => $row,
@@ -59,6 +62,30 @@ class ContentElementPreviewRenderer implements PageLayoutViewDrawItemHookInterfa
                 ],
                 true
             );
+
+            /** Check for using layout */
+            $useLayout = file_exists(
+                    GeneralUtility::getFileAbsFileName(
+                        "EXT:{$contentElement->getExtensionKey()}/Resources/Private/Layouts/ContentElements/Preview.html"
+                    )
+                ) && !u($preview)->containsAny('<!--Without layout-->');
+
+            if ($useLayout) {
+                /** Create a Standalone view instance */
+                /** @var StandaloneView $layout */
+                $layout = GeneralUtility::makeInstance(StandaloneView::class);
+                /** Set view Template */
+                $layout->setTemplatePathAndFilename(
+                    "EXT:{$contentElement->getExtensionKey()}/Resources/Private/Layouts/ContentElements/Preview.html"
+                );
+                /** Assign rendered preview to layout */
+                $layout->assign('preview', $preview);
+                /** Modify core preview */
+                $itemContent .= $layout->render();
+            } else {
+                /** Modify core preview */
+                $itemContent .= $preview;
+            }
         }
     }
 
