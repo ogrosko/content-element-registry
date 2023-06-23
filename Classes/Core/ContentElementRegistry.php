@@ -69,7 +69,7 @@ class ContentElementRegistry implements SingletonInterface
             $contentElementsPaths = GeneralUtility::trimExplode(',', $contentElementsPaths);
             foreach ($contentElementsPaths as $contentElementsPath) {
                 //                TODO: replace with str_starts_with() in PHP 8
-                if (GeneralUtility::isFirstPartOfStr($contentElementsPath, 'EXT:')) {
+                if (str_starts_with($contentElementsPath, 'EXT:')) {
                     $contentElementsPath = GeneralUtility::getFileAbsFileName($contentElementsPath);
                 }
                 if (\file_exists($contentElementsPath) and \is_dir($contentElementsPath)) {

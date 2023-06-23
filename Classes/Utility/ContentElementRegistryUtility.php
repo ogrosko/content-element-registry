@@ -36,7 +36,7 @@ class ContentElementRegistryUtility
         foreach ($typoScriptArray as $key => $value) {
             if (!is_array($value)) {
                 //                TODO: replace with str_starts_with() in PHP 8
-                if (GeneralUtility::isFirstPartOfStr($value, ":=") === true) {
+                if (str_starts_with($value, ":=") === true) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key $value\n";
                 } elseif (strpos($value, "\n") === false) {
                     $typoScript .= str_repeat("\t", ($tab === 0) ? $tab : $tab - 1) . "$key = $value\n";

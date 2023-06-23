@@ -228,7 +228,7 @@ Model is accessible in the template of element with variable name `{contentEleme
 2. In the TCA `EXT:your_extension/Configuration/TCA/Overrides/tt_content.php` create new column and config [Typo3 Columns Config](https://docs.typo3.org/m/typo3/reference-tca/master/en-us/ColumnsConfig/Index.html):
 ```php
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 $ttContentNewColumns = [
     'new_field' => [

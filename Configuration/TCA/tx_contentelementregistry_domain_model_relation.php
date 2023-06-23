@@ -15,6 +15,9 @@ return [
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'sortby' => 'sorting',
+        'security' => [
+            'ignorePageTypeRestriction' => true
+        ],
         'enablecolumns' => [
             'disabled' => 'hidden',
             'starttime' => 'starttime',
@@ -151,47 +154,10 @@ return [
         'media' => [
             'exclude' => true,
             'label' => 'LLL:EXT:content_element_registry/Resources/Private/Language/locallang_db.xlf:tx_contentelementregistry_domain_model_relation.media',
-            'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
-                'media',
-                [
-                    'overrideChildTca' => [
-                        'types' => [
-                            '0' => [
-                                'showitem' => '
-                                    --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
-                            ],
-                            \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
-                                'showitem' => '
-                                    --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
-                            ],
-                            \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
-                                'showitem' => '
-                                    --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
-                            ],
-                            \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
-                                'showitem' => '
-                                    --palette--;;audioOverlayPalette,
-                                    --palette--;;filePalette'
-                            ],
-                            \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
-                                'showitem' => '
-                                    --palette--;;videoOverlayPalette,
-                                    --palette--;;filePalette'
-                            ],
-                            \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
-                                'showitem' => '
-                                    --palette--;;imageoverlayPalette,
-                                    --palette--;;filePalette'
-                            ]
-                        ],
-                    ],
-                    'maxitems' => 1
-                ]
-            ),
-
+            'config' => [
+                'type' => 'file',
+                'maxitems' => 1
+            ]
         ],
         'content_element' => [
             'config' => [

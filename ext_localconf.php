@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 call_user_func(
     function ($extKey) {
@@ -17,6 +17,7 @@ call_user_func(
             IconRegistry::class
         );
         $contentElementsRegistry = ContentElementRegistry::getInstance();
+
 
         foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
             //Register CE icon
@@ -43,10 +44,6 @@ call_user_func(
                 ContentElementRegistryUtility::convertArrayToTypoScript($contentElement->getTypoScriptConfiguration())
             );
         }
-
-        //Register CE preview template
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem'][ContentElementRegistry::EXTENSION_KEY] =
-            ContentElementPreviewRenderer::class;
     },
     'content_element_registry'
 );

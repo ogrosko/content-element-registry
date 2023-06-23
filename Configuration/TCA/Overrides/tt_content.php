@@ -3,7 +3,7 @@
 use Digitalwerk\ContentElementRegistry\Core\ContentElementRegistry;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 $contentElementsRegistry = ContentElementRegistry::getInstance();
 

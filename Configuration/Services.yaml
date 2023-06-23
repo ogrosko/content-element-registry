@@ -8,3 +8,9 @@ services:
   Digitalwerk\ContentElementRegistry\:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
+
+  Digitalwerk\ContentElementRegistry\Listeners\ContentElementPreviewRenderer:
+    tags:
+      - name: event.listener
+        identifier: 'contentElementPreviewRenderer'
+        event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent
