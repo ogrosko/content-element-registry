@@ -79,8 +79,7 @@ class ContentElementPreviewRenderer
                 /** Modify core preview */
                 $itemContent .= $preview;
             }
+            $event->setPreviewContent($itemContent ?: '');
         }
-
-        $event->setPreviewContent($itemContent ?: 'test');
     }
 }
