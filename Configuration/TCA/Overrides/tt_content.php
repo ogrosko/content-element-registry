@@ -16,8 +16,8 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
             'tt_content',
             'CType',
             [
-                $contentElement->getGroupLabel(),
-                '--div--'
+                'label' => $contentElement->getGroupLabel(),
+                'value' => '--div--'
             ],
             'text',
             'before'
@@ -29,9 +29,9 @@ foreach ($contentElementsRegistry->getContentElements() as $contentElement) {
         'tt_content',
         'CType',
         [
-            $contentElement->getTitle(),
-            $contentElement->getCType(),
-            $contentElement->getIconIdentifier()
+            'label' => $contentElement->getTitle(),
+            'value' => $contentElement->getCType(),
+            'icon' => $contentElement->getIconIdentifier()
         ],
         'text',
         'before'
