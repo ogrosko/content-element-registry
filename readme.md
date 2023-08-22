@@ -1,4 +1,9 @@
+⚠️ Project migrated ⚠️
+-------------------------
 
+Project was migrated to another project.
+
+Please continue in [this](https://github.com/devskio/content-element-registry) project
 
 
 # <img src="https://github.com/ogrosko/content-element-registry/raw/master/Resources/Public/Icons/Extension.svg?sanitize=true" width="40" height="40"/> Content element registry
